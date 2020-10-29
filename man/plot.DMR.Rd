@@ -24,4 +24,3 @@ X <- miete[,-1]
 m <- DMR(X, y)
 plot(m)
 }
-

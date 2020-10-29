@@ -4,9 +4,17 @@
 \alias{DMRnet}
 \title{Delete or Merge Regressors net}
 \usage{
-DMRnet(X, y, family = "gaussian", clust.method = "complete", o = 5,
-  nlambda = 20, lam = 10^(-7), interc = TRUE, maxp = ifelse(family ==
-  "gaussian", ceiling(length(y)/2), ceiling(length(y)/4)))
+DMRnet(
+  X,
+  y,
+  family = "gaussian",
+  clust.method = "complete",
+  o = 5,
+  nlambda = 20,
+  lam = 10^(-7),
+  interc = TRUE,
+  maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))
+)
 }
 \arguments{
 \item{X}{Input data frame; each row is an observation vector; each column can be numerical or integer for a continuous predictor or a factor for a categorical predictor.}
@@ -83,4 +91,3 @@ ypr <- predict(m2, newx = Xte, df = g$df.min)
 \seealso{
 \code{\link{print.DMR}} for printing, \code{\link{plot.DMR}} for plotting, \code{\link{coef.DMR}} for extracting coefficients and \code{\link{predict.DMR}} for prediction.
 }
-

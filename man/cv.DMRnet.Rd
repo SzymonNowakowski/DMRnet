@@ -4,10 +4,18 @@
 \alias{cv.DMRnet}
 \title{cross-validation for DMRnet}
 \usage{
-cv.DMRnet(X, y, family = "gaussian", clust.method = "complete", o = 5,
-  nlambda = 20, lam = 10^(-7), interc = TRUE, nfolds = 10,
-  maxp = ifelse(family == "gaussian", ceiling(length(y)/2),
-  ceiling(length(y)/4)))
+cv.DMRnet(
+  X,
+  y,
+  family = "gaussian",
+  clust.method = "complete",
+  o = 5,
+  nlambda = 20,
+  lam = 10^(-7),
+  interc = TRUE,
+  nfolds = 10,
+  maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))
+)
 }
 \arguments{
 \item{X}{Input data frame, of dimension n x p; each row is an observation vector. Columns can be numerical or integer for continuous predictors or factors for categorical predictors.}
@@ -62,4 +70,3 @@ ypr <- predict(cv, newx = Xte)
 \seealso{
 \code{\link{plot.cv.DMR}} for plotting, \code{\link{coef.cv.DMR}} for extracting coefficients and \code{\link{predict.cv.DMR}} for prediction.
 }
-

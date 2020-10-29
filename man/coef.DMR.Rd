@@ -29,4 +29,3 @@ X <- miete[,-1]
 m <- DMR(X, y)
 coef(m, df = 12)
 }
-

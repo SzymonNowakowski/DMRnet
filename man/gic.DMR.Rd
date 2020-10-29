@@ -32,4 +32,3 @@ m <- DMR(X, y)
 \seealso{
 \code{\link{plot.gic.DMR}} for plotting, \code{\link{coef.gic.DMR}} for extracting coefficients and \code{\link{predict.gic.DMR}} for prediction.
 }
-

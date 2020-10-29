@@ -75,4 +75,3 @@ ypr <- predict(m2, newx = Xte, df = g$df.min)
 \seealso{
 \code{\link{print.DMR}} for printing, \code{\link{plot.DMR}} for plotting, \code{\link{coef.DMR}} for extracting coefficients and \code{\link{predict.DMR}} for prediction.
 }
-

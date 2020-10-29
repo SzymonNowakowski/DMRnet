@@ -30,4 +30,3 @@ cv = cv.DMR(X,y)
 coef(cv)
 
 }
-

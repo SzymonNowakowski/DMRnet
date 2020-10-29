@@ -4,8 +4,14 @@
 \alias{cv.DMR}
 \title{cross-validation for DMR}
 \usage{
-cv.DMR(X, y, family = "gaussian", clust.method = "complete",
-  lam = 10^(-7), nfolds = 10)
+cv.DMR(
+  X,
+  y,
+  family = "gaussian",
+  clust.method = "complete",
+  lam = 10^(-7),
+  nfolds = 10
+)
 }
 \arguments{
 \item{X}{Input data frame, of dimension n x p; DMR works only if p<n, for p>=n see DMRnet; each row is an observation vector. Columns can be numerical or integer for continuous predictors or factors for categorical predictors.}
@@ -52,4 +58,3 @@ ypr <- predict(cv, newx = Xte)
 \seealso{
 \code{\link{plot.cv.DMR}} for plotting, \code{\link{coef.cv.DMR}} for extracting coefficients and \code{\link{predict.cv.DMR}} for prediction.
 }
-

@@ -34,4 +34,3 @@ Xte <- miete[1501:2053,-1]
 m <- DMR(Xtr, ytr)
 ypr <- predict(m, newx = Xte, df = 11)
 }
-

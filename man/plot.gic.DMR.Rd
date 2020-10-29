@@ -25,4 +25,3 @@ m <- DMR(X, y)
 g <- gic.DMR(m, c = 2.5)
 plot(g)
 }
-

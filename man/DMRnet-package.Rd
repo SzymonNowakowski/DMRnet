@@ -22,11 +22,6 @@ coef.gic.DMR, coef.cv.DMR, plot.gic.DMR, plot.cv.DMR, predict.gic.DMR, predict.c
 
 miete, promoter - Two data sets used for methods illustration.
 }
-\author{
-Agnieszka Prochenka-Sołtys, Piotr Pokarowski
-
-Maintainer: Agnieszka Prochenka-Sołtys <ap220756@mimuw.edu.pl>
-}
 \references{
 Aleksandra Maj-Kańska, Piotr Pokarowski and Agnieszka Prochenka. "Delete or merge regressors for linear model selection." Electronic Journal of Statistics 9.2 (2015): 1749-1778. \url{https://projecteuclid.org/euclid.ejs/1440507392}
 
@@ -34,4 +29,8 @@ Piotr Pokarowski and Jan Mielniczuk. "Combined l1 and greedy l0 penalized least 
 
 Agnieszka Prochenka and Piotr Pokarowski. "Delete or Merge Regressors algorithm." 20th European Young Statisticians Meeting, Aug 2017. \url{https://indico.uu.se/event/317/contribution/32/material/paper/0.pdf}
 }
+\author{
+Agnieszka Prochenka-Sołtys, Piotr Pokarowski
 
+Maintainer: Agnieszka Prochenka-Sołtys <ap220756@mimuw.edu.pl>
+}

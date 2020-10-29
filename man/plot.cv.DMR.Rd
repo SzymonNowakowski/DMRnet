@@ -27,4 +27,3 @@ cv = cv.DMR(X,y)
 plot(cv)
 
 }
-

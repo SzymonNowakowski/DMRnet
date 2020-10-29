@@ -4,7 +4,8 @@
 \name{miete}
 \alias{miete}
 \title{miete dataset}
-\format{A data frame with 2053 observations on the following 12 variables.
+\format{
+A data frame with 2053 observations on the following 12 variables.
 \describe{
   \item{rent}{Rent in euros.}
   \item{bathextra}{Special furniture in bathroom, yes = 1, no = 0.}
@@ -18,7 +19,8 @@
   \item{central}{Central heating, yes = 0, no = 1.}
   \item{year}{Year of construction.}
   \item{size}{Living space in square meter.}
-}}
+}
+}
 \usage{
 data(miete)
 }
@@ -33,4 +35,3 @@ summary(miete)
 Fahrmeir, L., Künstler, R., Pigeot, I., Tutz, G. (2004) Statistik: der Weg zur Datenanalyse. 5. Auflage, Berlin: Springer-Verlag.
 }
 \keyword{datasets}
-

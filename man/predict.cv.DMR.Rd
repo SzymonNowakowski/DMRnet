@@ -38,4 +38,3 @@ coef(cv)
 ypr <- predict(cv, newx = Xte)
 
 }
-

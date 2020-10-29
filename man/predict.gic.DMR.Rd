@@ -33,4 +33,3 @@ m <- DMR(Xtr, ytr)
 g <- gic.DMR(m, c = 2.5)
 ypr <- predict(g, newx = Xte)
 }
-

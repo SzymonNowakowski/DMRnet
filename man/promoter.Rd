@@ -4,7 +4,8 @@
 \name{promoter}
 \alias{promoter}
 \title{promoter dataset}
-\format{A data frame with 106 observations on the following 58 variables.
+\format{
+A data frame with 106 observations on the following 58 variables.
 \describe{
   \item{y}{One of 1/0, indicating the class (1 = promoter).}
   \item{X1}{Sequence; filled by one of {a, g, t, c}.}
@@ -63,7 +64,8 @@
   \item{X54}{Sequence; filled by one of {a, g, t, c}.}
   \item{X55}{Sequence; filled by one of {a, g, t, c}.}
   \item{X56}{Sequence; filled by one of {a, g, t, c}.}
-  \item{X57}{Sequence; filled by one of {a, g, t, c}.}}}
+  \item{X57}{Sequence; filled by one of {a, g, t, c}.}}
+}
 \source{
 \href{https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+\%28Promoter+Gene+Sequences\%29}{UCI machine learning repository: promoter}
 }
@@ -81,4 +83,3 @@ summary(promoter)
 Towell, G., Shavlik, J., Noordewier, M. Refinement of approximate domain theories by knowledge-based neural networks. In Proceedings of the eighth National conference on Artificial intelligence, pages 861-866. Boston, MA, 1990.
 }
 \keyword{datasets}
-
