@@ -48,18 +48,20 @@ DMR4lm <- function(X, y, clust.method = 'complete'){
                                ord <- 2:(n.cont + 1)
               }
     }
-	  #QR decompostion of the model matrix
-    qX <- qr.Q(m$qr)
-    rX <- qr.R(m$qr)
-    Ro <- solve(rX)
-    z <- t(qX)%*%y
-    sigma <- as.numeric((t(m$res)%*%m$res)/(n - p))
+
+      #QR decompostion of the model matrix
+    qX <- qr.Q(m$qr)   #matrix Q, eq. 3.1 of A.Prochenka PhD Thesis
+    rX <- qr.R(m$qr)   #matrix R, eq. 3.1 of A.Prochenka PhD Thesis
+    Ro <- solve(rX)    #matrix R^-1, eq. 3.1 of A.Prochenka PhD Thesis
+#    z <- qr.qty(m$qr, y)[1:m$qr$rank]   #what is the rest of those columns???
+    z <- t(qX)%*%y     #vector z, eq. 3.1 of A.Prochenka PhD Thesis
+    sigma_sq <- as.numeric((t(m$res)%*%m$res)/(n - p))   #variance estimator sigma hat squared, eq. 3.1 of A.Prochenka PhD Thesis
     #dissimilarity measures - matrices of squared t-statistics for each factor
     if (n.factors > 0){
        Tmats <- lapply(1:n.factors, function(i) {
           i1 <- ifelse(i == 1, 2, sum(n.levels[1:(i - 1)] - 1) + 2)
           i2 <- sum(n.levels[1:i] - 1) + 1
-          out <- t_stats(Ro[i1:i2,], ind1 = i1, ind2 = i2, sigma_sq = sigma, z = z)
+          out <- t_stats(Ro[i1:i2,], ind1 = i1, ind2 = i2, sigma_sq = sigma_sq, z = z)
           rownames(out) <- colnames(out) <- m$xlevels[[i]]
           return(out)
        })
@@ -80,9 +82,9 @@ DMR4lm <- function(X, y, clust.method = 'complete'){
     names(heig)[1] = "full"
     if ((p.fac + 1) < p){
         if((p.fac + 2) == p){
-          heig.add <- ((Ro[(p.fac + 2):p,]%*%z)^2)/(sigma*sum(Ro[(p.fac + 2):p,]^2))
+          heig.add <- ((Ro[(p.fac + 2):p,]%*%z)^2)/(sigma_sq*sum(Ro[(p.fac + 2):p,]^2))
         } else {
-          heig.add <- ((Ro[(p.fac + 2):p,]%*%z)^2)/(sigma*(apply(Ro[(p.fac + 2):p, ], 1, function(y) t(y)%*%y)))
+          heig.add <- ((Ro[(p.fac + 2):p,]%*%z)^2)/(sigma_sq*(apply(Ro[(p.fac + 2):p, ], 1, function(y) t(y)%*%y)))
         }
         names(heig.add) <- colnames(x.full)[(p.fac + 2):p]
         heig <- c(heig, heig.add)
