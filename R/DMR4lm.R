@@ -4,56 +4,59 @@ DMR4lm <- function(X, y, clust.method = 'complete'){
     if(n != length(y)){
               stop("Error: non-conforming data: nrow(X) not equal to length(y)")
     }
-    ssd <- apply(X, 2, function(x) length(unique(x)))
-    if (ssd[1] == 1 & (class(X[,1]) == "numeric" | class(X[,1]) == "integer")){
-       X <- X[,-1, drop = FALSE]
+    ssd <- apply(X, 2, function(x) length(unique(x)))   #number of unique values in each column of X
+    if (ssd[1] == 1 & (class(X[,1]) == "numeric" | class(X[,1]) == "integer")){  # removing the first column in case
+        # in case is a numeric constant in X
+        # i.e. in case it is an Intercept. Other than that, constant columns are NOT allowed
+       X <- X[,-1, drop = FALSE]   #drop=FALSE keeps the dimensions of X
        ssd <- ssd[-1]
     }
+
     if(ncol(X) == 0){
               stop("Error: X has zero columns")
     }
-    if(sum(ssd == 1) > 0){
+    if(sum(ssd == 1) > 0){   #checking if any other constant columns still  exist. if yes -> error
                stop("Error: X has columns with sd = 0 apart from the intercept")
     }
     nn <- sapply(1:ncol(X), function(i) class(X[,i]))
-    names(nn) <- colnames(X)
     nn[nn == "integer"] <- "numeric"
     if(sum(nn != "numeric" & nn != "factor" ) > 0){
               stop("Error: wrong data type, columns should be one of types: integer, factor, numeric")
     }
     x.full <- stats::model.matrix(y~., data = data.frame(y=y, X[,order(nn), drop = FALSE], check.names = TRUE))
-    p <- ncol(x.full)
+    p <- ncol(x.full)   # sum over all dimensions of X, e.g. for a factor with k levels it is taking (k-1) as a summand
     if (p >= n){
        stop("Error: p >= n, DMR works only for p < n, use DMRnet instead")
     }
     m <- stats::lm.fit(x.full, y)
     faki <- which(nn == "factor")
-    n.factors <- length(faki)
-    if (length(faki) > 0){
+    n.factors <- length(faki)   #number of factors in X
+    if (n.factors > 0){
        n.levels <- sapply(1:n.factors, function(i) length(levels(X[,faki[i]])))
-       p.fac <- sum(n.levels - 1)
+       p.fac <- sum(n.levels - 1)   #sum of factor dimensions. Again, for a factor with k levels it is taking (k-1) as a summand
     } else{
        p.fac <- 0
     }
     cont <- which(nn == "numeric")
-    n.cont <- length(cont)
+    n.cont <- length(cont)   #number of continous columns in X
     namCont <- names(nn)[cont]
     ord <- c()
-    if(n.cont > 0 ){
-              if(n.factors > 0){
-                  for (j in 1:n.cont){
+    if (n.cont > 0) {  #TODO: understand what happens here
+              if (n.factors > 0) {
+                  for (j in 1:n.cont) {
                      ord[j] <- sum(n.levels[1:sum(nn[1:cont[j]] == "factor")] - 1) + j + 1
                   }
-              } else{
-                               ord <- 2:(n.cont + 1)
+              } else {
+                  ord <- 2:(n.cont + 1)
               }
     }
 
       #QR decompostion of the model matrix
-    qX <- qr.Q(m$qr)   #matrix Q, eq. 3.1 of A.Prochenka PhD Thesis
+    qX <- qr.Q(m$qr, complete=FALSE)   #matrix Q, eq. 3.1 of A.Prochenka PhD Thesis
+                                      #explicitly stating that we want partial results (https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/QR.Auxiliaries)
     rX <- qr.R(m$qr)   #matrix R, eq. 3.1 of A.Prochenka PhD Thesis
     Ro <- solve(rX)    #matrix R^-1, eq. 3.1 of A.Prochenka PhD Thesis
-#    z <- qr.qty(m$qr, y)[1:m$qr$rank]   #what is the rest of those columns???
+    #alternatively: z <- qr.qty(m$qr, y)[1:m$qr$rank]   #the rest of the columns are from the complete Q matrix (https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/qr)
     z <- t(qX)%*%y     #vector z, eq. 3.1 of A.Prochenka PhD Thesis
     sigma_sq <- as.numeric((t(m$res)%*%m$res)/(n - p))   #variance estimator sigma hat squared, eq. 3.1 of A.Prochenka PhD Thesis
     #dissimilarity measures - matrices of squared t-statistics for each factor
