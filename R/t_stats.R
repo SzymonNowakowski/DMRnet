@@ -10,7 +10,7 @@ t_stats <- function(M, ind1, ind2, sigma_sq, z){
         t_st <- c(0, ((M%*%z)^2)/(sigma_sq*(apply(M, 1, function(y) t(y)%*%y))))
         Tmat <- rbind(t_st, Tmat)
     } else {
-        Tmat <- matrix(c(0, 0, ((M%*%z)^2)/(sigma_sq*sum(M^2)),0), 2, 2)
+        Tmat <- matrix(c(0, 0, ((M%*%z)^2)/(sigma_sq*sum(M^2)),0), 2, 2)   #A. Prochenka, PhD Thesis, Algorithm 1, Calculate squared t-statistics for all elementary constraints defined in (2.2)
     }
     return(Tmat)
 }

@@ -12,42 +12,44 @@ DMR4lm <- function(X, y, clust.method = 'complete'){
        ssd <- ssd[-1]
     }
 
-    if(ncol(X) == 0){
-              stop("Error: X has zero columns")
+    if(ncol(X) == 0) {
+      stop("Error: X has zero columns")
     }
-    if(sum(ssd == 1) > 0){   #checking if any other constant columns still  exist. if yes -> error
-               stop("Error: X has columns with sd = 0 apart from the intercept")
+    if(sum(ssd == 1) > 0) {   #checking if any other constant columns still  exist. if yes -> error
+      stop("Error: X has columns with sd = 0 apart from the intercept")
     }
     nn <- sapply(1:ncol(X), function(i) class(X[,i]))
+    names(nn) <- colnames(X)
     nn[nn == "integer"] <- "numeric"
-    if(sum(nn != "numeric" & nn != "factor" ) > 0){
-              stop("Error: wrong data type, columns should be one of types: integer, factor, numeric")
+    if(sum(nn != "numeric" & nn != "factor" ) > 0) {
+      stop("Error: wrong data type, columns should be one of types: integer, factor, numeric")
     }
     x.full <- stats::model.matrix(y~., data = data.frame(y=y, X[,order(nn), drop = FALSE], check.names = TRUE))
+      #important: x.full (and its successors, like Ro later) is ordered: first intercept, then factors (and their levels), then numeric column
     p <- ncol(x.full)   # sum over all dimensions of X, e.g. for a factor with k levels it is taking (k-1) as a summand
-    if (p >= n){
+    if (p >= n) {
        stop("Error: p >= n, DMR works only for p < n, use DMRnet instead")
     }
     m <- stats::lm.fit(x.full, y)
-    faki <- which(nn == "factor")
-    n.factors <- length(faki)   #number of factors in X
-    if (n.factors > 0){
-       n.levels <- sapply(1:n.factors, function(i) length(levels(X[,faki[i]])))
+    factor_columns <- which(nn == "factor")
+    n.factors <- length(factor_columns)   #number of factors in X
+    if (n.factors > 0) {
+       n.levels <- sapply(1:n.factors, function(i) length(levels(X[,factor_columns[i]])))
        p.fac <- sum(n.levels - 1)   #sum of factor dimensions. Again, for a factor with k levels it is taking (k-1) as a summand
     } else{
        p.fac <- 0
     }
     cont <- which(nn == "numeric")
-    n.cont <- length(cont)   #number of continous columns in X
-    namCont <- names(nn)[cont]
+    n.cont <- length(cont)   #number of continuous columns in X
+    names.cont <- names(nn)[cont]
     ord <- c()
-    if (n.cont > 0) {  #TODO: understand what happens here
+    if (n.cont > 0) {
               if (n.factors > 0) {
                   for (j in 1:n.cont) {
                      ord[j] <- sum(n.levels[1:sum(nn[1:cont[j]] == "factor")] - 1) + j + 1
-                  }
+                  }    #TODO: understand it better. For now, it is a sum of factor dimensions in columns preceding a continuous column, plus a continuous column index plus one (the intercept)
               } else {
-                  ord <- 2:(n.cont + 1)
+                  ord <- 2:(n.cont + 1)   #For each continuous column, it is its index plus one (the intercept)
               }
     }
 
@@ -62,8 +64,9 @@ DMR4lm <- function(X, y, clust.method = 'complete'){
     #dissimilarity measures - matrices of squared t-statistics for each factor
     if (n.factors > 0){
        Tmats <- lapply(1:n.factors, function(i) {
-          i1 <- ifelse(i == 1, 2, sum(n.levels[1:(i - 1)] - 1) + 2)
-          i2 <- sum(n.levels[1:i] - 1) + 1
+          i1 <- ifelse(i == 1, 2, sum(n.levels[1:(i - 1)] - 1) + 2)   #first (cumulatively) level of i-th factor
+          i2 <- sum(n.levels[1:i] - 1) + 1                            #last (cumulatively) level of i-th factor
+                    #in Ro levels come first and numeric columns last
           out <- t_stats(Ro[i1:i2,], ind1 = i1, ind2 = i2, sigma_sq = sigma_sq, z = z)
           rownames(out) <- colnames(out) <- m$xlevels[[i]]
           return(out)
@@ -99,7 +102,7 @@ DMR4lm <- function(X, y, clust.method = 'complete'){
     sp <- list()
     form <- c()
     nl <- 0
-    Z1 <- X[, faki, drop = FALSE]
+    Z1 <- X[, factor_columns, drop = FALSE]
     if (n.factors > 0){
             for (i in 1:n.factors){
                 sp[[i]] <- 1:n.levels[i]
@@ -107,18 +110,18 @@ DMR4lm <- function(X, y, clust.method = 'complete'){
                 nl <- nl + length(unique(sp[[i]])) - 1
             }
      }
-     Z2 <- X[,namCont, drop = FALSE]
+     Z2 <- X[,names.cont, drop = FALSE]
      Z <- cbind(Z1,Z2)
      dane <- data.frame(y=y, Z, check.names = T)
      ZZ <- stats::model.matrix(y~., data = dane)
      m <- stats::lm.fit(ZZ, y)
      b <- m$coef
      rss = sum(m$res^2)
-     form <- namCont
+     form <- names.cont
      if (len > 2){
        for (i in 2:(len - 1)){
          kt <- names(heig)[i]
-         if(length(intersect(kt, namCont)) > 0){
+         if(length(intersect(kt, names.cont)) > 0){
                           form <- form[-which(form == kt)]
                           Z2 <- Z2[, form, drop = FALSE]
 
@@ -129,7 +132,7 @@ DMR4lm <- function(X, y, clust.method = 'complete'){
            if(length(sp[[kt]][sp[[kt]] != 1]) > 0){
                                        sp[[kt]][sp[[kt]] != 1] <- sp[[kt]][sp[[kt]] != 1] + dod - min(sp[[kt]][sp[[kt]] != 1])
            }
-           Z1[,kt] <- X[, faki[kt]]
+           Z1[,kt] <- X[, factor_columns[kt]]
            levels(Z1[,kt]) <- sp[[kt]]
            Z1[,kt] <- factor(Z1[,kt])
            if (kt < length(sp)) for( x in (kt+1):length(sp)){ if (length(sp[[x]][sp[[x]]!=1]) > 0 ) sp[[x]][sp[[x]]!= 1] = sp[[x]][sp[[x]]!=1] - 1}
@@ -145,7 +148,7 @@ DMR4lm <- function(X, y, clust.method = 'complete'){
                        bb <- unlist(sapply(1:length(sp), function(j) sp[[j]][-1]))
          }
          bb2 <- rep(1, n.cont)
-         names(bb2) <- namCont
+         names(bb2) <- names.cont
          if(length(form) > 0){
                     bb2[form] <- (nl + 2):(nl + 1 + length(form))
          }
