@@ -41,7 +41,6 @@ SOSnet4lm <- function(X, y, o = 5, nlambda = 50, interc = TRUE, maxp = ceiling(l
           SS <- ifelse(bb > 0, 1, 0)
           ii <- duplicated(t(SS))    #detecting duplicated predictor sets
           bb <- bb[, ii == FALSE, drop = FALSE]    #(3) removing duplicated predictor sets
-          predictor_sets_cnt <-  #not used later, calculated just for the sake of
           B <- apply(bb, 2, function(x) stats::quantile(x[x!=0], seq(0, 1, length = (o + 1))[-(o + 1)]))
                                      #o-based quantiles of non-zero Betas (without the last, 100% quantile)
   ##now, perform the selection of s_kl = floor(s_k*l/o) highest Betas from the k-th step and l-th substep of the SOSnet pseudocode
