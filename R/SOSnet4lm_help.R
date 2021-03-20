@@ -1,15 +1,21 @@
-SOSnet4lm_help <- function(S, mL, X, y, interc = interc){
+SOSnet4lm_help <- function(run_no, S, mL, X, y, interc = interc){
+
     screenPred <- which(S == 1)
     s <- sum(S)
+    cat(run_no, s+1, qr(cbind(1, X[, screenPred, drop = FALSE]))$rank,"\n")
+    if(run_no == 14) {
+      cat("here")
+    }
+
     if (interc == FALSE){
        QR <- qr(X[, screenPred, drop = FALSE])
     } else{
-       X <- cbind(1, X)
-       QR <- qr(cbind(1, X[, screenPred + 1, drop = FALSE]))
+       #X <- cbind(1, X)  #it was a superflous line, not used in execution
+       QR <- qr(cbind(1, X[, screenPred, drop = FALSE]))   #the effect was nullified in this line because here the index was shifted by 1
        s <- s + 1
     }
     W <- qr.R(QR)
-    Q <- qr.Q(QR)
+    Q <- qr.Q(QR, complete=FALSE)  #explicitly stating that we want partial results (https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/QR.Auxiliaries)
     z <- t(Q)%*%y
     bety <- backsolve(W, z)
     W_ <- backsolve(W, diag(s))

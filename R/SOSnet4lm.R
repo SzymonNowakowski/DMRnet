@@ -25,19 +25,19 @@ SOSnet4lm <- function(X, y, o = 5, nlambda = 50, interc = TRUE, maxp = ceiling(l
           mL <- glmnet::glmnet(Xg, y, alpha = 1, intercept = interc, nlambda = nlambda, family = "gaussian")
           RL <- mL$lambda
           dfy <- apply(mL$beta, 2, function(x) sum(x!=0))  #equal to s_k from SOSnet pseudocode
-          kt <- 1:length(RL)
+          kt <- 1:length(RL)    #indices of lambdas
           ngp <- which(dfy >= n)   #(1) removing predictor sets with more predictors than matrix rows
           if (length(ngp) > 0){
-            RL <- RL[-ngp]
-            kt <- kt[-ngp]
+            RL <- RL[-ngp]  #removing them from lambdas
+            kt <- kt[-ngp]   #and from lambda indices
             dfy <- dfy[-ngp]
           }
           kk <- which(dfy == 0)    #(2) removing predictor sets with 0 predictors
           if(length(kk) > 0){
-            RL <- RL[-kk]
-            kt <- kt[-kk]
+            RL <- RL[-kk]     #removing them from lambdas
+            kt <- kt[-kk]     #and for lambda indices
           }
-          bb <- as.matrix(abs(mL$beta[, kt]))
+          bb <- as.matrix(abs(mL$beta[, kt]))    #Betas corresponding to legal lambdas
           SS <- ifelse(bb > 0, 1, 0)
           ii <- duplicated(t(SS))    #detecting duplicated predictor sets
           bb <- bb[, ii == FALSE, drop = FALSE]    #(3) removing duplicated predictor sets
@@ -51,7 +51,7 @@ SOSnet4lm <- function(X, y, o = 5, nlambda = 50, interc = TRUE, maxp = ceiling(l
           SS <- matrix(S, p, sum(ii == FALSE)*o)
   ## a column number (l-1)*sum(ii==FALSE) + k of SS contains a "1" in a given row iff a given highest beta is a part of J i.e. that predictor is a part of s_kl selected predictors
           SS <- t(unique(t(SS)))   #again, removing duplicate rows
-          mm <- lapply(1:ncol(SS), function(i) SOSnet4lm_help(SS[,i], mL, X, y, interc = interc))
+          mm <- lapply(1:ncol(SS), function(i) SOSnet4lm_help(i, SS[,i], mL, X, y, interc = interc))
           maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$rss)))
           rss <- sapply(1:length(mm), function(i) c(rep(Inf, maxl - length(mm[[i]]$rss)), mm[[i]]$rss))
           iid <- apply(rss, 1, which.min)
