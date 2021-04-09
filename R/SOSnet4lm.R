@@ -52,6 +52,11 @@ SOSnet4lm <- function(X, y, o = 5, nlambda = 50, interc = TRUE, maxp = ceiling(l
   ## a column number (l-1)*sum(ii==FALSE) + k of SS contains a "1" in a given row iff a given highest beta is a part of J i.e. that predictor is a part of s_kl selected predictors
           SS <- t(unique(t(SS)))   #again, removing duplicate rows
           mm <- lapply(1:ncol(SS), function(i) SOSnet4lm_help(i, SS[,i], mL, X, y, interc = interc))
+
+          #at that point we can have duplicated indices too as a result of considering matrices of non-full rank
+          duplicated_indices <- duplicated(sapply(1:length(mm), function(i) mm[[i]]$ind))
+          mm<-mm[!duplicated_indices]  #removing the duplicates
+
           maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$rss)))
           rss <- sapply(1:length(mm), function(i) c(rep(Inf, maxl - length(mm[[i]]$rss)), mm[[i]]$rss))
           iid <- apply(rss, 1, which.min)
