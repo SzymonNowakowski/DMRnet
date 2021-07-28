@@ -64,7 +64,7 @@ adult.train.y = adult.train[,15]
 runs<-200
 model_choice <- "scope"
 gamma <- 250
-dfmin<-misclassification_error<-rep(0,runs)
+dfmin<-misclassification_error<-lengths<-rep(0,runs)
 
 for (run in 1:runs) {
   sample.1percent <- sample(1:nrow(adult.all), 0.01*nrow(adult.all))
@@ -153,7 +153,8 @@ for (run in 1:runs) {
   } else
     stop("Uknown method")
 
-  misclassification_error[run]<-sum(prediction != adult.test.1percent.y) / length(adult.test.1percent.y)
+  misclassification_error[run]<-sum(prediction[!is.na(prediction)] != adult.test.1percent.y[!is.na(prediction)]) / length(adult.test.1percent.y[!is.na(prediction)])
+  lengths[run]<-length(prediction[!is.na(prediction)])
   if (model_choice == "DMRnet")
     dfmin[run]<-model.1percent$df.min
   if (model_choice == "scope")
