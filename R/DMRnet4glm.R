@@ -34,8 +34,11 @@ DMRnet4glm <- function(X, y, clust.method = "complete", o = 5, nlambda = 20, lam
     n.factors <- length(faki)
     n.levels <- c()
     if (n.factors > 0){
-       n.levels <- sapply(1:n.factors, function(i) length(levels(X[,faki[i]])))
-    }
+       X[,faki]<-lapply(1:n.factors, function(i) factor(X[,faki[i]]))   #recalculate factors
+       n.levels.listed<-sapply(1:n.factors, function(i) levels(X[,faki[i]]))
+       n.levels <- sapply(1:n.factors, function(i) length(n.levels.listed[[i]]))
+    } else
+      n.levels.listed<-c()
     cont <- which(nn == "numeric")
     n.cont <- length(cont)
     ord <- c()
@@ -102,7 +105,7 @@ DMRnet4glm <- function(X, y, clust.method = "complete", o = 5, nlambda = 20, lam
                   ind1[ord] = (p - length(ord) + 1):p
                   be = be[ind1,]
    }
-   fit <- list(beta = be, df = length(idx):1, loglik = loglik[cbind(idx, ind[idx])], n = n, arguments = list(family = "binomial", clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp), interc = TRUE)
+   fit <- list(beta = be, df = length(idx):1, loglik = loglik[cbind(idx, ind[idx])], n = n, levels.listed = n.levels.listed ,arguments = list(family = "binomial", clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp), interc = TRUE)
    class(fit) = "DMR"
    return(fit)
 }

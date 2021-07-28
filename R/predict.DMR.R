@@ -28,6 +28,22 @@ predict.DMR <- function(object, newx, df = NULL, type = "link", ...){
          if(is.null(ncol(newx))){
                                  stop("Error: newx should be a data frame")
          }
+
+  #  attributing to each column of factors in newx the correct factor list from the original model
+         nn <- sapply(1:ncol(newx), function(i) class(newx[,i]))
+         faki <- which(nn == "factor")
+         n.factors <- length(faki)
+         if (n.factors > 0)   #DMRnet only
+           for (i in 1:n.factors) {
+             newx[,faki[i]] <- factor(newx[,faki[i]])   #start by recalculationg the test set factors to minimal possible set
+             predict_levels <- levels(newx[,faki[i]])
+             if (!min(predict_levels %in% object$levels.listed[[i]])) {#if any factor is outside of the listed levels
+               stop("Error: newx cointains factors not known in model calculations. Replace the unknown factors with the known ones and try again.")
+             }
+             newx[,faki[i]]<-factor(newx[,faki[i]], levels=object$levels.listed[[i]])   #recalculate factors, attribute the original factor list
+
+           }
+
          dd <- data.frame(newx)
          if (object$interc == TRUE){
             Z <- stats::model.matrix( ~ ., data = dd)

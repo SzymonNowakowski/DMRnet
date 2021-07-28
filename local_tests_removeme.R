@@ -1,5 +1,5 @@
 
-#data(miete)
+data(miete)
 
 # miete_shuffled<-data.frame(rent= miete$rent, bathextra = miete$bathextra, year=miete$year, area=miete$area)
 #
@@ -13,7 +13,17 @@
 library(devtools)
 load_all()
 
-m1<-lm.fit(X.te[,1:2000], y.te)
+#m1<-lm.fit(X.te[,1:2000], y.te)
 
-m1
-m1<-DMR(X.tr, y.tr)
+load("~/R/DMRnet/1000rows_5vars_that_cause_problem_for_glmnet.Rdata")
+m1<-DMRnet(Xtruncated[,5:1], ytruncated)
+
+
+subset <- sample(c(1:25000), size = 1000)
+ssd <- apply(X.tr[subset,], 2, stats::sd)
+m1<-DMRnet(X.tr[subset,which(ssd>0)], y.tr[subset])
+
+ssd <- apply(X.tr[subset,], 2, stats::sd)
+which(ssd ==0)
+
+#x<-sapply(1:85, function(i) length(which(SS[,i]>0)))
