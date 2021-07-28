@@ -158,7 +158,7 @@ for (run in 1:runs) {
   if (model_choice == "DMRnet")
     dfmin[run]<-model.1percent$df.min
   if (model_choice == "scope")
-    dfmin[run]<-sum(sapply(sapply(sapply(model.1percent$beta.best[[2]], as.factor), levels), length)) + 1
+    dfmin[run]<-unique(c(sapply(sapply(model.1percent$beta.best[[2]], as.factor), levels), recursive=TRUE))-1  #-1 is for "0" level
 
   cat(run, "median = ", median(misclassification_error[misclassification_error>0]), "\n")
   cat(run, "df.min = ", mean(dfmin[misclassification_error>0]), "\n")
