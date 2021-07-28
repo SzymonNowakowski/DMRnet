@@ -52,7 +52,7 @@ levels(adult.train[,15])[2]<-1
 adult.all<-rbind(adult.train, adult.test)
 ####HURRAY. In total 45222 observations (train+test) as in Stokell's paper
 
-adult.train.x = adult.train[,c(1,2,4,6:10,12:14)]  #I exclude only education_num and fnlwgt and capital_gain & capital_loss
+adult.train.x = adult.train[,c(1,2,4,6:10,13:14)]  #I exclude only education_num and fnlwgt and capital_gain & capital_loss
 adult.train.y = adult.train[,15]
 
 
@@ -62,16 +62,16 @@ adult.train.y = adult.train[,15]
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-200
-model_choice <- "DMRnet"
+model_choice <- "scope"
 gamma <- 250
 dfmin<-misclassification_error<-lengths<-rep(0,runs)
 
 for (run in 1:runs) {
   sample.1percent <- sample(1:nrow(adult.all), 0.01*nrow(adult.all))
-  adult.train.1percent.x <- adult.all[sample.1percent,c(1,2,4,6:10,12:14)]
+  adult.train.1percent.x <- adult.all[sample.1percent,c(1,2,4,6:10,13:14)]
   adult.train.1percent.y <- adult.all[sample.1percent,15]
 
-  adult.test.1percent.x <- adult.all[-sample.1percent,c(1,2,4,6:10,12:14)]
+  adult.test.1percent.x <- adult.all[-sample.1percent,c(1,2,4,6:10,13:14)]
   adult.test.1percent.y <- adult.all[-sample.1percent,15]
 
   ######WITH NO RECOMPUTAION OF FACTORS, grpreg FAILS with NA in empty factors
