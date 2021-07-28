@@ -62,7 +62,7 @@ adult.train.y = adult.train[,15]
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-200
-model_choice <- "scope"
+model_choice <- "DMRnet"
 gamma <- 250
 dfmin<-misclassification_error<-lengths<-rep(0,runs)
 
