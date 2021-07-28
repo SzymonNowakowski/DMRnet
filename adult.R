@@ -162,7 +162,7 @@ for (run in 1:runs) {
 
   cat(run, "median = ", median(misclassification_error[misclassification_error>0]), "\n")
   cat(run, "df.min = ", mean(dfmin[misclassification_error>0]), "\n")
-
+  cat(run, "lengths = ", mean(lengths[misclassification_error>0]), "\n")
 }
 boxplot(misclassification_error[misclassification_error!=0])
 cat("overall median = ", median(misclassification_error[misclassification_error!=0]), "\n")
