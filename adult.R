@@ -62,7 +62,7 @@ adult.train.y = adult.train[,15]
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-200
-model_choice <- "scope"
+model_choice <- "gic.DMRnet"
 gamma <- 250
 dfmin<-misclassification_error<-lengths<-rep(0,runs)
 
@@ -84,7 +84,24 @@ for (run in 1:runs) {
   for (i in c(2:8,10))
     adult.train.1percent.x[,i] <- factor(adult.train.1percent.x[,i])
 
-  if (model_choice=="DMRnet") {
+  if (model_choice=="gic.DMRnet") {
+    cat("DMRnet with GIC only\n")
+    model.1percent <- tryCatch(DMRnet(adult.train.1percent.x, adult.train.1percent.y, nlambda=100, family="binomial"),
+                               error=function(cond) {
+                                 message("Numerical instability in DMRnet detected. Will skip this 1-percent set. Original error:")
+                                 message(cond)
+                                 return(list("red_light"))
+                               })
+
+    if (model.1percent[[1]] == "red_light") {
+      next
+    }
+
+    #plot(model.1percent)
+    cat("GIC\n")
+    gic <- gic.DMR(model.1percent, c = 2)
+    #plot(gic)
+  } else  if (model_choice=="cv.DMRnet") {
       cat("DMRnet with cv\n")
       model.1percent <- tryCatch(cv.DMRnet(adult.train.1percent.x, adult.train.1percent.y, nlambda=100, family="binomial", nfolds=5),
                                 error=function(cond) {
@@ -113,13 +130,13 @@ for (run in 1:runs) {
       next
     }
 
-  } else if (model_choice=="rf") {
+  } else if (model_choice=="RF") {
     cat("random forest. no cv\n")
     model.1percent <- randomForest(adult.train.1percent.x, y=adult.train.1percent.y)
   } else if (model_choice=="lr") {
     cat("Linear Regression no cv\n")
     model.1percent <- glm(adult.train.1percent.y~., data = adult.train.1percent.x, family="binomial")
-  } else if (model_choice=="glmnet") {
+  } else if (model_choice=="cv.glmnet") {
     cat("glmnet with cv\n")
     model.1percent<-cv.glmnet(makeX(adult.train.1percent.x), adult.train.1percent.y, family="binomial", nfolds=5)
   } else
@@ -136,7 +153,19 @@ for (run in 1:runs) {
   for (i in c(2:8,10))
     adult.test.1percent.x[,i] <- factor(adult.test.1percent.x[,i])   #recalculate factors now for new test
 
-  if (model_choice=="DMRnet") {
+  if (model_choice=="gic.DMRnet") {
+    cat("DMRnet pred\n")
+    prediction<- tryCatch(predict(model.1percent, newx=adult.test.1percent.x, df = gic$df.min, type="class"),
+                          error=function(cond) {
+                            message("Numerical instability in predict (DMRnet) detected. Will skip this 1-percent set. Original error:")
+                            message(cond)
+                            return(c(1,1))
+                          })
+
+    if (length(prediction)==2) {
+      next
+    }
+  } else  if (model_choice=="cv.DMRnet") {
     cat("DMRnet pred\n")
     prediction<- tryCatch(predict(model.1percent, newx=adult.test.1percent.x, type="class"),#df = gic$df.min, type="class"),
                           error=function(cond) {
@@ -151,21 +180,41 @@ for (run in 1:runs) {
   } else if (model_choice=="scope") {
     cat("scope pred\n")
     prediction<- ifelse(predict(model.1percent, adult.test.1percent.x) >0.5,1,0)
-  } else if (model_choice=="rf") {
+  } else if (model_choice=="RF") {
     cat("Random Forest pred\n")
-    prediction<- predict(model.1percent, adult.test.1percent.x, type="class")
+    prediction<- tryCatch(predict(model.1percent, adult.test.1percent.x, type="class"),
+                          error=function(cond) {
+                            message("Numerical instability in predict (RF) detected. Will skip this 1-percent set. Original error:")
+                            message(cond)
+                            return(c(1,1))
+                          })
+
+    if (length(prediction)==2) {
+      next
+    }
   } else if (model_choice=="lr") {
     cat("Linear Regression pred\n")
     prediction<- ifelse(predict(model.1percent, adult.test.1percent.x) >0,1,0)
-  } else if (model_choice=="glmnet") {
+  } else if (model_choice=="cv.glmnet") {
     cat("glmnet pred\n")
-    prediction<-predict(model.1percent, newx=makeX(adult.test.1percent.x), type="class")
+    prediction<- tryCatch(predict(model.1percent, newx=makeX(adult.test.1percent.x), type="class"),
+                          error=function(cond) {
+                            message("Numerical instability in predict (cv.glmnet) detected. Will skip this 1-percent set. Original error:")
+                            message(cond)
+                            return(c(1,1))
+                          })
+
+    if (length(prediction)==2) {
+      next
+    }
   } else
     stop("Uknown method")
 
   misclassification_error[run]<-sum(prediction[!is.na(prediction)] != adult.test.1percent.y[!is.na(prediction)]) / length(adult.test.1percent.y[!is.na(prediction)])
   lengths[run]<-length(prediction[!is.na(prediction)])
-  if (model_choice == "DMRnet")
+  if (model_choice == "gic.DMRnet")
+    dfmin[run]<-gic$df.min
+  if (model_choice == "cv.DMRnet" )
     dfmin[run]<-model.1percent$df.min
   if (model_choice == "scope")
     dfmin[run]<-length(unique(c(sapply(sapply(model.1percent$beta.best[[2]], as.factor), levels), recursive=TRUE)))-1  #-1 is for "0" level
@@ -177,6 +226,18 @@ for (run in 1:runs) {
 boxplot(misclassification_error[misclassification_error!=0])
 cat("overall median = ", median(misclassification_error[misclassification_error!=0]), "\n")
 
+
+
+length_analysed[[model_choice]]<-lengths
+sizes[[model_choice]]<-dfmin
+errors[[model_choice]]<-misclassification_error
+
+boxplot(errors, ylim=c(0.16, 0.24))
+
+write.csv(errors, "errors.csv")
+write.csv(length_analysed, "lengthanalysed.csv")
+write.csv(sizes, "modelsizes.csv")
+
 pdf("dfmin.pdf",width=7,height=5)
 boxplot(dfmin[dfmin>0])
 dev.off()
@@ -184,4 +245,3 @@ dev.off()
 pdf("dfmin_error.pdf",width=7,height=5)
 plot(dfmin[dfmin>0], misclassification_error[misclassification_error>0])
 dev.off()
-
