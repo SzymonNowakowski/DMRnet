@@ -102,7 +102,17 @@ for (run in 1:runs) {
     #plot(gic)
   } else if (model_choice=="scope") {
     cat("Scope, no cv, gamma=", gamma,"\n")
-    model.1percent <- scope.logistic(adult.train.1percent.x, as.numeric(levels(adult.train.1percent.y))[adult.train.1percent.y], gamma=gamma)
+    model.1percent <- tryCatch(scope.logistic(adult.train.1percent.x, as.numeric(levels(adult.train.1percent.y))[adult.train.1percent.y], gamma=gamma),
+                               error=function(cond) {
+                                 message("Numerical instability in SCOPE detected. Will skip this 1-percent set. Original error:")
+                                 message(cond)
+                                 return(list("red_light"))
+                               })
+
+    if (model.1percent[[1]] == "red_light") {
+      next
+    }
+
   } else if (model_choice=="rf") {
     cat("random forest. no cv\n")
     model.1percent <- randomForest(adult.train.1percent.x, y=adult.train.1percent.y)
