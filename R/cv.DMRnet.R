@@ -67,9 +67,6 @@ cv.DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
               yte <- y[foldid == fold]
               Xtr <- X[foldid != fold, ,drop = FALSE]
               ytr <- y[foldid != fold]
-              dmr <- DMRnet(Xtr, ytr, family = "gaussian", clust.method = clust.method, o = o, nlambda = nlambda, interc = interc, maxp = ceiling(maxp))
-              #PP new code
-              rss[[fold]] <- dmr$rss
 
               ###SzN remove from test the data with factors not present in training
               nn <- sapply(1:ncol(Xte), function(i) class(Xte[,i]))
@@ -87,7 +84,9 @@ cv.DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
               real_n <- real_n + length(yte)
               #TODO: what to do if all test data is removed?
 
-
+              dmr <- DMRnet(Xtr, ytr, family = "gaussian", clust.method = clust.method, o = o, nlambda = nlambda, interc = interc, maxp = ceiling(maxp))
+              #PP new code
+              rss[[fold]] <- dmr$rss
 
               pred <- predict.DMR(dmr, newx = as.data.frame(Xte))
               #PP new code error[[fold]] <- apply(pred, 2, function(z) sum((z - yte)^2))
@@ -155,9 +154,6 @@ cv.DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
               yte <- y[foldid == fold]
               Xtr <- X[foldid != fold, , drop = FALSE]
               ytr <- y[foldid != fold]
-              dmr <- DMRnet(Xtr, ytr, family = "binomial", clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, interc = interc, maxp = maxp)
-              #SzN new code based on PP new code
-              loglik[[fold]] <- -2*dmr$loglik
 
               ###SzN remove from test the data with factors not present in training
               nn <- sapply(1:ncol(Xte), function(i) class(Xte[,i]))
@@ -174,6 +170,10 @@ cv.DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
                       }
               real_n <- real_n + length(yte)
               #TODO: what to do if all test data is removed?
+
+              dmr <- DMRnet(Xtr, ytr, family = "binomial", clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, interc = interc, maxp = maxp)
+              #SzN new code based on PP new code
+              loglik[[fold]] <- -2*dmr$loglik
 
               pred <- predict.DMR(dmr, newx = as.data.frame(Xte), type = "class")
               #SzN new code based on PP new code error[[fold]] <- apply(pred, 2, function(z) sum(z != yte))
