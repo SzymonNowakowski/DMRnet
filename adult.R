@@ -62,7 +62,7 @@ adult.train.y = adult.train[,15]
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-200
-model_choice <- "gic.DMRnet"
+model_choice <- "scope"
 gamma <- 250
 dfmin<-misclassification_error<-lengths<-rep(0,runs)
 
@@ -210,8 +210,12 @@ for (run in 1:runs) {
   } else
     stop("Uknown method")
 
-  misclassification_error[run]<-sum(prediction[!is.na(prediction)] != adult.test.1percent.y[!is.na(prediction)]) / length(adult.test.1percent.y[!is.na(prediction)])
+
   lengths[run]<-length(prediction[!is.na(prediction)])
+
+  prediction[is.na(prediction)] <- 0
+  misclassification_error[run]<-1.0-sum(prediction[!is.na(prediction)] == adult.test.1percent.y[!is.na(prediction)]) / length(adult.test.1percent.y)  #division by FULL LENGTH (!)
+
   if (model_choice == "gic.DMRnet")
     dfmin[run]<-gic$df.min
   if (model_choice == "cv.DMRnet" )
@@ -227,12 +231,15 @@ boxplot(misclassification_error[misclassification_error!=0])
 cat("overall median = ", median(misclassification_error[misclassification_error!=0]), "\n")
 
 
+model_name<-model_choice
+if (model_choice == "scope")
+  model_name<-paste(model_name, gamma, sep="-")
 
-length_analysed[[model_choice]]<-lengths
-sizes[[model_choice]]<-dfmin
-errors[[model_choice]]<-misclassification_error
+length_analysed[[model_name]]<-lengths
+sizes[[model_name]]<-dfmin
+errors[[model_name]]<-misclassification_error
 
-boxplot(errors, ylim=c(0.16, 0.24))
+boxplot(errors, ylim=c(0.16, 0.26))
 
 write.csv(errors, "errors.csv")
 write.csv(length_analysed, "lengthanalysed.csv")
