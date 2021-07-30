@@ -231,15 +231,8 @@ levels(adult.train[,15])[2]<-1
 adult.all<-rbind(adult.train, adult.test)
 ####HURRAY. In total 45222 observations (train+test) as in Stokell's paper
 
-adult.train.x = adult.train[,c(1,2,4,6:10,13:14)]  #I exclude only education_num and fnlwgt and capital_gain & capital_loss
-adult.train.y = adult.train[,15]
-
-
-#ORIGINAL TEST/TEST SPLIT FAILS:
-#model.original <- DMRnet(adult.train.x, adult.train.y, nlambda=100, family="binomial") ###comment this to go further
-
 errors<-list()
-length_analysed<-list()
+effective_lengths<-list()
 sizes<-list()
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
@@ -251,19 +244,15 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 
 	while (run<=runs) {
 	  sample.1percent <- sample(1:nrow(adult.all), 0.01*nrow(adult.all))
-	  adult.train.1percent.x <- adult.all[sample.1percent,c(1,2,4,6:10,13:14)]
+	  adult.train.1percent.x <- adult.all[sample.1percent,c(1,2,4,6:10,13:14)] #I exclude education_num and fnlwgt and capital_gain & capital_loss
 	  adult.train.1percent.y <- adult.all[sample.1percent,15]
 
 	  adult.test.1percent.x <- adult.all[-sample.1percent,c(1,2,4,6:10,13:14)]
 	  adult.test.1percent.y <- adult.all[-sample.1percent,15]
 
-	  ######WITH NO RECOMPUTAION OF FACTORS, grpreg FAILS with NA in empty factors
-	  #MOD <- DMRnet(adult.train.1percent.x, adult.train.1percent.y, nlambda=100, family="binomial") ###comment this to go further
-	  ####because this fails in grpreg
-	  #Error: Missing data (NA's) detected in X.  You must eliminate missing data (e.g., by removing cases, removing features, or imputation) before passing X to grpreg
-
-	  #####RECOMPUTATION OF RELEVANT FACTORS in train set, to remove data in test set. Needed for random forest and glmnet
-	  ###but nor for DMRnet (not any more)
+	  #####RECOMPUTATION OF RELEVANT FACTORS in train set, to remove levels with no representative data (empty factors). Needed for random forest and glmnet
+	  ###and for DMRnet - old package
+	  ###but nor for DMRnet - new package
 	  for (i in c(2:8,10))
 	    adult.train.1percent.x[,i] <- factor(adult.train.1percent.x[,i])
 
@@ -327,7 +316,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 
 
 
-	  #remove data from test with factors  not present in train subsample as this causes predict() to fail
+	  #remove data from test set with factors not present in train subsample as this causes predict() to fail
 	  for (i in c(2:8,10)) {
 	    train.levels <- levels(adult.train.1percent.x[,i])
 	    adult.test.1percent.y<-adult.test.1percent.y[which(adult.test.1percent.x[,i] %in% train.levels)]
@@ -420,7 +409,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	if (model_choice == "scope")
 	  model_name<-paste(model_name, gamma, sep="-")
 
-	length_analysed[[model_name]]<-lengths
+	effective_lengths[[model_name]]<-lengths
 	if (length(dfmin[dfmin>0])>0)
 		sizes[[model_name]]<-dfmin
 	errors[[model_name]]<-misclassification_error
@@ -428,7 +417,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 }
 
 write.csv(errors, "errors.csv")
-write.csv(length_analysed, "length_analysed.csv")
+write.csv(effective_lengths, "effective_lengths.csv")
 write.csv(sizes, "model_sizes.csv")
 
 pdf("errors.pdf",width=7,height=5)
@@ -439,8 +428,8 @@ pdf("model_sizes.pdf",width=7,height=5)
 boxplot(sizes)
 dev.off
 
-pdf("length_analysed.pdf",width=7,height=5)
-boxplot(length_analysed)
+pdf("effective_lengths.pdf",width=7,height=5)
+boxplot(effective_lengths)
 dev.off
 
 
