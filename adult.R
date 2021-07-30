@@ -425,15 +425,15 @@ write.csv(errors, "errors.csv")
 write.csv(effective_lengths, "effective_lengths.csv")
 write.csv(sizes, "model_sizes.csv")
 
-pdf("errors.pdf",width=7,height=5)
+pdf("errors.pdf",width=12,height=5)
 boxplot(errors, ylim=c(0.16, 0.26))
 dev.off
 
-pdf("model_sizes.pdf",width=7,height=5)
+pdf("model_sizes.pdf",width=9,height=5)
 boxplot(sizes)
 dev.off
 
-pdf("effective_lengths.pdf",width=7,height=5)
+pdf("effective_lengths.pdf",width=12,height=5)
 boxplot(effective_lengths)
 dev.off
 
