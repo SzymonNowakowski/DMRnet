@@ -209,17 +209,20 @@ colnames(adult.test)<-colnames
 adult.train<-subset(adult.train, adult.train[,14] != " ?")
 adult.train<-subset(adult.train, adult.train[,7] != " ?")
 adult.train<-subset(adult.train, adult.train[,2] != " ?")
-adult.train[,14] = factor(adult.train[,14])
-adult.train[,7] = factor(adult.train[,7])
-adult.train[,2] = factor(adult.train[,2])
-
+adult.train[,14] <- factor(adult.train[,14])
+adult.train[,7] <- factor(adult.train[,7])
+adult.train[,2] <- factor(adult.train[,2])
+adult.train[,1] <- adult.train[,1] + 0.0  #make a continuous variable out of an integer. Otherwise scope would treat it as a factor
+adult.train[,13] <- adult.train[,13] + 0.0
 
 adult.test<-subset(adult.test, adult.test[,14] != " ?")
 adult.test<-subset(adult.test, adult.test[,7] != " ?")
 adult.test<-subset(adult.test, adult.test[,2] != " ?")
-adult.test[,14] = factor(adult.test[,14])
-adult.test[,7] = factor(adult.test[,7])
-adult.test[,2] = factor(adult.test[,2])
+adult.test[,14] <- factor(adult.test[,14])
+adult.test[,7] <- factor(adult.test[,7])
+adult.test[,2] <- factor(adult.test[,2])
+adult.test[,1] <- adult.test[,1] + 0.0  #make a continuous variable out of an integer. Otherwise scope would treat it as a factor
+adult.test[,13] <- adult.test[,13] + 0.0
 
 #consiliation of different level names in train and test sets (they end with '.' in test set)
 levels(adult.test[,15])[1]<-0
@@ -235,10 +238,12 @@ errors<-list()
 effective_lengths<-list()
 sizes<-list()
 
+gamma<-100
+
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-200
-for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "scope")) {
-	gamma <- 250
+for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "scope", "scope")) {
+	gamma <- 350 - gamma    #it alternates between 250 and 100
 	dfmin<-misclassification_error<-lengths<-rep(0,runs)
 	run<-1
 
