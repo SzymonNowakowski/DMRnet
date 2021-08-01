@@ -404,7 +404,8 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	  if (model_choice == "cv.DMRnet" )
 	    dfmin[run]<-model.1percent$df.min
 	  if (model_choice == "scope")
-	    dfmin[run]<-length(unique(c(sapply(sapply(model.1percent$beta.best[[2]], as.factor), levels), sapply(sapply(model.1percent$beta.best[[1]], as.factor), levels),recursive=TRUE)))-1  #-1 is for "0" level
+	    dfmin[run]<-length(unique(c(sapply(sapply(model.1percent$beta.best[[2]], as.factor), levels), sapply(sapply(model.1percent$beta.best[[1]], as.factor), levels),recursive=TRUE)))-1 + #-1 is for "0" level
+	                -sum(sapply(sapply(model.1percent$beta.best[[2]], as.factor), levels)!="0")   #and we subtract the number of factors = number of constraints from eq. (8) in Stokell et al.
 
 	  cat(run, "median = ", median(misclassification_error[misclassification_error>0]), "\n")
 	  cat(run, "df.min = ", mean(dfmin[misclassification_error>0]), "\n")
