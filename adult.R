@@ -5,7 +5,9 @@ library(glmnet)
 library(stats)  #glm
 library(CatReg)
 library(DMRnet)
+library(tools)
 
+set.seed(strtoi(substr(digest("MDRnet", "md5", serialize = FALSE),1,7),16))
 
 cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 5, nlambda = 20, lam = 10^(-7), interc = TRUE, nfolds = 10, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))){
 
@@ -237,6 +239,7 @@ adult.all<-rbind(adult.train, adult.test)
 errors<-list()
 effective_lengths<-list()
 sizes<-list()
+computation_times<-list()
 
 gamma<-100
 
@@ -244,10 +247,11 @@ gamma<-100
 runs<-200
 for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "scope", "scope")) {
 	gamma <- 350 - gamma    #it alternates between 250 and 100
-	dfmin<-misclassification_error<-lengths<-rep(0,runs)
+	times<-dfmin<-misclassification_error<-lengths<-rep(0,runs)
 	run<-1
 
 	while (run<=runs) {
+	  start.time <- Sys.time()
 	  sample.1percent <- sample(1:nrow(adult.all), 0.01*nrow(adult.all))
 	  adult.train.1percent.x <- adult.all[sample.1percent,c(1,2,4,6:10,13:14)] #I exclude education_num and fnlwgt and capital_gain & capital_loss
 	  adult.train.1percent.y <- adult.all[sample.1percent,15]
@@ -387,6 +391,8 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	  } else
 	    stop("Uknown method")
 
+	  end.time <- Sys.time()
+	  times[run] <- end.time - start.time
 
 	  lengths[run]<-length(prediction[!is.na(prediction)])
 
@@ -398,7 +404,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	  if (model_choice == "cv.DMRnet" )
 	    dfmin[run]<-model.1percent$df.min
 	  if (model_choice == "scope")
-	    dfmin[run]<-length(unique(c(sapply(sapply(model.1percent$beta.best[[2]], as.factor), levels), recursive=TRUE)))-1  #-1 is for "0" level
+	    dfmin[run]<-length(unique(c(sapply(sapply(model.1percent$beta.best[[2]], as.factor), levels), sapply(sapply(model.1percent$beta.best[[1]], as.factor), levels),recursive=TRUE)))-1  #-1 is for "0" level
 
 	  cat(run, "median = ", median(misclassification_error[misclassification_error>0]), "\n")
 	  cat(run, "df.min = ", mean(dfmin[misclassification_error>0]), "\n")
@@ -414,6 +420,8 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	if (model_choice == "scope")
 	  model_name<-paste(model_name, gamma, sep="-")
 
+
+	computation_times[[model_name]]<-times
 	effective_lengths[[model_name]]<-lengths
 	if (length(dfmin[dfmin>0])>0)
 		sizes[[model_name]]<-dfmin
@@ -421,19 +429,25 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 
 }
 
-write.csv(errors, "errors.csv")
-write.csv(effective_lengths, "effective_lengths.csv")
-write.csv(sizes, "model_sizes.csv")
+write.csv(errors, "adult_errors.csv")
+write.csv(effective_lengths, "adult_effective_lengths.csv")
+write.csv(sizes, "adult_model_sizes.csv")
+write.csv(computation_times, "adult_computation_times.csv")
 
-pdf("errors.pdf",width=12,height=5)
+
+pdf("adult_computation_times.pdf",width=12,height=5)
+boxplot(computation_times, ylim=c(0.16, 0.26))
+dev.off
+
+pdf("adult_errors.pdf",width=12,height=5)
 boxplot(errors, ylim=c(0.16, 0.26))
 dev.off
 
-pdf("model_sizes.pdf",width=9,height=5)
+pdf("adult_model_sizes.pdf",width=9,height=5)
 boxplot(sizes)
 dev.off
 
-pdf("effective_lengths.pdf",width=12,height=5)
+pdf("adult_effective_lengths.pdf",width=12,height=5)
 boxplot(effective_lengths)
 dev.off
 
