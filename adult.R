@@ -5,7 +5,7 @@ library(glmnet)
 library(stats)  #glm
 library(CatReg)
 library(DMRnet)
-library(tools)
+library(digest)
 
 set.seed(strtoi(substr(digest("MDRnet", "md5", serialize = FALSE),1,7),16))
 
