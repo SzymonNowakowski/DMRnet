@@ -393,7 +393,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	    stop("Uknown method")
 
 	  end.time <- Sys.time()
-	  times[run] <- end.time - start.time
+	  times[run] <- as.numeric(end.time)-as.numeric(start.time)
 	  cat("Ended: ", end.time,"elapsed: ", times[run],"\n")
 
 
