@@ -252,6 +252,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 
 	while (run<=runs) {
 	  start.time <- Sys.time()
+	  cat("Started: ", start.time,"\n")
 	  sample.1percent <- sample(1:nrow(adult.all), 0.01*nrow(adult.all))
 	  adult.train.1percent.x <- adult.all[sample.1percent,c(1,2,4,6:10,13:14)] #I exclude education_num and fnlwgt and capital_gain & capital_loss
 	  adult.train.1percent.y <- adult.all[sample.1percent,15]
@@ -393,6 +394,8 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 
 	  end.time <- Sys.time()
 	  times[run] <- end.time - start.time
+	  cat("Ended: ", end.time,"elapsed: ", times[run],"\n")
+
 
 	  lengths[run]<-length(prediction[!is.na(prediction)])
 
@@ -437,7 +440,7 @@ write.csv(computation_times, "adult_computation_times.csv")
 
 
 pdf("adult_computation_times.pdf",width=12,height=5)
-boxplot(computation_times, ylim=c(0.16, 0.26))
+boxplot(computation_times)
 dev.off
 
 pdf("adult_errors.pdf",width=12,height=5)
