@@ -242,22 +242,23 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 
 	  start.time <- Sys.time()
 	  cat("Started: ", start.time,"\n")
-	  sample.1percent <- sample(1:nrow(adult.all), 0.01*nrow(adult.all))
-	  adult.train.1percent.x <- adult.all[sample.1percent,c(1,2,4,6:10,13:14)] #I exclude education_num and fnlwgt and capital_gain & capital_loss
-	  adult.train.1percent.y <- adult.all[sample.1percent,15]
+	  sample.10percent <- sample(1:nrow(insurance.all.x), 0.1*nrow(insurance.all.x))
+	  insurance.train.10percent.x <- insurance.all.x[sample.10percent,]
+	  insurance.train.10percent.y <- insurance.all.y[sample.10percent]
 
-	  adult.test.1percent.x <- adult.all[-sample.1percent,c(1,2,4,6:10,13:14)]
-	  adult.test.1percent.y <- adult.all[-sample.1percent,15]
+	  insurance.test.10percent.x <- insurance.all.x[-sample.10percent,]
+	  insurance.test.10percent.y <- insurance.all.y[-sample.10percent]
 
 	  #####RECOMPUTATION OF RELEVANT FACTORS in train set, to remove levels with no representative data (empty factors). Needed for random forest and glmnet
 	  ###and for DMRnet - old package
 	  ###but nor for DMRnet - new package
-	  for (i in c(2:8,10))
-	    adult.train.1percent.x[,i] <- factor(adult.train.1percent.x[,i])
+	  for (i in 1:dim(insurance.train.10percent.x)[2])
+	    if (!(i %in% cont_columns))
+	      insurance.train.10percent.x[,i] <- factor(insurance.train.10percent.x[,i])
 
 	  if (model_choice=="gic.DMRnet") {
 	    cat("DMRnet with GIC only\n")
-	    model.1percent <- tryCatch(DMRnet(adult.train.1percent.x, adult.train.1percent.y, nlambda=100, family="gaussian"),
+	    model.1percent <- tryCatch(DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian"),
 	                               error=function(cond) {
 	                                 message("Numerical instability in DMRnet detected. Will skip this 1-percent set. Original error:")
 	                                 message(cond)
@@ -274,7 +275,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	    #plot(gic)
 	  } else  if (model_choice=="cv.DMRnet") {
 	      cat("DMRnet with cv\n")
-	      model.1percent <- tryCatch(cv_DMRnet(adult.train.1percent.x, adult.train.1percent.y, nlambda=100, family="gaussian", nfolds=5),
+	      model.1percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=5),
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 1-percent set. Original error:")
 	                                  message(cond)
@@ -290,7 +291,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	    #plot(gic)
 	  } else if (model_choice=="scope") {
 	    cat("Scope, no cv, gamma=", gamma,"\n")
-	    model.1percent <- tryCatch(scope(adult.train.1percent.x, as.numeric(levels(adult.train.1percent.y))[adult.train.1percent.y], gamma=gamma),
+	    model.1percent <- tryCatch(scope(insurance.train.10percent.x, as.numeric(levels(insurance.train.10percent.y))[insurance.train.10percent.y], gamma=gamma),
 	                               error=function(cond) {
 	                                 message("Numerical instability in SCOPE detected. Will skip this 1-percent set. Original error:")
 	                                 message(cond)
@@ -303,30 +304,32 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 
 	  } else if (model_choice=="RF") {
 	    cat("random forest. no cv\n")
-	    model.1percent <- randomForest(adult.train.1percent.x, y=adult.train.1percent.y)
+	    model.1percent <- randomForest(insurance.train.10percent.x, y=insurance.train.10percent.y)
 	  } else if (model_choice=="lr") {
 	    cat("Linear Regression no cv\n")
-	    model.1percent <- glm(adult.train.1percent.y~., data = adult.train.1percent.x, family="gaussian")
+	    model.1percent <- glm(insurance.train.10percent.y~., data = insurance.train.10percent.x, family="gaussian")
 	  } else if (model_choice=="cv.glmnet") {
 	    cat("glmnet with cv\n")
-	    model.1percent<-cv.glmnet(makeX(adult.train.1percent.x), adult.train.1percent.y, family="gaussian", nfolds=5)
+	    model.1percent<-cv.glmnet(makeX(insurance.train.10percent.x), insurance.train.10percent.y, family="gaussian", nfolds=5)
 	  } else
 	    stop("Uknown method")
 
 
 
 	  #remove data from test set with factors not present in train subsample as this causes predict() to fail
-	  for (i in c(2:8,10)) {
-	    train.levels <- levels(adult.train.1percent.x[,i])
-	    adult.test.1percent.y<-adult.test.1percent.y[which(adult.test.1percent.x[,i] %in% train.levels)]
-	    adult.test.1percent.x<-adult.test.1percent.x[which(adult.test.1percent.x[,i] %in% train.levels),]
+	  for (i in 1:dim(insurance.train.10percent.x)[2])
+	    if (!(i %in% cont_columns)) {
+	      train.levels <- levels(insurance.train.10percent.x[,i])
+	      insurance.test.10percent.y<-insurance.test.10percent.y[which(insurance.test.10percent.x[,i] %in% train.levels)]
+	      insurance.test.10percent.x<-insurance.test.10percent.x[which(insurance.test.10percent.x[,i] %in% train.levels),]
 	  }
-	  for (i in c(2:8,10))
-	    adult.test.1percent.x[,i] <- factor(adult.test.1percent.x[,i])   #recalculate factors now for new test
+	  for (i in 1:dim(insurance.train.10percent.x)[2])
+	    if (!(i %in% cont_columns)) {
+	      insurance.test.10percent.x[,i] <- factor(insurance.test.10percent.x[,i])   #recalculate factors now for new test
 
 	  if (model_choice=="gic.DMRnet") {
 	    cat("DMRnet pred\n")
-	    prediction<- tryCatch(predict(model.1percent, newx=adult.test.1percent.x, df = gic$df.min, type="response"),
+	    prediction<- tryCatch(predict(model.1percent, newx=insurance.test.10percent.x, df = gic$df.min, type="response"),
 	                          error=function(cond) {
 	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 1-percent set. Original error:")
 	                            message(cond)
@@ -338,7 +341,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	    }
 	  } else  if (model_choice=="cv.DMRnet") {
 	    cat("DMRnet pred\n")
-	    prediction<- tryCatch(predict(model.1percent, newx=adult.test.1percent.x, type="response"),#df = gic$df.min, type="class"),
+	    prediction<- tryCatch(predict(model.1percent, newx=insurance.test.10percent.x, type="response"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
 	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 1-percent set. Original error:")
 	                            message(cond)
@@ -350,10 +353,10 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	    }
 	  } else if (model_choice=="scope") {
 	    cat("scope pred\n")
-	    prediction<- predict(model.1percent, adult.test.1percent.x)
+	    prediction<- predict(model.1percent, insurance.test.10percent.x)
 	  } else if (model_choice=="RF") {
 	    cat("Random Forest pred\n")
-	    prediction<- tryCatch(predict(model.1percent, adult.test.1percent.x, type="response"),
+	    prediction<- tryCatch(predict(model.1percent, insurance.test.10percent.x, type="response"),
 	                          error=function(cond) {
 	                            message("Numerical instability in predict (RF) detected. Will skip this 1-percent set. Original error:")
 	                            message(cond)
@@ -365,10 +368,10 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	    }
 	  } else if (model_choice=="lr") {
 	    cat("Linear Regression pred\n")
-	    prediction<- predict(model.1percent, adult.test.1percent.x)
+	    prediction<- predict(model.1percent, insurance.test.10percent.x)
 	  } else if (model_choice=="cv.glmnet") {
 	    cat("glmnet pred\n")
-	    prediction<- tryCatch(predict(model.1percent, newx=makeX(adult.test.1percent.x), type="response"),
+	    prediction<- tryCatch(predict(model.1percent, newx=makeX(insurance.test.10percent.x), type="response"),
 	                          error=function(cond) {
 	                            message("Numerical instability in predict (cv.glmnet) detected. Will skip this 1-percent set. Original error:")
 	                            message(cond)
@@ -389,7 +392,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	  lengths[run]<-length(prediction[!is.na(prediction)])
 
 	  prediction[is.na(prediction)] <- 0
-	  misclassification_error[run]<-1.0-sum(prediction[!is.na(prediction)] == adult.test.1percent.y[!is.na(prediction)]) / length(adult.test.1percent.y)  #division by FULL LENGTH (!)
+	  misclassification_error[run]<-1.0-sum(prediction[!is.na(prediction)] == insurance.test.10percent.y[!is.na(prediction)]) / length(insurance.test.10percent.y)  #division by FULL LENGTH (!)
 
 	  if (model_choice == "gic.DMRnet")
 	    dfmin[run]<-gic$df.min
