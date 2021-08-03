@@ -13,7 +13,7 @@ library(digest)
 set.seed(strtoi(substr(digest("insurance", "md5", serialize = FALSE),1,7),16))
 
 
-cv_helper<-function(Xtr, ytr, Xte, yte) {
+cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
   ###SzN remove from test the data with factors not present in training
   nn <- sapply(1:ncol(Xte), function(i) class(Xte[,i]))
   faki <- which(nn == "factor")
@@ -160,7 +160,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
               Xtr <- X[foldid != fold, , drop = FALSE]
               ytr <- y[foldid != fold]
 
-              helper<- cv_helper(Xtr, ytr, Xte, yte)
+              helper<- cv_helper(Xtr, ytr, Xte, yte, real_n)
               Xtr<-helper$Xtr
               ytr<-helper$ytr
               Xte<-helper$Xte
