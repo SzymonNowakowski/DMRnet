@@ -36,7 +36,7 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
   Xtr.make <- makeX(Xtr)
   prev_pos <- 0
   for (i in 1:ncol(Xtr))
-    if (i %in% n.factors) {  #removing columns from the last level, it is linearly dependant
+    if (i %in% faki) {  #removing columns from the last level, it is linearly dependant
       # cat(i, prev_pos, length(levels(insurance.train.10percent.x[,i])), "\n")
       Xtr.make <- Xtr.make[,-(prev_pos+length(levels(Xtr[,i])))]
       prev_pos <- prev_pos+length(levels(Xtr[,i])) - 1
@@ -47,7 +47,7 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
     reverse_lookup<-rep(0, ncol(Xtr.make))
     pos<-1
     for (i in 1:ncol(Xtr))
-      if (i %in% n.factors) {
+      if (i %in% faki) {
         reverse_lookup[pos:(pos+length(levels(Xtr[,i]))-1)]<-i  #there are levels-1 columns corresponding to each original column
         pos<-pos+length(levels(Xtr[,i]))-1
       } else {
