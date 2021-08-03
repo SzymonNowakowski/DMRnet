@@ -25,7 +25,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
           err <- list(); rss <- list(); #md <- list()
 
           for (fold in 1:nfolds){
-
+              cat("gaussian fold:", fold, "\n")
               Xte <- X[foldid == fold, ,drop = FALSE]
               yte <- y[foldid == fold]
               Xtr <- X[foldid != fold, ,drop = FALSE]
@@ -112,7 +112,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
           #PP new code error <- list()
           err <- list(); loglik <- list(); #md <- list()
           for (fold in 1:nfolds) {
-              cat("fold:", fold, "\n")
+              cat("binomial fold:", fold, "\n")
               Xte <- X[foldid == fold, , drop = FALSE]
               yte <- y[foldid == fold]
               Xtr <- X[foldid != fold, , drop = FALSE]
