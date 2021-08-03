@@ -48,10 +48,10 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
     pos<-1
     for (i in 1:ncol(Xtr))
       if (i %in% faki) {
-        reverse_lookup[pos:(pos+length(levels(Xtr[,i]))-1)]<-i  #there are levels-1 columns corresponding to each original column
+        reverse_lookup[pos:(pos+length(levels(Xtr[,i]))-2)]<-i  #there are levels-1 columns corresponding to each original column
         pos<-pos+length(levels(Xtr[,i]))-1
       } else {
-        reverse_lookup[pos:(pos+1)]<-i
+        reverse_lookup[pos]<-i
         pos<-pos+1
       }
     #removal of columns for pivot positions larger than rank
@@ -277,7 +277,6 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 	  insurance.all.y <- (insurance.all.y - m)/std+m + rnorm(1, 0, 1) #response was then scaled to have unit variance, after which standard normal noise was added.
 
 	  cat("generating train/test sets\n")
-	  singular<-TRUE
 
 	  sample.10percent <- sample(1:nrow(insurance.all.x), 0.1*nrow(insurance.all.x))
     insurance.train.10percent.x <- insurance.all.x[sample.10percent,]
@@ -326,10 +325,10 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 	    pos<-1
 	    for (i in 1:ncol(insurance.train.10percent.x))
 	      if (!(i %in% cont_columns)) {
-	        reverse_lookup[pos:(pos+length(levels(insurance.train.10percent.x[,i]))-1)]<-i  #there are levels-1 columns corresponding to each original column
+	        reverse_lookup[pos:(pos+length(levels(insurance.train.10percent.x[,i]))-2)]<-i  #there are levels-1 columns corresponding to each original column
 	        pos<-pos+length(levels(insurance.train.10percent.x[,i]))-1
 	      } else {
-	        reverse_lookup[pos:(pos+1)]<-i
+	        reverse_lookup[pos]<-i
 	        pos<-pos+1
 	      }
 	    #removal of columns for pivot positions larger than rank

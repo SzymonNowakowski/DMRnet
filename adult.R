@@ -49,10 +49,10 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
     pos<-1
     for (i in 1:ncol(Xtr))
       if (i %in% faki) {
-        reverse_lookup[pos:(pos+length(levels(Xtr[,i]))-1)]<-i  #there are levels-1 columns corresponding to each original column
+        reverse_lookup[pos:(pos+length(levels(Xtr[,i]))-2)]<-i  #there are levels-1 columns corresponding to each original column
         pos<-pos+length(levels(Xtr[,i]))-1
       } else {
-        reverse_lookup[pos:(pos+1)]<-i
+        reverse_lookup[pos]<-i
         pos<-pos+1
       }
     #removal of columns for pivot positions larger than rank
