@@ -58,7 +58,7 @@ cv_helper<-function(Xtr, ytr, Xte, yte) {
     Xte <- Xte[,-remove_us]
     cat("removed", length(unique(remove_us)), "columns\n")
   }
-  return (list(Xtr= Xtr, ytr=ytr, Xte=Xte, yte=yte))
+  return (list(Xtr= Xtr, ytr=ytr, Xte=Xte, yte=yte, real_n=real_n))
 }
 
 cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 5, nlambda = 20, lam = 10^(-7), interc = TRUE, nfolds = 10, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))){
@@ -85,6 +85,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
               ytr<-helper$ytr
               Xte<-helper$Xte
               yte<-helper$yte
+              real_n<-helper$real_n
 
               dmr <- DMRnet(Xtr, ytr, family = "gaussian", clust.method = clust.method, o = o, nlambda = nlambda, interc = interc, maxp = ceiling(maxp))
               #PP new code
@@ -162,6 +163,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
               ytr<-helper$ytr
               Xte<-helper$Xte
               yte<-helper$yte
+              real_n<-helper$real_n
 
               dmr <- DMRnet(Xtr, ytr, family = "binomial", clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, interc = interc, maxp = maxp)
               #SzN new code based on PP new code
