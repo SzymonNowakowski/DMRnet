@@ -4,8 +4,11 @@ library(randomForest)
 library(glmnet)
 library(stats)  #glm
 library(CatReg)
-library(DMRnet)
+
 library(digest)
+
+library(devtools)
+load_all()
 
 set.seed(strtoi(substr(digest("MDRnet", "md5", serialize = FALSE),1,7),16))
 
@@ -242,9 +245,18 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 
 	  start.time <- Sys.time()
 	  cat("Started: ", start.time,"\n")
-	  sample.10percent <- sample(1:nrow(insurance.all.x), 0.1*nrow(insurance.all.x))
-	  insurance.train.10percent.x <- insurance.all.x[sample.10percent,]
-	  insurance.train.10percent.y <- insurance.all.y[sample.10percent]
+
+	  singular<-TRUE
+    while (!singular) {   #we sample until we get non-singular X
+      sample.10percent <- sample(1:nrow(insurance.all.x), 0.1*nrow(insurance.all.x))
+      insurance.train.10percent.x <- insurance.all.x[sample.10percent,]
+      insurance.train.10percent.y <- insurance.all.y[sample.10percent]
+      singular<-FALSE
+      for (i in 1:(ncol(insurance.all.x)-1))
+        for (j in (i+1):ncol(insurance.all.x))
+          if (length(unique(as.integer(insurance.train.10percent.x[,i])-as.integer(insurance.train.10percent.x[,j])))==1)
+            singular = TRUE
+
 
 	  insurance.test.10percent.x <- insurance.all.x[-sample.10percent,]
 	  insurance.test.10percent.y <- insurance.all.y[-sample.10percent]
