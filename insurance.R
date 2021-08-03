@@ -4,9 +4,11 @@ library(randomForest)
 library(glmnet)
 library(stats)  #glm
 library(CatReg)
-library(DMRnet)
+
 library(digest)
 
+library(devtools)
+load_all()
 
 set.seed(strtoi(substr(digest("MDRnet", "md5", serialize = FALSE),1,7),16))
 
@@ -189,16 +191,16 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
 
 insurance.all<-read.csv("insurance_train", header=TRUE, comment.char="|", stringsAsFactors = TRUE)
 insurance.all<-insurance.all[,apply(apply(insurance.all,2,is.na), 2, sum)==0]  #removing columns with NA
-insurance.all.x<-insurance.all[,2:(dim(insurance.all)[2]-1)]  #without ID and the response columns
+insurance.all.x<-insurance.all[,2:(ncol(insurance.all)-1)]  #without ID and the response columns
 cont_columns = c(4, 8, 9, 10, 11)
-number_of_levels<-rep(0, dim(insurance.all.x)[2])
-for (i in 1:dim(insurance.all.x)[2])
+number_of_levels<-rep(0, ncol(insurance.all.x))
+for (i in 1:ncol(insurance.all.x))
   if (!(i %in% cont_columns)) {
     insurance.all.x[,i] <- factor(insurance.all.x[,i])  #int->factors
     number_of_levels[i] <- length(levels(insurance.all.x[,i]))
-}
+  }
 
-
+cat("data loaded\n")
 
 errors<-list()
 effective_lengths<-list()
@@ -208,16 +210,17 @@ computation_times<-list()
 gamma<-8
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
-runs<-2
-for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "scope", "scope")) {
+runs<-5
+for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr",  "scope", "scope")) {
 	gamma <- 40 - gamma    #it alternates between 32 and 8
-	times<-dfmin<-misclassification_error<-lengths<-rep(0,runs)
+	times<-dfmin<-MSPE<-lengths<-rep(0,runs)
 	run<-1
 
 	while (run<=runs) {
 	  cat("generating response vector\n")
 
 	  response_factor_columns <- sample(1:length(number_of_levels), 10, prob = number_of_levels/sum(number_of_levels))
+	              #in this sample we include continous columns but with 0 probability
 	  K<-number_of_levels[response_factor_columns]
 	  s<-floor(2+0.5*log(K))
 	  theta_coefficients<-list()
@@ -229,7 +232,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 
 	  continous_coefficients <- rnorm(5, 0, 1)
 
-	  insurance.all.y <- rep(0, dim(insurance.all.x)[1])
+	  insurance.all.y <- rep(0, nrow(insurance.all.x))
 	  for (i in 1:10)
 	    insurance.all.y <- insurance.all.y + theta_coefficients[[i]][as.integer(insurance.all.x[,response_factor_columns[i]])]
 	  for (i in 1:5)
@@ -240,108 +243,140 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 
 	  insurance.all.y <- (insurance.all.y - m)/std+m + rnorm(1, 0, 1) #response was then scaled to have unit variance, after which standard normal noise was added.
 
-
+	  cat("generating train/test sets\n")
 	  singular<-TRUE
-    while (!singular) {   #we sample until we get non-singular X
-      sample.10percent <- sample(1:nrow(insurance.all.x), 0.1*nrow(insurance.all.x))
-      insurance.train.10percent.x <- insurance.all.x[sample.10percent,]
-      insurance.train.10percent.y <- insurance.all.y[sample.10percent]
-      singular<-FALSE
-      for (i in 1:(ncol(insurance.all.x)-1))
-        for (j in (i+1):ncol(insurance.all.x))
-          if (length(unique(as.integer(insurance.train.10percent.x[,i])-as.integer(insurance.train.10percent.x[,j])))==1)
-            singular = TRUE
-    }
 
+	  sample.10percent <- sample(1:nrow(insurance.all.x), 0.1*nrow(insurance.all.x))
+    insurance.train.10percent.x <- insurance.all.x[sample.10percent,]
+	  insurance.train.10percent.y <- insurance.all.y[sample.10percent]
 	  insurance.test.10percent.x <- insurance.all.x[-sample.10percent,]
 	  insurance.test.10percent.y <- insurance.all.y[-sample.10percent]
 
-	  start.time <- Sys.time()
-	  cat("Started: ", start.time,"\n")
+
 
 	  #####RECOMPUTATION OF RELEVANT FACTORS in train set, to remove levels with no representative data (empty factors). Needed for random forest and glmnet
 	  ###and for DMRnet - old package
 	  ###but nor for DMRnet - new package
-	  for (i in 1:dim(insurance.train.10percent.x)[2])
+
+
+	  for (i in 1:ncol(insurance.train.10percent.x))
 	    if (!(i %in% cont_columns))
 	      insurance.train.10percent.x[,i] <- factor(insurance.train.10percent.x[,i])
 
+
+	  #remove data from test set with factors not present in train subsample as this causes predict() to fail
+	  for (i in 1:ncol(insurance.train.10percent.x))
+	    if (!(i %in% cont_columns)) {
+	      train.levels <- levels(insurance.train.10percent.x[,i])
+	      insurance.test.10percent.y<-insurance.test.10percent.y[which(insurance.test.10percent.x[,i] %in% train.levels)]
+	      insurance.test.10percent.x<-insurance.test.10percent.x[which(insurance.test.10percent.x[,i] %in% train.levels),]
+	    }
+	  for (i in 1:ncol(insurance.train.10percent.x))
+	    if (!(i %in% cont_columns)) {
+	      train.levels <- levels(insurance.train.10percent.x[,i])
+	      insurance.test.10percent.x[,i] <- factor(insurance.test.10percent.x[,i], levels=train.levels)   #recalculate factors now for new test
+	    }
+
+	  #handling the singular case
+	  insurance.make <- makeX(insurance.train.10percent.x)
+	  prev_pos <- 0
+	  for (i in 1:ncol(insurance.train.10percent.x))
+	    if (!(i %in% cont_columns)) {  #removing columns from the last level, it is linearly dependant
+	     # cat(i, prev_pos, length(levels(insurance.train.10percent.x[,i])), "\n")
+	      insurance.make<-insurance.make[,-(prev_pos+length(levels(insurance.train.10percent.x[,i])))]
+	      prev_pos <- prev_pos+length(levels(insurance.train.10percent.x[,i])) - 1
+	    } else prev_pos<-prev_pos+1
+	  QR<- qr(insurance.make)
+
+	  if (QR$rank < ncol(insurance.make)) {  #singular
+	    reverse_lookup<-rep(0, ncol(insurance.make))
+	    pos<-1
+	    for (i in 1:ncol(insurance.train.10percent.x))
+	      if (!(i %in% cont_columns)) {
+	        reverse_lookup[pos:(pos+length(levels(insurance.train.10percent.x[,i]))-1)]<-i  #there are levels-1 columns corresponding to each original column
+	        pos<-pos+length(levels(insurance.train.10percent.x[,i]))-1
+	      } else {
+	        reverse_lookup[pos:(pos+1)]<-i
+	        pos<-pos+1
+	      }
+	    #removal of columns for pivot positions larger than rank
+	    remove_us<-reverse_lookup[QR$pivot[(QR$rank+1):length(QR$pivot)]]
+	    insurance.train.10percent.x <- insurance.train.10percent.x[,-remove_us]
+	    insurance.test.10percent.x <- insurance.test.10percent.x[,-remove_us]
+	    cat("removed", length(unique(remove_us)), "columns\n")
+	  }
+
+	  cat("consolidated factors and columns\n")
+
+	  start.time <- Sys.time()
+	  cat("Started: ", start.time,"\n")
+
 	  if (model_choice=="gic.DMRnet") {
 	    cat("DMRnet with GIC only\n")
-	    model.1percent <- tryCatch(DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian"),
+	    model.10percent <- tryCatch(DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian"),
 	                               error=function(cond) {
-	                                 message("Numerical instability in DMRnet detected. Will skip this 1-percent set. Original error:")
+	                                 message("Numerical instability in DMRnet detected. Will skip this 10-percent set. Original error:")
 	                                 message(cond)
 	                                 return(list("red_light"))
 	                               })
 
-	    if (model.1percent[[1]] == "red_light") {
+	    if (model.10percent[[1]] == "red_light") {
 	      next
 	    }
 
-	    #plot(model.1percent)
+	    #plot(model.10percent)
 	    cat("GIC\n")
-	    gic <- gic.DMR(model.1percent, c = 2)
+	    gic <- gic.DMR(model.10percent, c = 2)
 	    #plot(gic)
 	  } else  if (model_choice=="cv.DMRnet") {
 	      cat("DMRnet with cv\n")
-	      model.1percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=5),
+	      model.10percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=5),
 	                                error=function(cond) {
-	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 1-percent set. Original error:")
+	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
 
-	    if (model.1percent[[1]] == "red_light") {
+	    if (model.10percent[[1]] == "red_light") {
 	      next
 	    }
 
-	    #plot(model.1percent)
-	    #gic <- gic.DMR(model.1percent, c = 2)
+	    #plot(model.10percent)
+	    #gic <- gic.DMR(model.10percent, c = 2)
 	    #plot(gic)
 	  } else if (model_choice=="scope") {
 	    cat("Scope, no cv, gamma=", gamma,"\n")
-	    model.1percent <- tryCatch(scope(insurance.train.10percent.x, as.numeric(levels(insurance.train.10percent.y))[insurance.train.10percent.y], gamma=gamma),
+	    model.10percent <- tryCatch(scope(insurance.train.10percent.x, as.numeric(levels(insurance.train.10percent.y))[insurance.train.10percent.y], gamma=gamma),
 	                               error=function(cond) {
-	                                 message("Numerical instability in SCOPE detected. Will skip this 1-percent set. Original error:")
+	                                 message("Numerical instability in SCOPE detected. Will skip this 10-percent set. Original error:")
 	                                 message(cond)
 	                                 return(list("red_light"))
 	                               })
 
-	    if (model.1percent[[1]] == "red_light") {
+	    if (model.10percent[[1]] == "red_light") {
 	      next
 	    }
 
 	  } else if (model_choice=="RF") {
 	    cat("random forest. no cv\n")
-	    model.1percent <- randomForest(insurance.train.10percent.x, y=insurance.train.10percent.y)
+	    model.10percent <- randomForest(insurance.train.10percent.x, y=insurance.train.10percent.y)
 	  } else if (model_choice=="lr") {
 	    cat("Linear Regression no cv\n")
-	    model.1percent <- glm(insurance.train.10percent.y~., data = insurance.train.10percent.x, family="gaussian")
+	    model.10percent <- glm(insurance.train.10percent.y~., data = insurance.train.10percent.x, family="gaussian")
 	  } else if (model_choice=="cv.glmnet") {
 	    cat("glmnet with cv\n")
-	    model.1percent<-cv.glmnet(makeX(insurance.train.10percent.x), insurance.train.10percent.y, family="gaussian", nfolds=5)
+	    model.10percent<-cv.glmnet(makeX(insurance.train.10percent.x), insurance.train.10percent.y, family="gaussian", nfolds=5)
 	  } else
 	    stop("Uknown method")
 
 
 
-	  #remove data from test set with factors not present in train subsample as this causes predict() to fail
-	  for (i in 1:dim(insurance.train.10percent.x)[2])
-	    if (!(i %in% cont_columns)) {
-	      train.levels <- levels(insurance.train.10percent.x[,i])
-	      insurance.test.10percent.y<-insurance.test.10percent.y[which(insurance.test.10percent.x[,i] %in% train.levels)]
-	      insurance.test.10percent.x<-insurance.test.10percent.x[which(insurance.test.10percent.x[,i] %in% train.levels),]
-	  }
-	  for (i in 1:dim(insurance.train.10percent.x)[2])
-	    if (!(i %in% cont_columns))
-	      insurance.test.10percent.x[,i] <- factor(insurance.test.10percent.x[,i])   #recalculate factors now for new test
 
 	  if (model_choice=="gic.DMRnet") {
 	    cat("DMRnet pred\n")
-	    prediction<- tryCatch(predict(model.1percent, newx=insurance.test.10percent.x, df = gic$df.min, type="response"),
+	    prediction<- tryCatch(predict(model.10percent, newx=insurance.test.10percent.x, df = gic$df.min, type="response"),
 	                          error=function(cond) {
-	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 1-percent set. Original error:")
+	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 10-percent set. Original error:")
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
@@ -351,9 +386,9 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	    }
 	  } else  if (model_choice=="cv.DMRnet") {
 	    cat("DMRnet pred\n")
-	    prediction<- tryCatch(predict(model.1percent, newx=insurance.test.10percent.x, type="response"),#df = gic$df.min, type="class"),
+	    prediction<- tryCatch(predict(model.10percent, newx=insurance.test.10percent.x, type="response"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
-	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 1-percent set. Original error:")
+	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 10-percent set. Original error:")
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
@@ -363,12 +398,12 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	    }
 	  } else if (model_choice=="scope") {
 	    cat("scope pred\n")
-	    prediction<- predict(model.1percent, insurance.test.10percent.x)
+	    prediction<- predict(model.10percent, insurance.test.10percent.x)
 	  } else if (model_choice=="RF") {
 	    cat("Random Forest pred\n")
-	    prediction<- tryCatch(predict(model.1percent, insurance.test.10percent.x, type="response"),
+	    prediction<- tryCatch(predict(model.10percent, insurance.test.10percent.x, type="response"),
 	                          error=function(cond) {
-	                            message("Numerical instability in predict (RF) detected. Will skip this 1-percent set. Original error:")
+	                            message("Numerical instability in predict (RF) detected. Will skip this 10-percent set. Original error:")
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
@@ -378,12 +413,12 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	    }
 	  } else if (model_choice=="lr") {
 	    cat("Linear Regression pred\n")
-	    prediction<- predict(model.1percent, insurance.test.10percent.x)
+	    prediction<- predict(model.10percent, insurance.test.10percent.x)
 	  } else if (model_choice=="cv.glmnet") {
 	    cat("glmnet pred\n")
-	    prediction<- tryCatch(predict(model.1percent, newx=makeX(insurance.test.10percent.x), type="response"),
+	    prediction<- tryCatch(predict(model.10percent, newx=makeX(insurance.test.10percent.x), type="response"),
 	                          error=function(cond) {
-	                            message("Numerical instability in predict (cv.glmnet) detected. Will skip this 1-percent set. Original error:")
+	                            message("Numerical instability in predict (cv.glmnet) detected. Will skip this 10-percent set. Original error:")
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
@@ -401,25 +436,24 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 
 	  lengths[run]<-length(prediction[!is.na(prediction)])
 
-	  prediction[is.na(prediction)] <- 0
-	  misclassification_error[run]<-1.0-sum(prediction[!is.na(prediction)] == insurance.test.10percent.y[!is.na(prediction)]) / length(insurance.test.10percent.y)  #division by FULL LENGTH (!)
+	  MSPE[run]<-mean((prediction[!is.na(prediction)] - insurance.test.10percent.y[!is.na(prediction)])^2)
 
 	  if (model_choice == "gic.DMRnet")
 	    dfmin[run]<-gic$df.min
 	  if (model_choice == "cv.DMRnet" )
-	    dfmin[run]<-model.1percent$df.min
+	    dfmin[run]<-model.10percent$df.min
 	  if (model_choice == "scope")
-	    dfmin[run]<-length(unique(c(sapply(sapply(model.1percent$beta.best[[2]], as.factor), levels), sapply(sapply(model.1percent$beta.best[[1]], as.factor), levels),recursive=TRUE)))-1 + #-1 is for "0" level
-	                -sum(sapply(sapply(model.1percent$beta.best[[2]], as.factor), levels)!="0")   #and we subtract the number of factors = number of constraints from eq. (8) in Stokell et al.
+	    dfmin[run]<-length(unique(c(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels), sapply(sapply(model.10percent$beta.best[[1]], as.factor), levels),recursive=TRUE)))-1 + #-1 is for "0" level
+	                -sum(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels)!="0")   #and we subtract the number of factors = number of constraints from eq. (8) in Stokell et al.
 
-	  cat(run, "median = ", median(misclassification_error[misclassification_error>0]), "\n")
-	  cat(run, "df.min = ", mean(dfmin[misclassification_error>0]), "\n")
-	  cat(run, "lengths = ", mean(lengths[misclassification_error>0]), "\n")
+	  cat(run, "median = ", median(MSPE[MSPE>0]), "\n")
+	  cat(run, "df.min = ", mean(dfmin[MSPE>0]), "\n")
+	  cat(run, "lengths = ", mean(lengths[MSPE>0]), "\n")
 
 	  run<-run+1
 	}
 
-	cat("overall median = ", median(misclassification_error[misclassification_error!=0]), "\n")
+	cat("overall median = ", median(MSPE[MSPE!=0]), "\n")
 
 
 	model_name<-model_choice
@@ -431,7 +465,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	effective_lengths[[model_name]]<-lengths
 	if (length(dfmin[dfmin>0])>0)
 		sizes[[model_name]]<-dfmin
-	errors[[model_name]]<-misclassification_error
+	errors[[model_name]]<-MSPE
 
 }
 

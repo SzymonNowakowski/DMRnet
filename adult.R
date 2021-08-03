@@ -251,8 +251,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	run<-1
 
 	while (run<=runs) {
-	  start.time <- Sys.time()
-	  cat("Started: ", start.time,"\n")
+	  cat("generating train/test sets\n")
 	  sample.1percent <- sample(1:nrow(adult.all), 0.01*nrow(adult.all))
 	  adult.train.1percent.x <- adult.all[sample.1percent,c(1,2,4,6:10,13:14)] #I exclude education_num and fnlwgt and capital_gain & capital_loss
 	  adult.train.1percent.y <- adult.all[sample.1percent,15]
@@ -260,11 +259,27 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	  adult.test.1percent.x <- adult.all[-sample.1percent,c(1,2,4,6:10,13:14)]
 	  adult.test.1percent.y <- adult.all[-sample.1percent,15]
 
+
 	  #####RECOMPUTATION OF RELEVANT FACTORS in train set, to remove levels with no representative data (empty factors). Needed for random forest and glmnet
 	  ###and for DMRnet - old package
 	  ###but nor for DMRnet - new package
 	  for (i in c(2:8,10))
 	    adult.train.1percent.x[,i] <- factor(adult.train.1percent.x[,i])
+
+
+
+	  #remove data from test set with factors not present in train subsample as this causes predict() to fail
+	  for (i in c(2:8,10)) {
+	    train.levels <- levels(adult.train.1percent.x[,i])
+	    adult.test.1percent.y<-adult.test.1percent.y[which(adult.test.1percent.x[,i] %in% train.levels)]
+	    adult.test.1percent.x<-adult.test.1percent.x[which(adult.test.1percent.x[,i] %in% train.levels),]
+	  }
+	  for (i in c(2:8,10))
+	    adult.test.1percent.x[,i] <- factor(adult.test.1percent.x[,i])   #recalculate factors now for new test
+
+
+	  start.time <- Sys.time()
+	  cat("Started: ", start.time,"\n")
 
 	  if (model_choice=="gic.DMRnet") {
 	    cat("DMRnet with GIC only\n")
@@ -326,14 +341,6 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 
 
 
-	  #remove data from test set with factors not present in train subsample as this causes predict() to fail
-	  for (i in c(2:8,10)) {
-	    train.levels <- levels(adult.train.1percent.x[,i])
-	    adult.test.1percent.y<-adult.test.1percent.y[which(adult.test.1percent.x[,i] %in% train.levels)]
-	    adult.test.1percent.x<-adult.test.1percent.x[which(adult.test.1percent.x[,i] %in% train.levels),]
-	  }
-	  for (i in c(2:8,10))
-	    adult.test.1percent.x[,i] <- factor(adult.test.1percent.x[,i])   #recalculate factors now for new test
 
 	  if (model_choice=="gic.DMRnet") {
 	    cat("DMRnet pred\n")
@@ -400,7 +407,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	  lengths[run]<-length(prediction[!is.na(prediction)])
 
 	  prediction[is.na(prediction)] <- 0
-	  misclassification_error[run]<-1.0-sum(prediction[!is.na(prediction)] == adult.test.1percent.y[!is.na(prediction)]) / length(adult.test.1percent.y)  #division by FULL LENGTH (!)
+	  misclassification_error[run]<-mean(prediction[!is.na(prediction)] != adult.test.1percent.y[!is.na(prediction)])
 
 	  if (model_choice == "gic.DMRnet")
 	    dfmin[run]<-gic$df.min
