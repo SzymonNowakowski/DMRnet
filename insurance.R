@@ -502,25 +502,25 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr",  "scope", "scope"
 
 }
 
-write.csv(errors, "adult_errors.csv")
-write.csv(effective_lengths, "adult_effective_lengths.csv")
-write.csv(sizes, "adult_model_sizes.csv")
-write.csv(computation_times, "adult_computation_times.csv")
+write.csv(errors, "insurance_errors.csv")
+write.csv(effective_lengths, "insurance_effective_lengths.csv")
+write.csv(sizes, "insurance_model_sizes.csv")
+write.csv(computation_times, "insurance_computation_times.csv")
 
 
-pdf("adult_computation_times.pdf",width=12,height=5)
+pdf("insurance_computation_times.pdf",width=12,height=5)
 boxplot(computation_times)
 dev.off
 
-pdf("adult_errors.pdf",width=12,height=5)
+pdf("insurance_errors.pdf",width=12,height=5)
 boxplot(errors, ylim=c(0.16, 0.26))
 dev.off
 
-pdf("adult_model_sizes.pdf",width=9,height=5)
+pdf("insurance_model_sizes.pdf",width=9,height=5)
 boxplot(sizes)
 dev.off
 
-pdf("adult_effective_lengths.pdf",width=12,height=5)
+pdf("insurance_effective_lengths.pdf",width=12,height=5)
 boxplot(effective_lengths)
 dev.off
 
