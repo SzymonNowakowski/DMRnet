@@ -324,7 +324,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	      insurance.test.10percent.x<-insurance.test.10percent.x[which(insurance.test.10percent.x[,i] %in% train.levels),]
 	  }
 	  for (i in 1:dim(insurance.train.10percent.x)[2])
-	    if (!(i %in% cont_columns)) {
+	    if (!(i %in% cont_columns))
 	      insurance.test.10percent.x[,i] <- factor(insurance.test.10percent.x[,i])   #recalculate factors now for new test
 
 	  if (model_choice=="gic.DMRnet") {
