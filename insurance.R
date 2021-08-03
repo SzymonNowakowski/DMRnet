@@ -244,7 +244,7 @@ gamma<-8
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-5
-for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr",  "scope", "scope")) {
+for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 	gamma <- 40 - gamma    #it alternates between 32 and 8
 	times<-dfmin<-MSPE<-lengths<-rep(0,runs)
 	run<-1
@@ -379,7 +379,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr",  "scope", "scope"
 	    #plot(gic)
 	  } else if (model_choice=="scope") {
 	    cat("Scope, no cv, gamma=", gamma,"\n")
-	    model.10percent <- tryCatch(scope(insurance.train.10percent.x, as.numeric(levels(insurance.train.10percent.y))[insurance.train.10percent.y], gamma=gamma),
+	    model.10percent <- tryCatch(scope(insurance.train.10percent.x, insurance.train.10percent.y, gamma=gamma),
 	                               error=function(cond) {
 	                                 message("Numerical instability in SCOPE detected. Will skip this 10-percent set. Original error:")
 	                                 message(cond)
