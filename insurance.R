@@ -82,7 +82,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
               Xtr <- X[foldid != fold, ,drop = FALSE]
               ytr <- y[foldid != fold]
 
-              helper<- cv_helper(Xtr, ytr, Xte, yte)
+              helper<- cv_helper(Xtr, ytr, Xte, yte, real_n)
               Xtr<-helper$Xtr
               ytr<-helper$ytr
               Xte<-helper$Xte
