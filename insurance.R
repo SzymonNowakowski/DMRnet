@@ -38,7 +38,7 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
   for (i in 1:ncol(Xtr))
     if (i %in% n.factors) {  #removing columns from the last level, it is linearly dependant
       # cat(i, prev_pos, length(levels(insurance.train.10percent.x[,i])), "\n")
-      Xtr.make < -Xtr.make[,-(prev_pos+length(levels(Xtr[,i])))]
+      Xtr.make <- Xtr.make[,-(prev_pos+length(levels(Xtr[,i])))]
       prev_pos <- prev_pos+length(levels(Xtr[,i])) - 1
     } else prev_pos<-prev_pos+1
   QR<- qr(Xtr.make)
