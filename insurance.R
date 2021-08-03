@@ -35,21 +35,21 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
   #preparation to detect singularity
   Xtr.make <- makeX(Xtr)
   prev_pos <- 0
-  for (i in 1:ncol(Xtr.make))
+  for (i in 1:ncol(Xtr))
     if (i %in% n.factors) {  #removing columns from the last level, it is linearly dependant
       # cat(i, prev_pos, length(levels(insurance.train.10percent.x[,i])), "\n")
-      Xtr.make < -Xtr.make[,-(prev_pos+length(levels(Xtr.make[,i])))]
-      prev_pos <- prev_pos+length(levels(Xtr.make[,i])) - 1
+      Xtr.make < -Xtr.make[,-(prev_pos+length(levels(Xtr[,i])))]
+      prev_pos <- prev_pos+length(levels(Xtr[,i])) - 1
     } else prev_pos<-prev_pos+1
   QR<- qr(Xtr.make)
 
   if (QR$rank < ncol(Xtr.make)) {  #singular
     reverse_lookup<-rep(0, ncol(Xtr.make))
     pos<-1
-    for (i in 1:ncol(insurance.train.10percent.x))
+    for (i in 1:ncol(Xtr))
       if (i %in% n.factors) {
-        reverse_lookup[pos:(pos+length(levels(Xtr.make[,i]))-1)]<-i  #there are levels-1 columns corresponding to each original column
-        pos<-pos+length(levels(Xtr.make[,i]))-1
+        reverse_lookup[pos:(pos+length(levels(Xtr[,i]))-1)]<-i  #there are levels-1 columns corresponding to each original column
+        pos<-pos+length(levels(Xtr[,i]))-1
       } else {
         reverse_lookup[pos:(pos+1)]<-i
         pos<-pos+1
@@ -60,7 +60,7 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
     Xte <- Xte[,-remove_us]
     cat("removed", length(unique(remove_us)), "columns\n")
   }
-  return (list(Xtr= Xtr, ytr=ytr, Xte=Xte, yte=yte, real_n=real_n))
+  return (list(Xtr=Xtr, ytr=ytr, Xte=Xte, yte=yte, real_n=real_n))
 }
 
 cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 5, nlambda = 20, lam = 10^(-7), interc = TRUE, nfolds = 10, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))){
@@ -77,9 +77,9 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
 
           for (fold in 1:nfolds){
               cat("gaussian fold:", fold, "\n")
-              Xte <- X[foldid == fold, ,drop = FALSE]
+              Xte <- X[foldid == fold, drop = FALSE]
               yte <- y[foldid == fold]
-              Xtr <- X[foldid != fold, ,drop = FALSE]
+              Xtr <- X[foldid != fold, drop = FALSE]
               ytr <- y[foldid != fold]
 
               helper<- cv_helper(Xtr, ytr, Xte, yte, real_n)
@@ -155,9 +155,9 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
           err <- list(); loglik <- list(); #md <- list()
           for (fold in 1:nfolds) {
               cat("binomial fold:", fold, "\n")
-              Xte <- X[foldid == fold, , drop = FALSE]
+              Xte <- X[foldid == fold, drop = FALSE]
               yte <- y[foldid == fold]
-              Xtr <- X[foldid != fold, , drop = FALSE]
+              Xtr <- X[foldid != fold, drop = FALSE]
               ytr <- y[foldid != fold]
 
               helper<- cv_helper(Xtr, ytr, Xte, yte, real_n)
