@@ -4,13 +4,13 @@ library(randomForest)
 library(glmnet)
 library(stats)  #glm
 library(CatReg)
-
+library(DMRnet)
 library(digest)
+#
+# library(devtools)
+# load_all()
 
-library(devtools)
-load_all()
-
-set.seed(strtoi(substr(digest("MDRnet", "md5", serialize = FALSE),1,7),16))
+set.seed(strtoi(substr(digest("insurance", "md5", serialize = FALSE),1,7),16))
 
 cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 5, nlambda = 20, lam = 10^(-7), interc = TRUE, nfolds = 10, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))){
 

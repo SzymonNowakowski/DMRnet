@@ -7,7 +7,7 @@ library(CatReg)
 library(DMRnet)
 library(digest)
 
-set.seed(strtoi(substr(digest("MDRnet", "md5", serialize = FALSE),1,7),16))
+set.seed(strtoi(substr(digest("adult", "md5", serialize = FALSE),1,7),16))
 
 cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 5, nlambda = 20, lam = 10^(-7), interc = TRUE, nfolds = 10, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))){
 
@@ -186,7 +186,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
 }
 
 
-cat("loaded\n")
+
 
 adult.train<-read.csv("adult.data", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
 adult.test<-read.csv("adult.test", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
@@ -235,6 +235,8 @@ levels(adult.train[,15])[2]<-1
 
 adult.all<-rbind(adult.train, adult.test)
 ####HURRAY. In total 45222 observations (train+test) as in Stokell's paper
+
+cat("data loaded\n")
 
 errors<-list()
 effective_lengths<-list()
