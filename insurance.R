@@ -77,9 +77,9 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
 
           for (fold in 1:nfolds){
               cat("gaussian fold:", fold, "\n")
-              Xte <- X[foldid == fold, drop = FALSE]
+              Xte <- X[foldid == fold, ,drop = FALSE]
               yte <- y[foldid == fold]
-              Xtr <- X[foldid != fold, drop = FALSE]
+              Xtr <- X[foldid != fold, ,drop = FALSE]
               ytr <- y[foldid != fold]
 
               helper<- cv_helper(Xtr, ytr, Xte, yte, real_n)
@@ -155,9 +155,9 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
           err <- list(); loglik <- list(); #md <- list()
           for (fold in 1:nfolds) {
               cat("binomial fold:", fold, "\n")
-              Xte <- X[foldid == fold, drop = FALSE]
+              Xte <- X[foldid == fold, ,drop = FALSE]
               yte <- y[foldid == fold]
-              Xtr <- X[foldid != fold, drop = FALSE]
+              Xtr <- X[foldid != fold, ,drop = FALSE]
               ytr <- y[foldid != fold]
 
               helper<- cv_helper(Xtr, ytr, Xte, yte, real_n)
