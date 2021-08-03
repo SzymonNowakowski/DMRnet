@@ -9,6 +9,58 @@ library(digest)
 
 set.seed(strtoi(substr(digest("adult", "md5", serialize = FALSE),1,7),16))
 
+
+
+cv_helper<-function(Xtr, ytr, Xte, yte) {
+  ###SzN remove from test the data with factors not present in training
+  nn <- sapply(1:ncol(Xte), function(i) class(Xte[,i]))
+  faki <- which(nn == "factor")
+  n.factors <- length(faki)
+  if (n.factors > 0)
+    for (i in 1:n.factors) {
+      Xtr[,faki[i]] <- factor(Xtr[,faki[i]])  #may be removed in next version of package because
+      train.levels <- levels(Xtr[,faki[i]])   #the same info is in dmr$levels.listed[[i]]
+      #but this has the advantage that is also compatible with the old package version
+      yte<-yte[which(Xte[,faki[i]] %in% train.levels)]
+      Xte<-Xte[which(Xte[,faki[i]] %in% train.levels),]
+      Xte[,faki[i]]<-factor(Xte[,faki[i]], levels=train.levels)  #recalculate the factors in new test set, may be removed in next version of package because the same happens in predict(..)
+    }
+  real_n <- real_n + length(yte)
+  #TODO: what to do if all test data is removed?
+
+
+  ####SzN remove from train and test columns causing data singularity
+  #preparation to detect singularity
+  Xtr.make <- makeX(Xtr)
+  prev_pos <- 0
+  for (i in 1:ncol(Xtr.make))
+    if (i %in% n.factors) {  #removing columns from the last level, it is linearly dependant
+      # cat(i, prev_pos, length(levels(insurance.train.10percent.x[,i])), "\n")
+      Xtr.make < -Xtr.make[,-(prev_pos+length(levels(Xtr.make[,i])))]
+      prev_pos <- prev_pos+length(levels(Xtr.make[,i])) - 1
+    } else prev_pos<-prev_pos+1
+  QR<- qr(Xtr.make)
+
+  if (QR$rank < ncol(Xtr.make)) {  #singular
+    reverse_lookup<-rep(0, ncol(Xtr.make))
+    pos<-1
+    for (i in 1:ncol(insurance.train.10percent.x))
+      if (i %in% n.factors) {
+        reverse_lookup[pos:(pos+length(levels(Xtr.make[,i]))-1)]<-i  #there are levels-1 columns corresponding to each original column
+        pos<-pos+length(levels(Xtr.make[,i]))-1
+      } else {
+        reverse_lookup[pos:(pos+1)]<-i
+        pos<-pos+1
+      }
+    #removal of columns for pivot positions larger than rank
+    remove_us<-reverse_lookup[QR$pivot[(QR$rank+1):length(QR$pivot)]]
+    Xtr <- Xtr[,-remove_us]
+    Xte <- Xte[,-remove_us]
+    cat("removed", length(unique(remove_us)), "columns\n")
+  }
+  return (list(Xtr= Xtr, ytr=ytr, Xte=Xte, yte=yte))
+}
+
 cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 5, nlambda = 20, lam = 10^(-7), interc = TRUE, nfolds = 10, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))){
 
 
@@ -28,21 +80,11 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
               Xtr <- X[foldid != fold, ,drop = FALSE]
               ytr <- y[foldid != fold]
 
-              ###SzN remove from test the data with factors not present in training
-              nn <- sapply(1:ncol(Xte), function(i) class(Xte[,i]))
-              faki <- which(nn == "factor")
-              n.factors <- length(faki)
-              if (n.factors > 0)
-                for (i in 1:n.factors) {
-                  Xtr[,faki[i]] <- factor(Xtr[,faki[i]])  #may be removed in next version of package because
-                  train.levels <- levels(Xtr[,faki[i]])   #the same info is in dmr$levels.listed[[i]]
-                                      #but this has the advantage that is also compatible with the old package version
-                  yte<-yte[which(Xte[,faki[i]] %in% train.levels)]
-                  Xte<-Xte[which(Xte[,faki[i]] %in% train.levels),]
-                  Xte[,faki[i]]<-factor(Xte[,faki[i]], levels=train.levels)  #recalculate the factors in new test set, may be removed in next version of package because the same happens in predict(..)
-                }
-              real_n <- real_n + length(yte)
-              #TODO: what to do if all test data is removed?
+              helper<- cv_helper(Xtr, ytr, Xte, yte)
+              Xtr<-helper$Xtr
+              ytr<-helper$ytr
+              Xte<-helper$Xte
+              yte<-helper$yte
 
               dmr <- DMRnet(Xtr, ytr, family = "gaussian", clust.method = clust.method, o = o, nlambda = nlambda, interc = interc, maxp = ceiling(maxp))
               #PP new code
@@ -115,21 +157,11 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
               Xtr <- X[foldid != fold, , drop = FALSE]
               ytr <- y[foldid != fold]
 
-              ###SzN remove from test the data with factors not present in training
-              nn <- sapply(1:ncol(Xte), function(i) class(Xte[,i]))
-              faki <- which(nn == "factor")
-              n.factors <- length(faki)
-              if (n.factors > 0)
-                      for (i in 1:n.factors) {
-                              Xtr[,faki[i]] <- factor(Xtr[,faki[i]])  #may be removed in next version of package because
-                              train.levels <- levels(Xtr[,faki[i]])   #the same info is in dmr$levels.listed[[i]]
-                              #but this has the advantage that is also compatible with the old package version
-                              yte<-yte[which(Xte[,faki[i]] %in% train.levels)]
-                              Xte<-Xte[which(Xte[,faki[i]] %in% train.levels),]
-                              Xte[,faki[i]]<-factor(Xte[,faki[i]], levels=train.levels)  #recalculate the factors in new test set, may be removed in next version of package because the same happens in predict(..)
-                      }
-              real_n <- real_n + length(yte)
-              #TODO: what to do if all test data is removed?
+              helper<- cv_helper(Xtr, ytr, Xte, yte)
+              Xtr<-helper$Xtr
+              ytr<-helper$ytr
+              Xte<-helper$Xte
+              yte<-helper$yte
 
               dmr <- DMRnet(Xtr, ytr, family = "binomial", clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, interc = interc, maxp = maxp)
               #SzN new code based on PP new code
