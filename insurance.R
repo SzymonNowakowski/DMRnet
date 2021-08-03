@@ -243,9 +243,6 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	  insurance.all.y <- (insurance.all.y - m)/std+m + rnorm(1, 0, 1) #response was then scaled to have unit variance, after which standard normal noise was added.
 
 
-	  start.time <- Sys.time()
-	  cat("Started: ", start.time,"\n")
-
 	  singular<-TRUE
     while (!singular) {   #we sample until we get non-singular X
       sample.10percent <- sample(1:nrow(insurance.all.x), 0.1*nrow(insurance.all.x))
@@ -256,10 +253,13 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
         for (j in (i+1):ncol(insurance.all.x))
           if (length(unique(as.integer(insurance.train.10percent.x[,i])-as.integer(insurance.train.10percent.x[,j])))==1)
             singular = TRUE
-
+    }
 
 	  insurance.test.10percent.x <- insurance.all.x[-sample.10percent,]
 	  insurance.test.10percent.y <- insurance.all.y[-sample.10percent]
+
+	  start.time <- Sys.time()
+	  cat("Started: ", start.time,"\n")
 
 	  #####RECOMPUTATION OF RELEVANT FACTORS in train set, to remove levels with no representative data (empty factors). Needed for random forest and glmnet
 	  ###and for DMRnet - old package
