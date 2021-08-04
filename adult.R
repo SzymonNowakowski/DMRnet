@@ -12,7 +12,7 @@ library(digest)
 
 set.seed(strtoi(substr(digest("adult", "md5", serialize = FALSE),1,7),16))
 
-source("R/cv_DMRnet.R")
+source("cv_DMRnet.R")
 
 adult.train<-read.csv("adult.data", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
 adult.test<-read.csv("adult.test", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
