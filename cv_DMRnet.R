@@ -20,15 +20,20 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
   ####SzN remove from train and test columns causing data singularity
   #preparation to detect singularity
   Xtr.make <- makeX(Xtr)
-  if (ncol(Xtr)>=2) {
-    prev_pos <- length(levels(Xtr[,1]))
-    for (i in 2:ncol(Xtr))
-      if (i %in% faki) {  #removing columns from the last level (but not for the first original column) they are linearly dependant
-        # cat(i, prev_pos, length(levels(insurance.train.10percent.x[,i])), "\n")
+  prev_pos <- 0
+  first_identified_yet = FALSE
+  for (i in 1:ncol(Xtr))
+    if (i %in% faki) {  #removing columns from the last level (but not for the first original column) they are linearly dependant
+      # cat(i, prev_pos, length(levels(insurance.train.10percent.x[,i])), "\n")
+      if (first_identified_yet) {
         Xtr.make <- Xtr.make[,-(prev_pos+length(levels(Xtr[,i])))]
         prev_pos <- prev_pos+length(levels(Xtr[,i])) - 1
-      } else prev_pos<-prev_pos+1
-  }
+      } else {
+        prev_pos <- prev_pos+length(levels(Xtr[,i]))
+        first_identified_yet = TRUE
+      }
+    } else prev_pos<-prev_pos+1
+
   QR<- qr(Xtr.make)
 
   if (QR$rank < ncol(Xtr.make)) {  #singular
