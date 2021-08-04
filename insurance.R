@@ -103,13 +103,15 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 
 	  #handling the singular case
 	  insurance.make <- makeX(insurance.train.10percent.x)
-	  prev_pos <- 0
-	  for (i in 1:ncol(insurance.train.10percent.x))
-	    if (!(i %in% cont_columns)) {  #removing columns from the last level, it is linearly dependant
-	     # cat(i, prev_pos, length(levels(insurance.train.10percent.x[,i])), "\n")
-	      insurance.make<-insurance.make[,-(prev_pos+length(levels(insurance.train.10percent.x[,i])))]
-	      prev_pos <- prev_pos+length(levels(insurance.train.10percent.x[,i])) - 1
-	    } else prev_pos<-prev_pos+1
+	  if (ncol(insurance.train.10percent.x >= 2)) {
+  	  prev_pos <- length(levels(insurance.train.10percent.x[,1]))
+  	  for (i in 2:ncol(insurance.train.10percent.x))
+  	    if (!(i %in% cont_columns)) {  #removing columns from the last level, it is linearly dependant
+  	     # cat(i, prev_pos, length(levels(insurance.train.10percent.x[,i])), "\n")
+  	      insurance.make<-insurance.make[,-(prev_pos+length(levels(insurance.train.10percent.x[,i])))]
+  	      prev_pos <- prev_pos+length(levels(insurance.train.10percent.x[,i])) - 1
+  	    } else prev_pos<-prev_pos+1
+  	  }
 	  QR<- qr(insurance.make)
 
 	  if (QR$rank < ncol(insurance.make)) {  #singular

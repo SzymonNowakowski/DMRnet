@@ -21,7 +21,7 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
   #preparation to detect singularity
   Xtr.make <- makeX(Xtr)
   if (ncol(Xtr)>=2) {
-    prev_pos <- length(levels(Xtr))
+    prev_pos <- length(levels(Xtr[,1]))
     for (i in 2:ncol(Xtr))
       if (i %in% faki) {  #removing columns from the last level (but not for the first original column) they are linearly dependant
         # cat(i, prev_pos, length(levels(insurance.train.10percent.x[,i])), "\n")
