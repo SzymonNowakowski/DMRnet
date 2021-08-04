@@ -4,11 +4,11 @@ library(randomForest)
 library(glmnet)
 library(stats)  #glm
 library(CatReg)
-#library(DMRnet)
+library(DMRnet)
 library(digest)
 #
- library(devtools)
- load_all()
+#library(devtools)
+#load_all()
 
 set.seed(strtoi(substr(digest("insurance", "md5", serialize = FALSE),1,7),16))
 
