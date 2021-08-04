@@ -39,10 +39,17 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
   if (QR$rank < ncol(Xtr.make)) {  #singular
     reverse_lookup<-rep(0, ncol(Xtr.make))
     pos<-1
+    first_identified_yet = FALSE
     for (i in 1:ncol(Xtr))
       if (i %in% faki) {
-        reverse_lookup[pos:(pos+length(levels(Xtr[,i]))-2)]<-i  #there are levels-1 columns corresponding to each original column
-        pos<-pos+length(levels(Xtr[,i]))-1
+        if (first_identified_yet) {
+          reverse_lookup[pos:(pos+length(levels(Xtr[,i]))-1)]<-i  #there are levels-1 columns corresponding to the first original column
+          pos<-pos+length(levels(Xtr[,i]))
+        } else {
+          reverse_lookup[pos:(pos+length(levels(Xtr[,i]))-2)]<-i  #there are levels-1 columns corresponding to each original column other than the first
+          pos<-pos+length(levels(Xtr[,i]))-1
+          first_identified_yet = TRUE
+        }
       } else {
         reverse_lookup[pos]<-i
         pos<-pos+1

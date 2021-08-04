@@ -118,8 +118,13 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 	    pos<-1
 	    for (i in 1:ncol(insurance.train.10percent.x))
 	      if (!(i %in% cont_columns)) {
-	        reverse_lookup[pos:(pos+length(levels(insurance.train.10percent.x[,i]))-2)]<-i  #there are levels-1 columns corresponding to each original column
-	        pos<-pos+length(levels(insurance.train.10percent.x[,i]))-1
+	        if (i==1) {
+	          reverse_lookup[pos:(pos+length(levels(insurance.train.10percent.x[,i]))-1)]<-i  #there are levels columns corresponding to the first original column
+	          pos<-pos+length(levels(insurance.train.10percent.x[,i]))
+	        } else {
+	          reverse_lookup[pos:(pos+length(levels(insurance.train.10percent.x[,i]))-2)]<-i  #there are levels-1 columns corresponding to each original column other than the first
+	          pos<-pos+length(levels(insurance.train.10percent.x[,i]))-1
+	        }
 	      } else {
 	        reverse_lookup[pos]<-i
 	        pos<-pos+1
