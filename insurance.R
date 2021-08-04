@@ -110,7 +110,7 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 	      insurance.make<-insurance.make[,-(prev_pos+length(levels(insurance.train.10percent.x[,i])))]
 	      prev_pos <- prev_pos+length(levels(insurance.train.10percent.x[,i])) - 1
 	    } else prev_pos<-prev_pos+1
-	  }
+
 	  QR<- qr(insurance.make)
 
 	  if (QR$rank < ncol(insurance.make)) {  #singular
