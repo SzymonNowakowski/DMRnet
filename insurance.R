@@ -42,7 +42,7 @@ computation_times<-list()
 gamma<-8
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
-runs<-10
+runs<-25
 for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 	gamma <- 40 - gamma    #it alternates between 32 and 8
 	times<-dfmin<-MSPE<-lengths<-rep(0,runs)
@@ -73,7 +73,7 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 	  m<-mean(insurance.all.y)
 	  std<-sd(insurance.all.y)
 
-	  insurance.all.y <- (insurance.all.y - m)/std+m + rnorm(1, 0, 1) #response was then scaled to have unit variance, after which standard normal noise was added.
+	  insurance.all.y <- (insurance.all.y - m)/std+m + rnorm(length(insurance.all.y), 0, 1) #response was then scaled to have unit variance, after which standard normal noise was added.
 
 	  cat("generating train/test sets\n")
 
