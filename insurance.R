@@ -12,7 +12,7 @@ library(digest)
 
 set.seed(strtoi(substr(digest("insurance", "md5", serialize = FALSE),1,7),16))
 
-source("cv_DMRnet.R")
+debugSource("cv_DMRnet.R")
 
 insurance.all<-read.csv("insurance_train", header=TRUE, comment.char="|", stringsAsFactors = TRUE)
 insurance.all<-insurance.all[,apply(apply(insurance.all,2,is.na), 2, sum)==0]  #removing columns with NA

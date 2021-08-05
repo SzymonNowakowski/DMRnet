@@ -38,7 +38,7 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
 
   if (QR$rank < ncol(Xtr.make)) {  #singular
     reverse_lookup<-rep(0, ncol(Xtr.make))
-    pos<-1
+    pos<-0
     first_identified_yet = FALSE
     for (i in 1:ncol(Xtr))
       if (i %in% faki) {
@@ -77,7 +77,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
 
     for (fold in 1:nfolds){
       cat("gaussian fold:", fold, "\n")
-      if (fold==4) {
+      if (fold==2) {
         xx<-4
       }
       Xte <- X[foldid == fold, ,drop = FALSE]
