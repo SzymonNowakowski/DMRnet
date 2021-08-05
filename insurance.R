@@ -73,7 +73,7 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 	  m<-mean(insurance.all.y)
 	  std<-sd(insurance.all.y)
 
-	  insurance.all.y <- (insurance.all.y - m)/std+m + rnorm(length(insurance.all.y), 0, 1) #response was then scaled to have unit variance, after which standard normal noise was added.
+	  insurance.all.y <- (insurance.all.y - m)/std + rnorm(length(insurance.all.y), 0, 1) #response was then scaled to have unit variance, after which standard normal noise was added.
 
 	  cat("generating train/test sets\n")
 
