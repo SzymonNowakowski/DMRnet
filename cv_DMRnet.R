@@ -54,6 +54,7 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
         reverse_lookup[pos]<-i
         pos<-pos+1
       }
+
     #removal of columns for pivot positions larger than rank
     remove_us<-reverse_lookup[QR$pivot[(QR$rank+1):length(QR$pivot)]]
     Xtr <- Xtr[,-remove_us]

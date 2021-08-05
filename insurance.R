@@ -1,16 +1,23 @@
 
-
 library(randomForest)
 library(glmnet)
 library(stats)  #glm
 library(CatReg)
 library(DMRnet)
 library(digest)
+library(scriptName)
+
 #
 #library(devtools)
 #load_all()
 
-set.seed(strtoi(substr(digest("insurance", "md5", serialize = FALSE),1,7),16))
+
+filename_and_dirs <- current_filename()
+part_filename_and_number <- substr(filename_and_dirs, nchar(filename_and_dirs)-10, nchar(filename_and_dirs))
+print(part_filename_and_number)
+set.seed(strtoi(substr(digest(part_filename_and_number, "md5", serialize = FALSE),1,7),16))
+cat("seed set as md5 hash of the following string: ", part_filename_and_number,"\n\n")
+cat("search for the result files postfixed with the same string: ", part_filename_and_number,"\n\n")
 
 source("cv_DMRnet.R")
 
@@ -35,7 +42,7 @@ computation_times<-list()
 gamma<-8
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
-runs<-5
+runs<-10
 for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 	gamma <- 40 - gamma    #it alternates between 32 and 8
 	times<-dfmin<-MSPE<-lengths<-rep(0,runs)
@@ -299,25 +306,25 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 
 }
 
-write.csv(errors, "insurance_errors.csv")
-write.csv(effective_lengths, "insurance_effective_lengths.csv")
-write.csv(sizes, "insurance_model_sizes.csv")
-write.csv(computation_times, "insurance_computation_times.csv")
+write.csv(errors, paste(part_filename_and_number, "_errors.csv", sep=""))
+write.csv(effective_lengths, paste(part_filename_and_number, "_effective_lengths.csv", sep=""))
+write.csv(sizes, paste(part_filename_and_number, "_model_sizes.csv", sep=""))
+write.csv(computation_times, paste(part_filename_and_number, "_computation_times.csv", sep=""))
 
 
-pdf("insurance_computation_times.pdf",width=12,height=5)
+pdf(paste(part_filename_and_number, "_computation_times.pdf", sep=""),width=12,height=5)
 boxplot(computation_times)
 dev.off
 
-pdf("insurance_errors.pdf",width=12,height=5)
+pdf(paste(part_filename_and_number, "_errors.pdf", sep=""),width=12,height=5)
 boxplot(errors, ylim=c(0.16, 0.26))
 dev.off
 
-pdf("insurance_model_sizes.pdf",width=9,height=5)
+pdf(paste(part_filename_and_number, "_model_sizes.pdf", sep=""),width=9,height=5)
 boxplot(sizes)
 dev.off
 
-pdf("insurance_effective_lengths.pdf",width=12,height=5)
+pdf(paste(part_filename_and_number, "_effective_lengths.pdf", sep=""),width=12,height=5)
 boxplot(effective_lengths)
 dev.off
 
