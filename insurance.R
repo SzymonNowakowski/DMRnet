@@ -64,10 +64,13 @@ for (model_choice in c(  "cv.glmnet",  "scope", "scope", "cv.DMRnet", "gic.DMRne
 
 
 	  #norming continous columns so they have sqrt(n) norm
+	  norm<-function(x) sqrt(sum(x^2))
+	  normalize<-function(x) x/norm(x)*sqrt(length(x))
 	  for (i in 1:5) {
-	    m<-mean(insurance.all.x[,cont_columns[i]])
-	    std<-sd(insurance.all.x[,cont_columns[i]])
-	    insurance.all.x[,cont_columns[i]] <- (insurance.all.x[,cont_columns[i]] - m) / std #* sqrt(nrow(insurance.all.x)s)
+	    insurance.all.x[,cont_columns[i]] <- normalize(insurance.all.x[,cont_columns[i]])
+	    #m<-mean(insurance.all.x[,cont_columns[i]])
+	    #std<-sd(insurance.all.x[,cont_columns[i]])
+	    #insurance.all.x[,cont_columns[i]] <- (insurance.all.x[,cont_columns[i]] - m) / std #* sqrt(nrow(insurance.all.x)s)
 	  }
 
 	  #continous coeeficients:
