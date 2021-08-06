@@ -43,7 +43,7 @@ gamma<-8
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-25
-for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
+for (model_choice in c(    "scope", "scope")) {
 	gamma <- 40 - gamma    #it alternates between 32 and 8
 	times<-dfmin<-MSPE<-lengths<-rep(0,runs)
 	run<-1
@@ -72,8 +72,8 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 
 	  m<-mean(insurance.all.y)
 	  std<-sd(insurance.all.y)
-
-	  insurance.all.y <- (insurance.all.y - m)/std + rnorm(length(insurance.all.y), 0, 1) #response was then scaled to have unit variance, after which standard normal noise was added.
+	  insurance.all.y.no_error <- (insurance.all.y - m)/std
+	  insurance.all.y <- insurance.all.y.no_error + rnorm(length(insurance.all.y), 0, 1) #response was then scaled to have unit variance, after which standard normal noise was added.
 
 	  cat("generating train/test sets\n")
 
@@ -82,7 +82,7 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 	  insurance.train.10percent.y <- insurance.all.y[sample.10percent]
 	  insurance.test.10percent.x <- insurance.all.x[-sample.10percent,]
 	  insurance.test.10percent.y <- insurance.all.y[-sample.10percent]
-
+	  insurance.test.10percent.y.no_error <- insurance.all.y.no_error[-sample.10percent]
 
 
 	  #####RECOMPUTATION OF RELEVANT FACTORS in train set, to remove levels with no representative data (empty factors). Needed for random forest and glmnet
@@ -100,6 +100,7 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 	    if (!(i %in% cont_columns)) {
 	      train.levels <- levels(insurance.train.10percent.x[,i])
 	      insurance.test.10percent.y<-insurance.test.10percent.y[which(insurance.test.10percent.x[,i] %in% train.levels)]
+	      insurance.test.10percent.y.no_error<-insurance.test.10percent.y.no_error[which(insurance.test.10percent.x[,i] %in% train.levels)]
 	      insurance.test.10percent.x<-insurance.test.10percent.x[which(insurance.test.10percent.x[,i] %in% train.levels),]
 	    }
 	  for (i in 1:ncol(insurance.train.10percent.x))
@@ -273,15 +274,28 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 
 	  lengths[run]<-length(prediction[!is.na(prediction)])
 
-	  MSPE[run]<-mean((prediction[!is.na(prediction)] - insurance.test.10percent.y[!is.na(prediction)])^2)
+	  MSPE[run]<-mean((prediction[!is.na(prediction)] - insurance.test.10percent.y.no_error[!is.na(prediction)])^2)
 
 	  if (model_choice == "gic.DMRnet")
 	    dfmin[run]<-gic$df.min
 	  if (model_choice == "cv.DMRnet" )
 	    dfmin[run]<-model.10percent$df.min
 	  if (model_choice == "scope")
-	    dfmin[run]<-length(unique(c(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels), sapply(sapply(model.10percent$beta.best[[1]], as.factor), levels),recursive=TRUE)))-1 + #-1 is for "0" level
-	                -sum(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels)!="0")   #and we subtract the number of factors = number of constraints from eq. (8) in Stokell et al.
+	    dfmin[run]<-sum(abs(model.10percent$beta.best[[1]]) > 1e-10) +
+	                sum(sapply(sapply(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels), unique), length)-1)
+	  #  length(unique(c(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels), sapply(sapply(model.10percent$beta.best[[1]], as.factor), levels),recursive=TRUE)))-1 + #-1 is for "0" level
+	   #             -sum(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels)!="0")   #and we subtract the number of factors = number of constraints from eq. (8) in Stokell et al.
+                       #the commented formula had problems with levels close to 0 but nonzero, like these:
+
+                  	  #[[91]]
+                  	  #0                    1
+                  	  #6.28837260041593e-18 6.28837260041593e-18
+                  	  #Levels: 6.28837260041593e-18
+
+                  	  #[[92]]
+                  	  #0                    1
+                  	  #6.28837260041593e-18 6.28837260041593e-18
+                  	  #Levels: 6.28837260041593e-18
 
 	  cat(run, "median = ", median(MSPE[MSPE>0]), "\n")
 	  cat(run, "df.min = ", mean(dfmin[MSPE>0]), "\n")
