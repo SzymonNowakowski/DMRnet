@@ -42,7 +42,7 @@ computation_times<-list()
 gamma<-8
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
-runs<-25
+runs<-50
 for (model_choice in c(  "cv.glmnet",  "scope", "scope", "cv.DMRnet", "gic.DMRnet", "lr")) {
 	gamma <- 40 - gamma    #it alternates between 32 and 8
 	times<-dfmin<-MSPE<-lengths<-rep(0,runs)
@@ -63,14 +63,11 @@ for (model_choice in c(  "cv.glmnet",  "scope", "scope", "cv.DMRnet", "gic.DMRne
 	  }
 
 
-	  #norming continous columns so they have sqrt(n) norm
-	  norm<-function(x) sqrt(sum(x^2))
-	  normalize<-function(x) x/norm(x)*sqrt(length(x))
+	  #norming continous columns
 	  for (i in 1:5) {
-	    insurance.all.x[,cont_columns[i]] <- normalize(insurance.all.x[,cont_columns[i]])
-	    #m<-mean(insurance.all.x[,cont_columns[i]])
-	    #std<-sd(insurance.all.x[,cont_columns[i]])
-	    #insurance.all.x[,cont_columns[i]] <- (insurance.all.x[,cont_columns[i]] - m) / std #* sqrt(nrow(insurance.all.x)s)
+	    m<-mean(insurance.all.x[,cont_columns[i]])
+	    std<-sd(insurance.all.x[,cont_columns[i]])
+	    insurance.all.x[,cont_columns[i]] <- (insurance.all.x[,cont_columns[i]] - m) / std
 	  }
 
 	  #continous coeeficients:
