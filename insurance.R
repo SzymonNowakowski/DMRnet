@@ -67,7 +67,7 @@ for (model_choice in c(  "cv.glmnet","cv.DMRnet", "gic.DMRnet", "lr",  "scope", 
 	  for (i in 1:5) {
 	    m<-mean(insurance.all.x[,cont_columns[i]])
 	    std<-sd(insurance.all.x[,cont_columns[i]])
-	    insurance.all.x[,cont_columns[i]] <- (insurance.all.x[,cont_columns[i]] - m) / std * sqrt(length(insurance.all.y))
+	    insurance.all.x[,cont_columns[i]] <- (insurance.all.x[,cont_columns[i]] - m) / std * sqrt(nrow(insurance.all.x))
 	  }
 
 	  #continous coeeficients:
