@@ -285,7 +285,7 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 	                sum(sapply(sapply(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels), unique), length)-1)
 	  #  length(unique(c(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels), sapply(sapply(model.10percent$beta.best[[1]], as.factor), levels),recursive=TRUE)))-1 + #-1 is for "0" level
 	   #             -sum(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels)!="0")   #and we subtract the number of factors = number of constraints from eq. (8) in Stokell et al.
-                       #the commented formula had problems with levels close to 0 but nonzero, like these:
+                       #the commented formula above had problems with levels close to 0 but nonzero, like these:
 
                   	  #[[91]]
                   	  #0                    1
@@ -328,18 +328,18 @@ write.csv(computation_times, paste(part_filename_and_number, "_computation_times
 
 pdf(paste(part_filename_and_number, "_computation_times.pdf", sep=""),width=12,height=5)
 boxplot(computation_times)
-dev.off
+dev.off()
 
 pdf(paste(part_filename_and_number, "_errors.pdf", sep=""),width=12,height=5)
-boxplot(errors, ylim=c(0.16, 0.26))
-dev.off
+boxplot(errors)
+dev.off()
 
 pdf(paste(part_filename_and_number, "_model_sizes.pdf", sep=""),width=9,height=5)
 boxplot(sizes)
-dev.off
+dev.off()
 
 pdf(paste(part_filename_and_number, "_effective_lengths.pdf", sep=""),width=12,height=5)
 boxplot(effective_lengths)
-dev.off
+dev.off()
 
 
