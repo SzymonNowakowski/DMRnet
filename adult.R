@@ -214,7 +214,7 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	    prediction<- ifelse(predict(model.1percent, adult.test.1percent.x) >0,1,0)
 	  } else if (model_choice=="cv.glmnet") {
 	    cat("glmnet pred\n")
-	    prediction<- tryCatch(predict(model.1percent, newx=makeX(adult.test.1percent.x), type="class"),
+	    prediction<- tryCatch(predict(model.1percent, newx=makeX(adult.test.1percent.x), s="lambda.min", type="class"),
 	                          error=function(cond) {
 	                            message("Numerical instability in predict (cv.glmnet) detected. Will skip this 1-percent set. Original error:")
 	                            message(cond)
@@ -241,9 +241,11 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	    dfmin[run]<-gic$df.min
 	  if (model_choice == "cv.DMRnet" )
 	    dfmin[run]<-model.1percent$df.min
+	  if (model_choice == "cv.glmnet" )
+	    dfmin[run]<-sum(coef(model.1percent, s="lambda.min")!=0)-1
 	  if (model_choice == "scope")
-	    dfmin[run]<-sum(abs(model.10percent$beta.best[[1]]) > 1e-10) +
-	                sum(sapply(sapply(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels), unique), length)-1)
+	    dfmin[run]<-sum(abs(model.1percent$beta.best[[1]]) > 1e-10) +
+	                sum(sapply(sapply(sapply(sapply(model.1percent$beta.best[[2]], as.factor), levels), unique), length)-1)
               	  #  length(unique(c(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels), sapply(sapply(model.10percent$beta.best[[1]], as.factor), levels),recursive=TRUE)))-1 + #-1 is for "0" level
               	  #             -sum(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels)!="0")   #and we subtract the number of factors = number of constraints from eq. (8) in Stokell et al.
               	  #the commented formula above had problems with levels close to 0 but nonzero, like these:

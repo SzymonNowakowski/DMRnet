@@ -43,7 +43,7 @@ gamma<-8
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-25
-for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
+for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "cv.glmnet","scope", "scope")) {
 	gamma <- 40 - gamma    #it alternates between 32 and 8
 	times<-dfmin<-MSPE<-lengths<-rep(0,runs)
 	run<-1
@@ -62,6 +62,14 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 	      theta_coefficients[[i]] <- sample(1:s[i], size=K[i], replace = TRUE)
 	  }
 
+
+	  #norming continous columns so they have sqrt(n) norm
+	  m<-mean(insurance.all.x[,cont_columns])
+	  std<-sd(insurance.all.x[,cont_columns])
+	  for (i in 1:5) {
+	    insurance.all.x[,cont_columns[i]] <- (insurance.all.x[,cont_columns[i]] - m[i]) / std[i] * sqrt(length(insurance.all.y))
+
+	  #continous coeeficients:
 	  continous_coefficients <- rnorm(5, 0, 1)
 
 	  insurance.all.y <- rep(0, nrow(insurance.all.x))
@@ -254,7 +262,7 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 	    prediction<- predict(model.10percent, insurance.test.10percent.x)
 	  } else if (model_choice=="cv.glmnet") {
 	    cat("glmnet pred\n")
-	    prediction<- tryCatch(predict(model.10percent, newx=makeX(insurance.test.10percent.x), type="response"),
+	    prediction<- tryCatch(predict(model.10percent, newx=makeX(insurance.test.10percent.x), s="lambda.min"),
 	                          error=function(cond) {
 	                            message("Numerical instability in predict (cv.glmnet) detected. Will skip this 10-percent set. Original error:")
 	                            message(cond)
@@ -280,6 +288,8 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "lr",  "scope", "scope")) {
 	    dfmin[run]<-gic$df.min
 	  if (model_choice == "cv.DMRnet" )
 	    dfmin[run]<-model.10percent$df.min
+	  if (model_choice == "cv.glmnet" )
+	    dfmin[run]<-sum(coef(model.10percent, s="lambda.min")!=0)-1
 	  if (model_choice == "scope")
 	    dfmin[run]<-sum(abs(model.10percent$beta.best[[1]]) > 1e-10) +
 	                sum(sapply(sapply(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels), unique), length)-1)
