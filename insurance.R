@@ -3,21 +3,14 @@ library(randomForest)
 library(glmnet)
 library(stats)  #glm
 library(CatReg)
-library(DMRnet)
-library(digest)
-library(scriptName)
+#library(DMRnet)
 
 #
 #library(devtools)
 #load_all()
 
 
-filename_and_dirs <- current_filename()
-part_filename_and_number <- substr(filename_and_dirs, nchar(filename_and_dirs)-11, nchar(filename_and_dirs))
-print(part_filename_and_number)
-set.seed(strtoi(substr(digest(part_filename_and_number, "md5", serialize = FALSE),1,7),16))
-cat("seed set as md5 hash of the following string: ", part_filename_and_number,"\n\n")
-cat("search for the result files postfixed with the same string: ", part_filename_and_number,"\n\n")
+
 
 source("cv_DMRnet.R")
 
@@ -43,7 +36,7 @@ gamma<-8
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-50
-for (model_choice in c(  "cv.glmnet",  "scope", "scope", "cv.DMRnet", "gic.DMRnet", "lr")) {
+for (model_choice in c( run_list )) {
 	gamma <- 40 - gamma    #it alternates between 32 and 8
 	times<-dfmin<-MSPE<-lengths<-rep(0,runs)
 	run<-1
