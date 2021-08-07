@@ -1,5 +1,5 @@
 library(digest)
-library(scriptName)
+
 
 
 run_list = c("cv.glmnet",  "scope", "scope", "lr")
