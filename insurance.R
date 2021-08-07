@@ -35,7 +35,7 @@ computation_times<-list()
 gamma<-8
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
-runs<-50
+
 for (model_choice in c( run_list )) {
 	gamma <- 40 - gamma    #it alternates between 32 and 8
 	times<-dfmin<-MSPE<-lengths<-rep(0,runs)
