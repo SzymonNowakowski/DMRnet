@@ -1,5 +1,14 @@
 
 cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
+
+
+  ####SzN remove from train and test columns causing data singularity
+  #removing columns with only one level:
+  singular_factors<-which(sapply(sapply(Xtr, levels), length)==1)  #for continous columns length is 0
+  Xte <- Xte[,-singular_factors]
+  Xtr <- Xtr[,-singuar_factors]
+  cat("removed", length(singular_factors), "columns due to singular factors in training\n")
+
   ###SzN remove from test the data with factors not present in training
   nn <- sapply(1:ncol(Xte), function(i) class(Xte[,i]))
   faki <- which(nn == "factor")
@@ -17,8 +26,8 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
   #TODO: what to do if all test data is removed?
 
 
-  ####SzN remove from train and test columns causing data singularity
-  #preparation to detect singularity
+
+  #preparation to detect data dependency
   Xtr.make <- makeX(Xtr)
   prev_pos <- 0
   first_identified_yet = FALSE
@@ -59,7 +68,7 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
     remove_us<-reverse_lookup[QR$pivot[(QR$rank+1):length(QR$pivot)]]
     Xtr <- Xtr[,-remove_us]
     Xte <- Xte[,-remove_us]
-    cat("removed", length(unique(remove_us)), "columns\n")
+    cat("removed", length(unique(remove_us)), "columns due to data linear dependency\n")
   }
   return (list(Xtr=Xtr, ytr=ytr, Xte=Xte, yte=yte, real_n=real_n))
 }

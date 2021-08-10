@@ -3,7 +3,7 @@ library(randomForest)
 library(glmnet)
 library(stats)  #glm
 library(CatReg)
-library(DMRnet)
+#library(DMRnet)
 
 #
 #library(devtools)
@@ -105,17 +105,26 @@ for (model_choice in c( run_list )) {
 	      insurance.test.10percent.y.no_error<-insurance.test.10percent.y.no_error[which(insurance.test.10percent.x[,i] %in% train.levels)]
 	      insurance.test.10percent.x<-insurance.test.10percent.x[which(insurance.test.10percent.x[,i] %in% train.levels),]
 	    }
+
+	  #recomputation of test factors - they should match train factors even if relevant levels not present
 	  for (i in 1:ncol(insurance.train.10percent.x))
 	    if (!(i %in% cont_columns)) {
 	      train.levels <- levels(insurance.train.10percent.x[,i])
 	      insurance.test.10percent.x[,i] <- factor(insurance.test.10percent.x[,i], levels=train.levels)   #recalculate factors now for new test
 	    }
 
-	  #handling the singular case
+	  #HANDLING THE SINGULAR CASE
+
+	  #removing columns with only one level:
+	  singular_factors<-which(sapply(sapply(insurance.train.10percent.x, levels), length)==1)   #for continous columns length is 0
+	  insurance.test.10percent.x <- insurance.test.10percent.x[,-singular_factors]
+	  insurance.train.10percent.x <- insurance.train.10percent.x[,-singuar_factors]
+	  cat("removed", length(singular_factors), "columns due to singular factors\n")
+
 	  insurance.make <- makeX(insurance.train.10percent.x)
 	  prev_pos <- length(levels(insurance.train.10percent.x[,1]))
-  	for (i in 2:ncol(insurance.train.10percent.x))
-	    if (!(i %in% cont_columns)) {  #removing columns from the last level, it is linearly dependant
+  	for (i in 2:ncol(insurance.train.10percent.x))   #we use the fact that we KNOW the first column is a "Product_Info_1" factor
+	    if (!(i %in% cont_columns)) {  #removing columns from the last level, it is linearly dependent with the exception of the first column
 	     # cat(i, prev_pos, length(levels(insurance.train.10percent.x[,i])), "\n")
 	      insurance.make<-insurance.make[,-(prev_pos+length(levels(insurance.train.10percent.x[,i])))]
 	      prev_pos <- prev_pos+length(levels(insurance.train.10percent.x[,i])) - 1
@@ -143,7 +152,7 @@ for (model_choice in c( run_list )) {
 	    remove_us<-reverse_lookup[QR$pivot[(QR$rank+1):length(QR$pivot)]]
 	    insurance.train.10percent.x <- insurance.train.10percent.x[,-remove_us]
 	    insurance.test.10percent.x <- insurance.test.10percent.x[,-remove_us]
-	    cat("removed", length(unique(remove_us)), "columns\n")
+	    cat("removed", length(unique(remove_us)), "columns (data lineary dependent)\n")
 	  }
 
 	  cat("consolidated factors and columns\n")
@@ -197,9 +206,6 @@ for (model_choice in c( run_list )) {
 	      next
 	    }
 
-	  } else if (model_choice=="RF") {
-	    cat("random forest. no cv\n")
-	    model.10percent <- randomForest(insurance.train.10percent.x, y=insurance.train.10percent.y)
 	  } else if (model_choice=="lr") {
 	    cat("Linear Regression no cv\n")
 	    model.10percent <- glm(insurance.train.10percent.y~., data = insurance.train.10percent.x, family="gaussian")
@@ -239,18 +245,6 @@ for (model_choice in c( run_list )) {
 	  } else if (model_choice=="scope") {
 	    cat("scope pred\n")
 	    prediction<- predict(model.10percent, insurance.test.10percent.x)
-	  } else if (model_choice=="RF") {
-	    cat("Random Forest pred\n")
-	    prediction<- tryCatch(predict(model.10percent, insurance.test.10percent.x, type="response"),
-	                          error=function(cond) {
-	                            message("Numerical instability in predict (RF) detected. Will skip this 10-percent set. Original error:")
-	                            message(cond)
-	                            return(c(1,1))
-	                          })
-
-	    if (length(prediction)==2) {
-	      next
-	    }
 	  } else if (model_choice=="lr") {
 	    cat("Linear Regression pred\n")
 	    prediction<- predict(model.10percent, insurance.test.10percent.x)

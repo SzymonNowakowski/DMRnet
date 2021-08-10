@@ -106,6 +106,12 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	    adult.test.1percent.x[,i] <- factor(adult.test.1percent.x[,i])   #recalculate factors now for new test
 
 
+	  #removing columns with only one level:
+	  singular_factors<-which(sapply(sapply(adult.train.1percent.x, levels), length)==1)   #for continous columns length is 0
+	  adult.test.1percent.x <- adult.test.1percent.x[,-singular_factors]
+	  adult.train.1percent.x <- adult.train.1percent.x[,-singuar_factors]
+	  cat("removed", length(singular_factors), "columns due to singular factors\n")
+
 	  start.time <- Sys.time()
 	  cat("Started: ", start.time,"\n")
 
