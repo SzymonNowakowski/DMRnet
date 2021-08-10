@@ -3,7 +3,7 @@ library(randomForest)
 library(glmnet)
 library(stats)  #glm
 library(CatReg)
-library(DMRnet)
+
 
 #
 #library(devtools)
@@ -117,9 +117,11 @@ for (model_choice in c( run_list )) {
 
 	  #removing columns with only one level:
 	  singular_factors<-which(sapply(sapply(insurance.train.10percent.x, levels), length)==1)   #for continous columns length is 0
-	  insurance.test.10percent.x <- insurance.test.10percent.x[,-singular_factors]
-	  insurance.train.10percent.x <- insurance.train.10percent.x[,-singular_factors]
-	  cat("removed", length(singular_factors), "columns due to singular factors\n")
+	  if (length(singular_factors)>0) {
+  	  insurance.test.10percent.x <- insurance.test.10percent.x[,-singular_factors]
+  	  insurance.train.10percent.x <- insurance.train.10percent.x[,-singular_factors]
+  	  cat("removed", length(singular_factors), "columns due to singular factors\n")
+	  }
 
 	  insurance.make <- makeX(insurance.train.10percent.x)
 	  prev_pos <- length(levels(insurance.train.10percent.x[,1]))
@@ -173,10 +175,8 @@ for (model_choice in c( run_list )) {
 	      next
 	    }
 
-	    #plot(model.10percent)
 	    cat("GIC\n")
 	    gic <- gic.DMR(model.10percent, c = 2)
-	    #plot(gic)
 	  } else  if (model_choice=="cv.DMRnet") {
 	      cat("DMRnet with cv\n")
 	      model.10percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=5),
@@ -189,10 +189,6 @@ for (model_choice in c( run_list )) {
 	    if (model.10percent[[1]] == "red_light") {
 	      next
 	    }
-
-	    #plot(model.10percent)
-	    #gic <- gic.DMR(model.10percent, c = 2)
-	    #plot(gic)
 	  } else if (model_choice=="scope") {
 	    cat("Scope, no cv, gamma=", gamma,"\n")
 	    model.10percent <- tryCatch(scope(insurance.train.10percent.x, insurance.train.10percent.y, gamma=gamma),

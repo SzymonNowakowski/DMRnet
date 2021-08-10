@@ -1,5 +1,6 @@
 library(digest)
 library(scriptName)
+library(DMRnet)
 
 
 

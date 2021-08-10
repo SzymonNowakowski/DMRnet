@@ -5,9 +5,11 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
   ####SzN remove from train and test columns causing data singularity
   #removing columns with only one level:
   singular_factors<-which(sapply(sapply(Xtr, levels), length)==1)  #for continous columns length is 0
-  Xte <- Xte[,-singular_factors]
-  Xtr <- Xtr[,-singular_factors]
-  cat("removed", length(singular_factors), "columns due to singular factors in training\n")
+  if (length(singular_factors)>0) {
+    Xte <- Xte[,-singular_factors]
+    Xtr <- Xtr[,-singular_factors]
+    cat("removed", length(singular_factors), "columns due to singular factors in training set\n")
+  }
 
   ###SzN remove from test the data with factors not present in training
   nn <- sapply(1:ncol(Xte), function(i) class(Xte[,i]))
