@@ -6,7 +6,7 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
   #removing columns with only one level:
   singular_factors<-which(sapply(sapply(Xtr, levels), length)==1)  #for continous columns length is 0
   Xte <- Xte[,-singular_factors]
-  Xtr <- Xtr[,-singuar_factors]
+  Xtr <- Xtr[,-singular_factors]
   cat("removed", length(singular_factors), "columns due to singular factors in training\n")
 
   ###SzN remove from test the data with factors not present in training

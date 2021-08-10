@@ -118,7 +118,7 @@ for (model_choice in c( run_list )) {
 	  #removing columns with only one level:
 	  singular_factors<-which(sapply(sapply(insurance.train.10percent.x, levels), length)==1)   #for continous columns length is 0
 	  insurance.test.10percent.x <- insurance.test.10percent.x[,-singular_factors]
-	  insurance.train.10percent.x <- insurance.train.10percent.x[,-singuar_factors]
+	  insurance.train.10percent.x <- insurance.train.10percent.x[,-singular_factors]
 	  cat("removed", length(singular_factors), "columns due to singular factors\n")
 
 	  insurance.make <- makeX(insurance.train.10percent.x)
