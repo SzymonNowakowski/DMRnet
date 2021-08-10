@@ -3,7 +3,7 @@ library(randomForest)
 library(glmnet)
 library(stats)  #glm
 library(CatReg)
-#library(DMRnet)
+library(DMRnet)
 
 #
 #library(devtools)
