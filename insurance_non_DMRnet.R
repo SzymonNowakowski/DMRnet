@@ -5,6 +5,7 @@ library(digest)
 
 run_list = c("scope", "scope", "lr", "cv.glmnet")
 runs<-1000
+sigma<-1.0
 
 part_filename_and_number = "insurance"
 print(part_filename_and_number)

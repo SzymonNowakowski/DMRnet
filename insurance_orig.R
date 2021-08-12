@@ -42,40 +42,11 @@ for (model_choice in c( run_list )) {
 	run<-1
 
 	while (run<=runs) {
-	  cat("generating response vector\n")
+	  cat("original response vector\n")
 
-	  response_factor_columns <- sample(1:length(number_of_levels), 10, prob = number_of_levels/sum(number_of_levels))
-	              #in this sample we include continous columns but with 0 probability
-	  K<-number_of_levels[response_factor_columns]
-	  s<-floor(2+0.5*log(K))
-	  theta_coefficients<-list()
-	  for (i in 1:10) {
-	    theta_coefficients[[i]]<-c(0) #min(s) = 2
-	    while (length(unique(theta_coefficients[[i]])) < s[i])  #we sample until the condition "yielding sj true levels" is satisfied
-	      theta_coefficients[[i]] <- sample(1:s[i], size=K[i], replace = TRUE)
-	  }
-
-
-	  #norming continous columns
-	  for (i in 1:5) {
-	    m<-mean(insurance.all.x[,cont_columns[i]])
-	    std<-sd(insurance.all.x[,cont_columns[i]])
-	    insurance.all.x[,cont_columns[i]] <- (insurance.all.x[,cont_columns[i]] - m) / std
-	  }
-
-	  #continous coeeficients:
-	  continous_coefficients <- rnorm(5, 0, 1)
-
-	  insurance.all.y <- rep(0, nrow(insurance.all.x))
-	  for (i in 1:10)
-	    insurance.all.y <- insurance.all.y + theta_coefficients[[i]][as.integer(insurance.all.x[,response_factor_columns[i]])]
-	  for (i in 1:5)
-	    insurance.all.y <- insurance.all.y + continous_coefficients[i]*insurance.all.x[,cont_columns[i]]
-
-	  m<-mean(insurance.all.y)
-	  std<-sd(insurance.all.y)
-	  insurance.all.y.no_error <- (insurance.all.y - m)/std                              #response was then scaled to have unit variance,
-	  insurance.all.y <- insurance.all.y.no_error + rnorm(length(insurance.all.y), 0, sigma) #after which standard normal noise was added.
+	  ################ original response 8 levels!
+	  insurance.all.y<-insurance.all[,ncol(insurance.all)] +0.0
+	  insurance.all.y.no_error<-insurance.all[,ncol(insurance.all)] +0.0
 
 	  cat("generating train/test sets\n")
 
@@ -154,7 +125,7 @@ for (model_choice in c( run_list )) {
 	    remove_us<-reverse_lookup[QR$pivot[(QR$rank+1):length(QR$pivot)]]
 	    insurance.train.10percent.x <- insurance.train.10percent.x[,-remove_us]
 	    insurance.test.10percent.x <- insurance.test.10percent.x[,-remove_us]
-	    cat("removed", length(unique(remove_us)), "columns (data lineary dependent)\n")
+	    cat("removed", length(unique(remove_us)), "columns (data linearly dependent)\n")
 	  }
 
 	  cat("consolidated factors and columns\n")
