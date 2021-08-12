@@ -4,7 +4,7 @@ library(digest)
 
 
 run_list = c("scope", "scope", "lr", "cv.glmnet")
-runs<-100
+runs<-1000
 
 part_filename_and_number = "insurance_orig"
 print(part_filename_and_number)
