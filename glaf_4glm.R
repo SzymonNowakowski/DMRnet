@@ -1,5 +1,22 @@
 
+part2beta_glm_help <- function(b, S, fl){
+  if (sum(S == 0) > 0){
+    b1 <- b[1]
+    b <- b[-1]
+    for (i in 1:length(S)){
+      if(S[i] == 1) {
+        b1 <- c(b1, b[1:(fl[i] - 1)])
+        b <- b[-c(1:(fl[i] - 1))]
+      } else{
+        b1 <- c(b1, rep(0, (fl[i] - 1)))
+      }
 
+    }
+  } else{
+    b1 <- b
+  }
+  return(b1)
+}
 
 glaf_stats <- function(betas_for_all_levels){
   n <- length(betas_for_all_levels)
@@ -278,7 +295,7 @@ glaf_4glm <- function(X, y, clust.method = "complete", nlambda = 100, lam = 10^(
     } else{
        idx <- 1:length(ind)
     }
-    be <- sapply(idx, function(i) {b_matrix<-mm[[ind[i]]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); DMRnet::part2beta_glm_help(b = b_matrix[,i - sum(loglik[, ind[i]] == -Inf)], S = SS[,ind[i]], fl=fl)})
+    be <- sapply(idx, function(i) {b_matrix<-mm[[ind[i]]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_glm_help(b = b_matrix[,i - sum(loglik[, ind[i]] == -Inf)], S = SS[,ind[i]], fl=fl)})
     #!!!!!!!!!!!important stability change. Added matrix( ...$b)
     rownames(be) <- colnames(x.full)
     if(length(ord) > 0){
