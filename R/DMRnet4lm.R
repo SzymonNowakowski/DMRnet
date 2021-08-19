@@ -79,7 +79,7 @@ DMRnet4lm <- function(X, y, clust.method = "complete", o = 5, nlambda = 20, maxp
     SS <- matrix(S, p.x, sum(ii == FALSE)*o)
     SS <- t(unique(t(SS)))
     if (p >= n) SS = SS[,-1]
-    mm <- lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[,i], mL, X, y, fl, clust.method))
+    mm <- lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[,i], X, y, fl, clust.method))
     maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$rss)))
     rss <- sapply(1:length(mm), function(i) c(rep(Inf, maxl - length(mm[[i]]$rss)), mm[[i]]$rss))
     ind <- apply(rss, 1, which.min)
@@ -89,7 +89,8 @@ DMRnet4lm <- function(X, y, clust.method = "complete", o = 5, nlambda = 20, maxp
     } else{
        idx <- 1:length(ind)
     }
-    be <- sapply(idx, function(i) part2beta_help(b = mm[[ind[i]]]$b[,i - sum(rss[, ind[i]] == Inf)], S = SS[,ind[i]], X = X, y = y, fl=fl))
+    be <- sapply(idx, function(i) {b_matrix<-mm[[ind[i]]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_help(b = b_matrix[,i - sum(rss[, ind[i]] == Inf)], S = SS[,ind[i]], X = X, y = y, fl=fl)})
+    #SzN:fixing the above line in accordance with crashes in adult dataset in GLAF
     rownames(be) <- colnames(x.full)
     if(length(ord) > 0){
                   ind1 <- c(1:p)

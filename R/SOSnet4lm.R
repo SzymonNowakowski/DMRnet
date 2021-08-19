@@ -43,7 +43,7 @@ SOSnet4lm <- function(X, y, o = 5, nlambda = 50, interc = TRUE, maxp = ceiling(l
           bb <- bb[, ii == FALSE, drop = FALSE]    #(3) removing duplicated predictor sets
           B <- apply(bb, 2, function(x) stats::quantile(x[x!=0], seq(0, 1, length = (o + 1))[-(o + 1)]))
                                      #o-based quantiles of non-zero Betas (without the last, 100% quantile)
-  ##now, perform the selection of s_kl = floor(s_k*l/o) highest Betas from the k-th step and l-th substep of the SOSnet pseudocode
+  ##now, perform the selection of s_kl = floor(s_k*l/o) highest Betas from the k-th step and l-th substep of the MDRnet pseudocode
           #first, note that sum(ii==FALSE) is a number of predictor sets and it may be smaller than nlambda because of (1), (2), (3)
           S <- sapply(1:o, function(j){
             sapply(1:ncol(bb), function(i) ifelse(bb[,i] >= B[j,i], 1, 0))
