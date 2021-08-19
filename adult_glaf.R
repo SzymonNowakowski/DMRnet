@@ -151,7 +151,7 @@ for (model_choice in c( "cv.GLAF", "gic.GLAF")) {
 
 	  if (model_choice=="gic.GLAF") {
 	    cat("gic.GLAF pred\n")
-	    prediction<- tryCatch(predict.DMR(model.1percent, newx=adult.test.1percent.x, df = gic$df.min, type="class"),
+	    prediction<- tryCatch(predict(model.1percent, newx=adult.test.1percent.x, df = gic$df.min, type="class"),
 	                          error=function(cond) {
 	                            message("Numerical instability in predict (GLAF) detected. Will skip this 1-percent set. Original error:")
 	                            message(cond)
@@ -164,7 +164,7 @@ for (model_choice in c( "cv.GLAF", "gic.GLAF")) {
 
 	  } else  if (model_choice=="cv.GLAF") {
 	    cat("cv.GLAF pred\n")
-	    prediction<- tryCatch(predict.cv.DMR(model.1percent, newx=adult.test.1percent.x, type="class"),#df = gic$df.min, type="class"),
+	    prediction<- tryCatch(predict(model.1percent, newx=adult.test.1percent.x, type="class"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
 	                            message("Numerical instability in predict (cv.GLAF) detected. Will skip this 1-percent set. Original error:")
 	                            message(cond)
