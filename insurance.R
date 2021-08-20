@@ -242,7 +242,7 @@ for (model_choice in c( run_list )) {
 
 
 	  if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAF") {
-	    cat("DMRnet pred\n")
+	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.10percent, newx=insurance.test.10percent.x, df = gic$df.min, type="response"),
 	                          error=function(cond) {
 	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 10-percent set. Original error:")
@@ -254,7 +254,7 @@ for (model_choice in c( run_list )) {
 	      next
 	    }
 	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAF") {
-	    cat("DMRnet pred\n")
+	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.10percent, newx=insurance.test.10percent.x, type="response"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
 	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 10-percent set. Original error:")
@@ -295,9 +295,9 @@ for (model_choice in c( run_list )) {
 
 	  MSPE[run]<-mean((prediction[!is.na(prediction)] - insurance.test.10percent.y.no_error[!is.na(prediction)])^2)
 
-	  if (model_choice == "gic.DMRnet")
+	  if (model_choice == "gic.DMRnet" | model_choice=="gic.GLAF")
 	    dfmin[run]<-gic$df.min
-	  if (model_choice == "cv.DMRnet" )
+	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAF")
 	    dfmin[run]<-model.10percent$df.min
 	  if (model_choice == "cv.glmnet" )
 	    dfmin[run]<-sum(coef(model.10percent, s="lambda.min")!=0)-1

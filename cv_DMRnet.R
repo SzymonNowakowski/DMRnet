@@ -107,7 +107,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
 
       if (method == "GLAF") {
         dmr <- glaf_4lm(Xtr, ytr, clust.method = clust.method, nlambda = nlambda, maxp = ceiling(maxp))
-
+        cat("GLAF calculated\n")
 
       } else dmr <- DMRnet(Xtr, ytr, family = "gaussian", clust.method = clust.method, o = o, nlambda = nlambda, interc = interc, maxp = ceiling(maxp))
       #PP new code
@@ -130,7 +130,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
     #PP rename dmr.fit
     if (method == "GLAF") {
       dmr.full <- glaf_4lm(X, y, clust.method = clust.method, nlambda = nlambda, maxp = ceiling(maxp))
-
+      cat("full GLAF calculated\n")
     } else dmr.full <- DMRnet(X, y, family = "gaussian", clust.method = clust.method, o = o, nlambda = nlambda, interc = interc, maxp = ceiling(maxp))
 
     #PP new code kt <- which(error == min(error))
@@ -192,7 +192,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
 
         if (method == "GLAF") {
           dmr <- glaf_4glm(Xtr, ytr, clust.method = clust.method, nlambda = nlambda, maxp = ceiling(maxp))
-
+          cat("GLAF calculated\n")
 
         } else dmr <- DMRnet(Xtr, ytr, family = "binomial", clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, interc = interc, maxp = maxp)
         #SzN new code based on PP new code
@@ -216,7 +216,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
       #PP rename dmr.fit
       if (method == "GLAF") {
         dmr.full <- glaf_4glm(X, y, clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp)
-
+        cat("full GLAF calculated\n")
 
       } else dmr.full <- DMRnet(X, y, family = "binomial", clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, interc = interc, maxp = maxp)
 
