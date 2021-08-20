@@ -215,10 +215,10 @@ for (model_choice in c( "cv.GLAF", "gic.GLAF")) {
 
 }
 
-write.csv(errors, "adult_merge_lasso_errors.csv")
-write.csv(effective_lengths, "adult_merge_lasso_effective_lengths.csv")
-write.csv(sizes, "adult_merge_lasso_model_sizes.csv")
-write.csv(computation_times, "adult_merge_lasso_computation_times.csv")
+write.csv(errors, "adult_glaf_errors.csv")
+write.csv(effective_lengths, "adult_glaf_effective_lengths.csv")
+write.csv(sizes, "adult_glaf_model_sizes.csv")
+write.csv(computation_times, "adult_glaf_computation_times.csv")
 
 pdf("adult_glaf_errors.pdf",width=8,height=5)
 boxplot(errors, ylim=c(0.16, 0.26))
