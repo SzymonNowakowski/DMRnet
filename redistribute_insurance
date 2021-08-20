@@ -48,6 +48,31 @@ cp insurance_DMRnet_s0.1.R insurance_DMRnet_s0.1j.R
 cp insurance_DMRnet_s0.1.R insurance_DMRnet_s0.1k.R
 
 
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.031.R
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.032.R
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.033.R
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.034.R
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.035.R
+
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.036.R
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.037.R
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.038.R
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.039.R
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.03a.R
+
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.03b.R
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.03c.R
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.03d.R
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.03e.R
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.03f.R
+
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.03g.R
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.03h.R
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.03i.R
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.03j.R
+cp insurance_DMRnet_s0.03.R insurance_DMRnet_s0.03k.R
+
+
 cp insurance_DMRnet_orig.R insurance_DMRnet_orig1.R
 cp insurance_DMRnet_orig.R insurance_DMRnet_orig2.R
 cp insurance_DMRnet_orig.R insurance_DMRnet_orig3.R
@@ -120,6 +145,31 @@ cp insurance_glaf_s0.1.R insurance_glaf_s0.1h.R
 cp insurance_glaf_s0.1.R insurance_glaf_s0.1i.R
 cp insurance_glaf_s0.1.R insurance_glaf_s0.1j.R
 cp insurance_glaf_s0.1.R insurance_glaf_s0.1k.R
+
+
+cp insurance_glaf_s0.03.R insurance_glaf_s0.031.R
+cp insurance_glaf_s0.03.R insurance_glaf_s0.032.R
+cp insurance_glaf_s0.03.R insurance_glaf_s0.033.R
+cp insurance_glaf_s0.03.R insurance_glaf_s0.034.R
+cp insurance_glaf_s0.03.R insurance_glaf_s0.035.R
+
+cp insurance_glaf_s0.03.R insurance_glaf_s0.036.R
+cp insurance_glaf_s0.03.R insurance_glaf_s0.037.R
+cp insurance_glaf_s0.03.R insurance_glaf_s0.038.R
+cp insurance_glaf_s0.03.R insurance_glaf_s0.039.R
+cp insurance_glaf_s0.03.R insurance_glaf_s0.03a.R
+
+cp insurance_glaf_s0.03.R insurance_glaf_s0.03b.R
+cp insurance_glaf_s0.03.R insurance_glaf_s0.03c.R
+cp insurance_glaf_s0.03.R insurance_glaf_s0.03d.R
+cp insurance_glaf_s0.03.R insurance_glaf_s0.03e.R
+cp insurance_glaf_s0.03.R insurance_glaf_s0.03f.R
+
+cp insurance_glaf_s0.03.R insurance_glaf_s0.03g.R
+cp insurance_glaf_s0.03.R insurance_glaf_s0.03h.R
+cp insurance_glaf_s0.03.R insurance_glaf_s0.03i.R
+cp insurance_glaf_s0.03.R insurance_glaf_s0.03j.R
+cp insurance_glaf_s0.03.R insurance_glaf_s0.03k.R
 
 
 cp insurance_glaf_orig.R insurance_glaf_orig1.R

@@ -147,7 +147,7 @@ for (model_choice in c( run_list )) {
 	    }
 
 	    cat("GIC\n")
-	    gic <- gic.DMR(model.10percent, c = 2)
+	    gic <- gic.DMR(model.10percent)
 	  } else  if (model_choice=="cv.DMRnet") {
 	      cat("DMRnet with cv\n")
 	      model.10percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=5),
@@ -174,7 +174,7 @@ for (model_choice in c( run_list )) {
 	    }
 
 	    cat("GIC\n")
-	    gic <- gic.DMR(model.10percent, c = 2)
+	    gic <- gic.DMR(model.10percent)
 	  } else  if (model_choice=="cv.GLAF") {
 	    cat("GLAF with cv\n")
 	    model.10percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, method="GLAF", nlambda=100, family="gaussian", nfolds=5),
