@@ -220,7 +220,7 @@ glaf_4glm <- function(X, y, clust.method = "complete", nlambda = 100, lam = 10^(
     n.levels <- c()
     if (n.factors > 0){
        X[,faki]<-lapply(1:n.factors, function(i) factor(X[,faki[i]]))   #recalculate factors
-       n.levels.listed<-sapply(1:n.factors, function(i) levels(X[,faki[i]]))
+       n.levels.listed<-lapply(1:n.factors, function(i) levels(X[,faki[i]]))
        n.levels <- sapply(1:n.factors, function(i) length(n.levels.listed[[i]]))
     } else
       n.levels.listed<-c()

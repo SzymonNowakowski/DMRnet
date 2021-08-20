@@ -1,11 +1,11 @@
-library(glmnet)
+library(glmnet) #for makeX function
 
 cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
 
 
   ####SzN remove from train and test columns causing data singularity
   #removing columns with only one level:
-  singular_factors<-which(sapply(sapply(Xtr, levels), length)==1)  #for continous columns length is 0
+  singular_factors<-which(sapply(lapply(Xtr, levels), length)==1)  #for continous columns length is 0
   if (length(singular_factors)>0) {
     Xte <- Xte[,-singular_factors]
     Xtr <- Xtr[,-singular_factors]
