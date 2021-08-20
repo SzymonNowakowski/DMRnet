@@ -106,7 +106,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
       real_n<-helper$real_n
 
       if (method == "GLAF") {
-        dmr <- glaf_4lm(Xtr, ytr, clust.method = clust.method, nlambda = nlambda, interc = interc, maxp = ceiling(maxp))
+        dmr <- glaf_4lm(Xtr, ytr, clust.method = clust.method, nlambda = nlambda, maxp = ceiling(maxp))
 
 
       } else dmr <- DMRnet(Xtr, ytr, family = "gaussian", clust.method = clust.method, o = o, nlambda = nlambda, interc = interc, maxp = ceiling(maxp))
@@ -129,7 +129,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
 
     #PP rename dmr.fit
     if (method == "GLAF") {
-      dmr.full <- glaf_4lm(X, y, clust.method = clust.method, nlambda = nlambda, interc = interc, maxp = ceiling(maxp))
+      dmr.full <- glaf_4lm(X, y, clust.method = clust.method, nlambda = nlambda, maxp = ceiling(maxp))
 
     } else dmr.full <- DMRnet(X, y, family = "gaussian", clust.method = clust.method, o = o, nlambda = nlambda, interc = interc, maxp = ceiling(maxp))
 

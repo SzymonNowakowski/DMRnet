@@ -82,7 +82,7 @@ clusters_4glm_help <- function(S, betas_with_intercept, X, y, clust.method = 'co
   heig <- c(0,heig)
   names(heig)[1] = "full"
   if ((p.fac + 1) < p){  # heights for continous vars are just the betas
-    heig.add <- betas[(p.fac + 2):p]^2
+    heig.add <- betas_with_intercept[(p.fac + 2):p]^2
     names(heig.add) <- colnames(x.full)[(p.fac + 2):p]
     heig <- c(heig, heig.add)
   }
