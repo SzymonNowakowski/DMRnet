@@ -1,4 +1,7 @@
 
+source("glaf_stats.R")
+
+
 part2beta_glm_help <- function(b, S, fl){
   if (sum(S == 0) > 0){
     b1 <- b[1]
@@ -18,23 +21,14 @@ part2beta_glm_help <- function(b, S, fl){
   return(b1)
 }
 
-glaf_stats <- function(betas_for_all_levels){
-  n <- length(betas_for_all_levels)
-  #returns a nxn similarity matrix (upper triangular) with 0-diagonal
-
-  Tmat <- matrix(0, n, n)
-  for (i in 1:(n-1))
-    for (j in (i+1):n)
-      Tmat[i,j] <- (betas_for_all_levels[i] - betas_for_all_levels[j])^2
-
-  return(Tmat)
-}
 
 
 clusters_4glm_help <- function(S, betas_with_intercept, X, y, clust.method = 'complete', lam = 10^(-7)){
+
   X <- X[, S==1, drop = FALSE]
   betas_with_intercept <- betas_with_intercept[betas_with_intercept>0]
   betas <- betas_with_intercept[-1]
+
   n <- nrow(X)
   nn <- sapply(1:ncol(X), function(i) class(X[,i]))
   names(nn) <- colnames(X)
@@ -68,7 +62,7 @@ clusters_4glm_help <- function(S, betas_with_intercept, X, y, clust.method = 'co
     Wmats <- lapply(1:n.factors, function(i) {
       i1 <- ifelse(i == 1, 1, sum(n.levels[1:(i - 1)]-1) +1)
       i2 <- sum(n.levels[1:i]-1)
-      out <- glaf_stats(c(0,betas[i1:i2]))
+      out <- glaf_stats(c(0,betas[i1:i2]))   #appending 0 as a beta for the constrained level. Each factor has one level constrained to have beta==0 in AP's PhD Thesis (2.2) and (2.3)
       rownames(out) <- colnames(out) <- levels(X[,faki[i]])
       return(out)
     })
@@ -88,7 +82,7 @@ clusters_4glm_help <- function(S, betas_with_intercept, X, y, clust.method = 'co
   heig <- c(0,heig)
   names(heig)[1] = "full"
   if ((p.fac + 1) < p){  # heights for continous vars are just the betas
-    heig.add <- betas[(p.fac + 2):p]
+    heig.add <- betas[(p.fac + 2):p]^2
     names(heig.add) <- colnames(x.full)[(p.fac + 2):p]
     heig <- c(heig, heig.add)
   }
@@ -268,7 +262,6 @@ glaf_4glm <- function(X, y, clust.method = "complete", nlambda = 100, lam = 10^(
     ii <- duplicated(t(bb_predictor_sets))    #detecting duplicated predictor sets
     prz <- rep(1:p.x, fl-1)
     fac <- apply(bb[-1,ii == FALSE, drop = FALSE], 2, function(x) tapply(x, factor(prz), function(z) sum(z^2)*sqrt(length(z))))
-    ####????? shouldn't it be multiplied by sqrt(length(z)-1) as on page 38 of AP's PhD Thesis - to check
       #(3) removing duplicated predictor sets
       #fac is a matrix listing a normalized sum of betas from bb for each predictor values (rows) respective to the net of lambda values (cols)) but without the intercept
             #and without lambdas for which we have duplicated sets of beta
