@@ -5,7 +5,7 @@ library(digest)
 library(DMRnet)
 
 
-set.seed(strtoi(substr(digest("adult-GLAF", "md5", serialize = FALSE),1,7),16))
+set.seed(strtoi(substr(digest("adult_GLAF", "md5", serialize = FALSE),1,7),16))
 
 source("glaf_4glm.R")
 source("cv_DMRnet.R")
@@ -220,3 +220,10 @@ write.csv(effective_lengths, "adult_merge_lasso_effective_lengths.csv")
 write.csv(sizes, "adult_merge_lasso_model_sizes.csv")
 write.csv(computation_times, "adult_merge_lasso_computation_times.csv")
 
+pdf("adult_glaf_errors.pdf",width=8,height=5)
+boxplot(errors, ylim=c(0.16, 0.26))
+dev.off()
+
+pdf("adult_glaf_model_sizes.pdf",width=8,height=5)
+boxplot(sizes)
+dev.off()
