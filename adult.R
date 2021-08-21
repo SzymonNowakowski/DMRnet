@@ -73,7 +73,7 @@ gamma<-100
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-1000
-for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "scope", "scope")) {
+for (model_choice in c( "cv.GLAF", "gic.GLAF", "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "scope", "scope")) {
 	gamma <- 350 - gamma    #it alternates between 250 and 100
 	times<-dfmin<-misclassification_error<-lengths<-rep(0,runs)
 	run<-1
@@ -131,11 +131,11 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	    }
 
 	    cat("GIC\n")
-	    gic <- gic.DMR(model.1percent, c = 2)
+	    gic <- gic.DMR(model.1percent)
 
 	  } else  if (model_choice=="cv.DMRnet") {
 	      cat("DMRnet with cv\n")
-	      model.1percent <- tryCatch(cv_DMRnet(adult.train.1percent.x, adult.train.1percent.y, nlambda=100, family="binomial", nfolds=5),
+	      model.1percent <- tryCatch(cv_DMRnet(adult.train.1percent.x, adult.train.1percent.y, nlambda=100, family="binomial", nfolds=5, agressive = FALSE),
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 1-percent set. Original error:")
 	                                  message(cond)
@@ -149,7 +149,39 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	    #plot(model.1percent)
 	    #gic <- gic.DMR(model.1percent, c = 2)
 	    #plot(gic)
-	  } else if (model_choice=="scope") {
+	  } else if (model_choice=="gic.GLAF") {
+	    cat("GLAF method\n")
+	    model.1percent <- tryCatch(glaf_4glm(adult.train.1percent.x, adult.train.1percent.y, nlambda=100),
+	                               error=function(cond) {
+	                                 message("Numerical instability in GLAF detected. Will skip this 1-percent set. Original error:")
+	                                 message(cond)
+	                                 return(list("red_light"))
+	                               })
+
+	    if (model.1percent[[1]] == "red_light") {
+	      next
+	    }
+
+	    cat("GIC\n")
+	    gic <- gic.DMR(model.1percent)   #we are using existing gic calculation which is compatible with GLAF models
+
+	  } else  if (model_choice=="cv.GLAF") {
+	    cat("GLAF with cv\n")
+	    model.1percent <- tryCatch(cv_DMRnet(adult.train.1percent.x, adult.train.1percent.y, method="GLAF", nlambda=100, family="binomial", nfolds=5, agressive = FALSE),
+	                               error=function(cond) {
+	                                 message("Numerical instability in cv.DMRnet detected. Will skip this 1-percent set. Original error:")
+	                                 message(cond)
+	                                 return(list("red_light"))
+	                               })
+
+	    if (model.1percent[[1]] == "red_light") {
+	      next
+	    }
+
+	    #plot(model.1percent)
+	    #gic <- gic.DMR(model.1percent, c = 2)
+	    #plot(gic)
+	  }  else if (model_choice=="scope") {
 	    cat("Scope, no cv, gamma=", gamma,"\n")
 	    model.1percent <- tryCatch(scope.logistic(adult.train.1percent.x, as.numeric(levels(adult.train.1percent.y))[adult.train.1percent.y], gamma=gamma),
 	                               error=function(cond) {
@@ -177,8 +209,8 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 
 
 
-	  if (model_choice=="gic.DMRnet") {
-	    cat("DMRnet pred\n")
+	  if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAF") {
+	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.1percent, newx=adult.test.1percent.x, df = gic$df.min, type="class"),
 	                          error=function(cond) {
 	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 1-percent set. Original error:")
@@ -189,8 +221,8 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	    if (length(prediction)==2) {
 	      next
 	    }
-	  } else  if (model_choice=="cv.DMRnet") {
-	    cat("DMRnet pred\n")
+	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAF") {
+	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.1percent, newx=adult.test.1percent.x, type="class"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
 	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 1-percent set. Original error:")
@@ -244,15 +276,15 @@ for (model_choice in c( "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sco
 	  prediction[is.na(prediction)] <- 0
 	  misclassification_error[run]<-mean(prediction[!is.na(prediction)] != adult.test.1percent.y[!is.na(prediction)])
 
-	  if (model_choice == "gic.DMRnet")
+	  if (model_choice == "gic.DMRnet" | model_choice == "gic.GLAF")
 	    dfmin[run]<-gic$df.min
-	  if (model_choice == "cv.DMRnet" )
+	  if (model_choice == "cv.DMRnet"  | model_choice == "cv.GLAF")
 	    dfmin[run]<-model.1percent$df.min
 	  if (model_choice == "cv.glmnet" )
 	    dfmin[run]<-sum(coef(model.1percent, s="lambda.min")!=0)-1
 	  if (model_choice == "scope")
 	    dfmin[run]<-sum(abs(model.1percent$beta.best[[1]]) > 1e-10) +
-	                sum(sapply(sapply(sapply(sapply(model.1percent$beta.best[[2]], as.factor), levels), unique), length)-1)
+	                sum(sapply(sapply(sapply(lapply(model.1percent$beta.best[[2]], as.factor), levels), unique), length)-1)
               	  #  length(unique(c(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels), sapply(sapply(model.10percent$beta.best[[1]], as.factor), levels),recursive=TRUE)))-1 + #-1 is for "0" level
               	  #             -sum(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels)!="0")   #and we subtract the number of factors = number of constraints from eq. (8) in Stokell et al.
               	  #the commented formula above had problems with levels close to 0 but nonzero, like these:
