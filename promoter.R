@@ -100,7 +100,7 @@ for (model_choice in c(   "cv.GLAF", "gic.GLAF", "cv.DMRnet", "gic.DMRnet", "cv.
 
 	  } else  if (model_choice=="cv.DMRnet") {
 	      cat("DMRnet with cv\n")
-	      model.70percent <- tryCatch(cv_DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100, family="binomial", nfolds=5),
+	      model.70percent <- tryCatch(cv_DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100, family="binomial", nfolds=5, agressive=FALSE),
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 1-percent set. Original error:")
 	                                  message(cond)
@@ -132,7 +132,7 @@ for (model_choice in c(   "cv.GLAF", "gic.GLAF", "cv.DMRnet", "gic.DMRnet", "cv.
 
 	  } else  if (model_choice=="cv.GLAF") {
 	    cat("GLAF with cv\n")
-	    model.70percent <- tryCatch(cv_DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, method="GLAF", nlambda=100, family="binomial", nfolds=5),
+	    model.70percent <- tryCatch(cv_DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, method="GLAF", nlambda=100, family="binomial", nfolds=5, agressive=FALSE),
 	                               error=function(cond) {
 	                                 message("Numerical instability in cv.DMRnet detected. Will skip this 1-percent set. Original error:")
 	                                 message(cond)
@@ -175,7 +175,7 @@ for (model_choice in c(   "cv.GLAF", "gic.GLAF", "cv.DMRnet", "gic.DMRnet", "cv.
 
 
 	  if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAF") {
-	    cat("DMRnet pred\n")
+	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.70percent, newx=promoter.test.70percent.x, df = gic$df.min, type="class"),
 	                          error=function(cond) {
 	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 1-percent set. Original error:")
@@ -187,7 +187,7 @@ for (model_choice in c(   "cv.GLAF", "gic.GLAF", "cv.DMRnet", "gic.DMRnet", "cv.
 	      next
 	    }
 	  } else  if (model_choice=="cv.DMRnet" | model_choice =="cv.GLAF") {
-	    cat("DMRnet pred\n")
+	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.70percent, newx=promoter.test.70percent.x, type="class"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
 	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 1-percent set. Original error:")

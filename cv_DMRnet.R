@@ -1,6 +1,6 @@
 library(glmnet) #for makeX function
 
-cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
+cv_helper<-function(Xtr, ytr, Xte, yte, real_n, agressive) {
 
 
   ####SzN remove from train and test columns causing data singularity
@@ -29,54 +29,57 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n) {
   #TODO: what to do if all test data is removed?
 
 
-
-  #preparation to detect data dependency
-  Xtr.make <- makeX(Xtr)
-  prev_pos <- 0
-  first_identified_yet = FALSE
-  for (i in 1:ncol(Xtr))
-    if (i %in% faki) {  #removing columns from the last level (but not for the first original column) they are linearly dependant
-      # cat(i, prev_pos, length(levels(insurance.train.10percent.x[,i])), "\n")
-      if (first_identified_yet) {
-        Xtr.make <- Xtr.make[,-(prev_pos+length(levels(Xtr[,i])))]
-        prev_pos <- prev_pos+length(levels(Xtr[,i])) - 1
-      } else {
-        prev_pos <- prev_pos+length(levels(Xtr[,i]))
-        first_identified_yet = TRUE
-      }
-    } else prev_pos<-prev_pos+1
-
-  QR<- qr(Xtr.make)
-
-  if (QR$rank < ncol(Xtr.make)) {  #singular
-    reverse_lookup<-rep(0, ncol(Xtr.make))
-    pos<-1
+  if (agressive) {
+    #preparation to detect data dependency
+    Xtr.make <- makeX(Xtr)
+    prev_pos <- 0
     first_identified_yet = FALSE
     for (i in 1:ncol(Xtr))
-      if (i %in% faki) {
+      if (i %in% faki) {  #removing columns from the last level (but not for the first original column) they are linearly dependant
+        # cat(i, prev_pos, length(levels(insurance.train.10percent.x[,i])), "\n")
         if (first_identified_yet) {
-          reverse_lookup[pos:(pos+length(levels(Xtr[,i]))-2)]<-i  #there are levels-1 columns corresponding to the first original column
-          pos<-pos+length(levels(Xtr[,i]))-1
+          Xtr.make <- Xtr.make[,-(prev_pos+length(levels(Xtr[,i])))]
+          prev_pos <- prev_pos+length(levels(Xtr[,i])) - 1
         } else {
-          reverse_lookup[pos:(pos+length(levels(Xtr[,i]))-1)]<-i  #there are levels-1 columns corresponding to each original column other than the first
-          pos<-pos+length(levels(Xtr[,i]))
+          prev_pos <- prev_pos+length(levels(Xtr[,i]))
           first_identified_yet = TRUE
         }
-      } else {
-        reverse_lookup[pos]<-i
-        pos<-pos+1
-      }
+      } else prev_pos<-prev_pos+1
 
-    #removal of columns for pivot positions larger than rank
-    remove_us<-reverse_lookup[QR$pivot[(QR$rank+1):length(QR$pivot)]]
-    Xtr <- Xtr[,-remove_us]
-    Xte <- Xte[,-remove_us]
-    cat("removed", length(unique(remove_us)), "columns due to data linear dependency\n")
-  }
+    QR<- qr(Xtr.make)
+
+    if (QR$rank < ncol(Xtr.make)) {  #singular
+      reverse_lookup<-rep(0, ncol(Xtr.make))
+      pos<-1
+      first_identified_yet = FALSE
+      for (i in 1:ncol(Xtr))
+        if (i %in% faki) {
+          if (first_identified_yet) {
+            reverse_lookup[pos:(pos+length(levels(Xtr[,i]))-2)]<-i  #there are levels-1 columns corresponding to the first original column
+            pos<-pos+length(levels(Xtr[,i]))-1
+          } else {
+            reverse_lookup[pos:(pos+length(levels(Xtr[,i]))-1)]<-i  #there are levels-1 columns corresponding to each original column other than the first
+            pos<-pos+length(levels(Xtr[,i]))
+            first_identified_yet = TRUE
+          }
+        } else {
+          reverse_lookup[pos]<-i
+          pos<-pos+1
+        }
+
+      #removal of columns for pivot positions larger than rank
+      remove_us<-reverse_lookup[QR$pivot[(QR$rank+1):length(QR$pivot)]]
+      Xtr <- Xtr[,-remove_us]
+      Xte <- Xte[,-remove_us]
+      cat("removed", length(unique(remove_us)), "columns due to data linear dependency\n")
+    }
+  } else
+    cat("non-aggressive mode for singularity detection, only single-leveled factors handled\n")
+
   return (list(Xtr=Xtr, ytr=ytr, Xte=Xte, yte=yte, real_n=real_n))
 }
 
-cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 5, nlambda = 20, lam = 10^(-7), interc = TRUE, nfolds = 10, method = "DMRnet", maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))){
+cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 5, nlambda = 20, lam = 10^(-7), interc = TRUE, nfolds = 10, method = "DMRnet", agressive = TRUE,  maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))){
 
 
   X <- data.frame(X, check.names = TRUE, stringsAsFactors = TRUE)
@@ -98,7 +101,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
       Xtr <- X[foldid != fold, ,drop = FALSE]
       ytr <- y[foldid != fold]
 
-      helper<- cv_helper(Xtr, ytr, Xte, yte, real_n)
+      helper<- cv_helper(Xtr, ytr, Xte, yte, real_n, agressive)
       Xtr<-helper$Xtr
       ytr<-helper$ytr
       Xte<-helper$Xte
@@ -183,7 +186,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
         Xtr <- X[foldid != fold, ,drop = FALSE]
         ytr <- y[foldid != fold]
 
-        helper<- cv_helper(Xtr, ytr, Xte, yte, real_n)
+        helper<- cv_helper(Xtr, ytr, Xte, yte, real_n, agressive)
         Xtr<-helper$Xtr
         ytr<-helper$ytr
         Xte<-helper$Xte
