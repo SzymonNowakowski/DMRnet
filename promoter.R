@@ -36,11 +36,11 @@ effective_lengths<-list()
 sizes<-list()
 computation_times<-list()
 
-gamma<-100
+gamma<-250
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-1000
-for (model_choice in c(   "cv.GLAF", "gic.GLAF", "cv.DMRnet", "gic.DMRnet", "cv.glmnet", "scope", "scope", "RF", "lr")) {
+for (model_choice in c( "scope",  "cv.GLAF", "gic.GLAF", "cv.DMRnet", "gic.DMRnet", "cv.glmnet", "scope", "scope", "RF", "lr")) {
 	gamma <- 350 - gamma    #it alternates between 250 and 100
 	times<-dfmin<-misclassification_error<-lengths<-rep(0,runs)
 	run<-1
@@ -249,7 +249,7 @@ for (model_choice in c(   "cv.GLAF", "gic.GLAF", "cv.DMRnet", "gic.DMRnet", "cv.
 	    dfmin[run]<-sum(coef(model.70percent, s="lambda.min")!=0)-1
 	  if (model_choice == "scope")
 	    dfmin[run]<-sum(abs(model.70percent$beta.best[[1]]) > 1e-10) +
-	                sum(sapply(sapply(sapply(sapply(model.70percent$beta.best[[2]], as.factor), levels), unique), length)-1)
+	                sum(sapply(sapply(sapply(lapply(model.70percent$beta.best[[2]], as.factor), levels), unique), length)-1)
               	  #  length(unique(c(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels), sapply(sapply(model.10percent$beta.best[[1]], as.factor), levels),recursive=TRUE)))-1 + #-1 is for "0" level
               	  #             -sum(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels)!="0")   #and we subtract the number of factors = number of constraints from eq. (8) in Stokell et al.
               	  #the commented formula above had problems with levels close to 0 but nonzero, like these:
