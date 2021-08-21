@@ -12,6 +12,7 @@ library(digest)
 
 set.seed(strtoi(substr(digest("adult", "md5", serialize = FALSE),1,7),16))
 
+source("glaf_4glm.R")
 source("cv_DMRnet.R")
 
 adult.train<-read.csv("adult.data", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
@@ -169,7 +170,7 @@ for (model_choice in c( "cv.GLAF", "gic.GLAF", "cv.DMRnet", "gic.DMRnet", "RF", 
 	    cat("GLAF with cv\n")
 	    model.1percent <- tryCatch(cv_DMRnet(adult.train.1percent.x, adult.train.1percent.y, method="GLAF", nlambda=100, family="binomial", nfolds=5, agressive = FALSE),
 	                               error=function(cond) {
-	                                 message("Numerical instability in cv.DMRnet detected. Will skip this 1-percent set. Original error:")
+	                                 message("Numerical instability in cv.GLAF detected. Will skip this 1-percent set. Original error:")
 	                                 message(cond)
 	                                 return(list("red_light"))
 	                               })
