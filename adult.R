@@ -74,7 +74,7 @@ gamma<-100
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-1000
-for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "scope", "scope", "cv.GLAF", "gic.GLAF",)) {
+for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "scope", "scope", "cv.GLAF", "gic.GLAF")) {
 	gamma <- 350 - gamma    #it alternates between 250 and 100
 	times<-dfmin<-misclassification_error<-lengths<-rep(0,runs)
 	run<-1
