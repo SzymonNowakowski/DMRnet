@@ -37,7 +37,7 @@ sizes<-list()
 computation_times<-list()
 
 gamma<-100
-runs<-1000
+runs<-100
 
 for (model_choice in c("cv.GLAF", "gic.GLAF", "cv.DMRnet", "gic.DMRnet", "cv.glmnet", "scope", "scope", "RF", "lr")) {
 	gamma <- 350 - gamma    #it alternates between 250 and 100
