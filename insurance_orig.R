@@ -34,8 +34,6 @@ computation_times<-list()
 
 gamma<-8
 
-#1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
-
 for (model_choice in c( run_list )) {
 	gamma <- 40 - gamma    #it alternates between 32 and 8
 	times<-dfmin<-MSPE<-lengths<-rep(0,runs)
@@ -150,7 +148,7 @@ for (model_choice in c( run_list )) {
 	    gic <- gic.DMR(model.10percent)
 	  } else  if (model_choice=="cv.DMRnet") {
 	      cat("DMRnet with cv\n")
-	      model.10percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=5),
+	      model.10percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=5, agressive=TRUE),
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
@@ -177,7 +175,7 @@ for (model_choice in c( run_list )) {
 	    gic <- gic.DMR(model.10percent)
 	  } else  if (model_choice=="cv.GLAF") {
 	    cat("GLAF with cv\n")
-	    model.10percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, method="GLAF", nlambda=100, family="gaussian", nfolds=5),
+	    model.10percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, method="GLAF", nlambda=100, family="gaussian", nfolds=5, agressive=TRUE),
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv.GLAF detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)

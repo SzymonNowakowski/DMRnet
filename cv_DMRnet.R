@@ -79,7 +79,7 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n, agressive) {
   return (list(Xtr=Xtr, ytr=ytr, Xte=Xte, yte=yte, real_n=real_n))
 }
 
-cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 5, nlambda = 20, lam = 10^(-7), interc = TRUE, nfolds = 10, method = "DMRnet", agressive = TRUE,  maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))){
+cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 5, nlambda = 20, lam = 10^(-7), interc = TRUE, nfolds = 10, method = "DMRnet", agressive = FALSE,  maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))){
 
 
   X <- data.frame(X, check.names = TRUE, stringsAsFactors = TRUE)

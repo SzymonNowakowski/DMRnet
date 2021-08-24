@@ -37,9 +37,8 @@ sizes<-list()
 computation_times<-list()
 
 gamma<-100
-
-#1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-1000
+
 for (model_choice in c("cv.GLAF", "gic.GLAF", "cv.DMRnet", "gic.DMRnet", "cv.glmnet", "scope", "scope", "RF", "lr")) {
 	gamma <- 350 - gamma    #it alternates between 250 and 100
 	times<-dfmin<-misclassification_error<-lengths<-rep(0,runs)
@@ -100,7 +99,7 @@ for (model_choice in c("cv.GLAF", "gic.GLAF", "cv.DMRnet", "gic.DMRnet", "cv.glm
 
 	  } else  if (model_choice=="cv.DMRnet") {
 	      cat("DMRnet with cv\n")
-	      model.70percent <- tryCatch(cv_DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100, family="binomial", nfolds=5, agressive=FALSE),
+	      model.70percent <- tryCatch(cv_DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100, family="binomial", nfolds=5),
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 1-percent set. Original error:")
 	                                  message(cond)
@@ -132,7 +131,7 @@ for (model_choice in c("cv.GLAF", "gic.GLAF", "cv.DMRnet", "gic.DMRnet", "cv.glm
 
 	  } else  if (model_choice=="cv.GLAF") {
 	    cat("GLAF with cv\n")
-	    model.70percent <- tryCatch(cv_DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, method="GLAF", nlambda=100, family="binomial", nfolds=5, agressive=FALSE),
+	    model.70percent <- tryCatch(cv_DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, method="GLAF", nlambda=100, family="binomial", nfolds=5),
 	                               error=function(cond) {
 	                                 message("Numerical instability in cv.DMRnet detected. Will skip this 1-percent set. Original error:")
 	                                 message(cond)
@@ -163,7 +162,7 @@ for (model_choice in c("cv.GLAF", "gic.GLAF", "cv.DMRnet", "gic.DMRnet", "cv.glm
 	    cat("random forest. no cv\n")
 	    model.70percent <- randomForest(promoter.train.70percent.x, y=promoter.train.70percent.y)
 	  } else if (model_choice=="lr") {
-	    cat("Linear Regression no cv\n")
+	    cat("Logistic Regression no cv\n")
 	    model.70percent <- glm(promoter.train.70percent.y~., data = promoter.train.70percent.x, family="binomial")
 	  } else if (model_choice=="cv.glmnet") {
 	    cat("glmnet with cv\n")
@@ -214,7 +213,7 @@ for (model_choice in c("cv.GLAF", "gic.GLAF", "cv.DMRnet", "gic.DMRnet", "cv.glm
 	      next
 	    }
 	  } else if (model_choice=="lr") {
-	    cat("Linear Regression pred\n")
+	    cat("Logistic Regression pred\n")
 	    prediction<- ifelse(predict(model.70percent, promoter.test.70percent.x) >0,1,0)
 	  } else if (model_choice=="cv.glmnet") {
 	    cat("glmnet pred\n")

@@ -136,7 +136,7 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sc
 
 	  } else  if (model_choice=="cv.DMRnet") {
 	      cat("DMRnet with cv\n")
-	      model.1percent <- tryCatch(cv_DMRnet(adult.train.1percent.x, adult.train.1percent.y, nlambda=100, family="binomial", nfolds=5, agressive = FALSE),
+	      model.1percent <- tryCatch(cv_DMRnet(adult.train.1percent.x, adult.train.1percent.y, nlambda=100, family="binomial", nfolds=5),
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 1-percent set. Original error:")
 	                                  message(cond)
@@ -168,7 +168,7 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sc
 
 	  } else  if (model_choice=="cv.GLAF") {
 	    cat("GLAF with cv\n")
-	    model.1percent <- tryCatch(cv_DMRnet(adult.train.1percent.x, adult.train.1percent.y, method="GLAF", nlambda=100, family="binomial", nfolds=5, agressive = FALSE),
+	    model.1percent <- tryCatch(cv_DMRnet(adult.train.1percent.x, adult.train.1percent.y, method="GLAF", nlambda=100, family="binomial", nfolds=5),
 	                               error=function(cond) {
 	                                 message("Numerical instability in cv.GLAF detected. Will skip this 1-percent set. Original error:")
 	                                 message(cond)
@@ -199,7 +199,7 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sc
 	    cat("random forest. no cv\n")
 	    model.1percent <- randomForest(adult.train.1percent.x, y=adult.train.1percent.y)
 	  } else if (model_choice=="lr") {
-	    cat("Linear Regression no cv\n")
+	    cat("Logistic Regression no cv\n")
 	    model.1percent <- glm(adult.train.1percent.y~., data = adult.train.1percent.x, family="binomial")
 	  } else if (model_choice=="cv.glmnet") {
 	    cat("glmnet with cv\n")
@@ -250,7 +250,7 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sc
 	      next
 	    }
 	  } else if (model_choice=="lr") {
-	    cat("Linear Regression pred\n")
+	    cat("Logistic Regression pred\n")
 	    prediction<- ifelse(predict(model.1percent, adult.test.1percent.x) >0,1,0)
 	  } else if (model_choice=="cv.glmnet") {
 	    cat("glmnet pred\n")
