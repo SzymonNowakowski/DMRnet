@@ -31,6 +31,7 @@ errors<-list()
 effective_lengths<-list()
 sizes<-list()
 computation_times<-list()
+real_sizes<-list()
 
 gamma<-8
 
@@ -38,7 +39,7 @@ gamma<-8
 
 for (model_choice in c( run_list )) {
 	gamma <- 40 - gamma    #it alternates between 32 and 8
-	times<-dfmin<-MSPE<-lengths<-rep(0,runs)
+	real_size<-times<-dfmin<-MSPE<-lengths<-rep(0,runs)
 	run<-1
 
 	while (run<=runs) {
@@ -295,6 +296,9 @@ for (model_choice in c( run_list )) {
 
 	  MSPE[run]<-mean((prediction[!is.na(prediction)] - insurance.test.10percent.y.no_error[!is.na(prediction)])^2)
 
+	  real_size[run]<- sum(s-1)+5    #real number of levels (s-1) that generated the response plus 5 continous variables,
+	                                #no intercept
+
 	  if (model_choice == "gic.DMRnet" | model_choice=="gic.GLAF")
 	    dfmin[run]<-gic$df.min
 	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAF")
@@ -337,6 +341,7 @@ for (model_choice in c( run_list )) {
 	effective_lengths[[model_name]]<-lengths
 	if (length(dfmin[dfmin>0])>0)
 		sizes[[model_name]]<-dfmin
+	real_sizes[[model_name]] <- real_size
 	errors[[model_name]]<-MSPE
 
 }
@@ -344,6 +349,7 @@ for (model_choice in c( run_list )) {
 write.csv(errors, paste(part_filename_and_number, "_errors.csv", sep=""))
 write.csv(effective_lengths, paste(part_filename_and_number, "_effective_lengths.csv", sep=""))
 write.csv(sizes, paste(part_filename_and_number, "_model_sizes.csv", sep=""))
+write.csv(real_sizes, paste(part_filename_and_number, "_real_sizes.csv", sep=""))
 write.csv(computation_times, paste(part_filename_and_number, "_computation_times.csv", sep=""))
 
 
@@ -355,7 +361,8 @@ pdf(paste(part_filename_and_number, "_errors.pdf", sep=""),width=12,height=5)
 boxplot(errors)
 dev.off()
 
-pdf(paste(part_filename_and_number, "_model_sizes.pdf", sep=""),width=9,height=5)
+sizes[["real"]]<-c(real_sizes, recursive=TRUE)
+pdf(paste(part_filename_and_number, "_model_sizes.pdf", sep=""),width=10,height=5)
 boxplot(sizes)
 dev.off()
 
