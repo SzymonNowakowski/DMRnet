@@ -324,24 +324,24 @@ for (model_choice in c( run_list )) {
 }
 
 write.csv(errors, "antigua_errors.csv")
-write.csv(effective_lengths, "antigua__effective_lengths.csv")
-write.csv(sizes, "antigua__model_sizes.csv")
-write.csv(computation_times, "antigua__computation_times.csv")
+write.csv(effective_lengths, "antigua_effective_lengths.csv")
+write.csv(sizes, "antigua_model_sizes.csv")
+write.csv(computation_times, "antigua_computation_times.csv")
 
 
-pdf("antigua__computation_times.pdf",width=12,height=5)
+pdf("antigua_computation_times.pdf",width=12,height=5)
 boxplot(computation_times)
 dev.off()
 
-pdf("antigua__errors.pdf",width=12,height=5)
+pdf("antigua_errors.pdf",width=12,height=5)
 boxplot(errors)
 dev.off()
 
-pdf("antigua__model_sizes.pdf",width=9,height=5)
+pdf("antigua_model_sizes.pdf",width=9,height=5)
 boxplot(sizes)
 dev.off()
 
-pdf("antigua__effective_lengths.pdf",width=12,height=5)
+pdf("antigua_effective_lengths.pdf",width=12,height=5)
 boxplot(effective_lengths)
 dev.off()
 

@@ -79,7 +79,7 @@ cv_helper<-function(Xtr, ytr, Xte, yte, real_n, agressive) {
   return (list(Xtr=Xtr, ytr=ytr, Xte=Xte, yte=yte, real_n=real_n))
 }
 
-cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 5, nlambda = 20, lam = 10^(-7), interc = TRUE, nfolds = 10, method = "DMRnet", agressive = FALSE,  maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))){
+cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 5, nlambda = 20, lam = 10^(-7), interc = TRUE, nfolds = 10, method = "DMRnet", agressive = FALSE, plateau_resistant_CV = TRUE, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))){
 
 
   X <- data.frame(X, check.names = TRUE, stringsAsFactors = TRUE)
@@ -150,8 +150,15 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
     #plot(mdGIC[length(laGIC):1],errGIC[length(laGIC):1]/s2, xlab="MD", ylab="PE", type="o")
 
     r <- dmr.full$rss
+    # Plateau-resistant CV:
+    errMin <- min(errGIC)
+    errS <- sd(errGIC)
     kt <- which(errGIC == min(errGIC))
-    indGIC <- kt[length(kt)]
+    if (plateau_resistant_CV)
+      indGIC <- which(errGIC <= errMin + errS)[1]
+    else
+      indGIC <- kt[length(kt)]
+
     gic.full <- (r+laGIC[indGIC]*length(r):1)/(real_n*s2)
     #plot(gic.full[length(gic.full):1])
     indMod <- which.min(gic.full)
@@ -236,8 +243,16 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
       #plot(mdGIC[length(laGIC):1],errGIC[length(laGIC):1]/s2, xlab="MD", ylab="PE", type="o")
 
       ll <- -2*dmr.full$loglik
+
+      # Plateau-resistant CV:
+      errMin <- min(errGIC)
+      errS <- sd(errGIC)
       kt <- which(errGIC == min(errGIC))
-      indGIC <- kt[length(kt)]
+      if (plateau_resistant_CV)
+        indGIC <- which(errGIC <= errMin + errS)[1]
+      else
+        indGIC <- kt[length(kt)]
+
       gic.full <- (ll+laGIC[indGIC]*length(ll):1)/real_n
       #plot(gic.full[length(gic.full):1])
       indMod <- which.min(gic.full)
