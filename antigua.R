@@ -10,10 +10,10 @@ library(DMRnet)
 #load_all()
 
 runs<-1000
-run_list = c("RF", "cv.DMRnet", "gic.DMRnet", "cv.GLAF", "gic.GLAF", "scope", "scope", "lr", "cv.glmnet")
+run_list = c("RF", "cv.DMRnet", "gic.DMRnet", "cv.GLAMER", "gic.GLAMER", "scope", "scope", "lr", "cv.glmnet")
 
 source("cv_DMRnet.R")
-source("glaf_4lm.R")
+source("glamer_4lm.R")
 
 library(DAAG)
 data(antigua)
@@ -156,11 +156,11 @@ for (model_choice in c( run_list )) {
 	    if (model.70percent[[1]] == "red_light") {
 	      next
 	    }
-	  } else  if (model_choice=="gic.GLAF") {
-	    cat("GLAF with GIC only\n")
-	    model.70percent <- tryCatch(glaf_4lm(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100),
+	  } else  if (model_choice=="gic.GLAMER") {
+	    cat("GLAMER with GIC only\n")
+	    model.70percent <- tryCatch(glamer_4lm(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100),
 	                                error=function(cond) {
-	                                  message("Numerical instability in gic.GLAF detected. Will skip this 10-percent set. Original error:")
+	                                  message("Numerical instability in gic.GLAMER detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
@@ -171,11 +171,11 @@ for (model_choice in c( run_list )) {
 
 	    cat("GIC\n")
 	    gic <- gic.DMR(model.70percent)
-	  } else  if (model_choice=="cv.GLAF") {
-	    cat("GLAF with cv\n")
-	    model.70percent <- tryCatch(cv_DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, method="GLAF", nlambda=100, family="gaussian", nfolds=5),
+	  } else  if (model_choice=="cv.GLAMER") {
+	    cat("GLAMER with cv\n")
+	    model.70percent <- tryCatch(cv_DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, method="GLAMER", nlambda=100, family="gaussian", nfolds=5),
 	                                error=function(cond) {
-	                                  message("Numerical instability in cv.GLAF detected. Will skip this 10-percent set. Original error:")
+	                                  message("Numerical instability in cv.GLAMER detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
@@ -211,7 +211,7 @@ for (model_choice in c( run_list )) {
 
 
 
-	  if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAF") {
+	  if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.70percent, newx=antigua.test.70percent.x, df = gic$df.min, type="response"),
 	                          error=function(cond) {
@@ -219,11 +219,11 @@ for (model_choice in c( run_list )) {
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
-	    #for GLAF we use a predict from DMR which is compatible with GLAF models
+	    #for GLAMER we use a predict from DMR which is compatible with GLAMER models
 	    if (length(prediction)==2) {
 	      next
 	    }
-	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAF") {
+	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.70percent, newx=antigua.test.70percent.x, type="response"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
@@ -231,7 +231,7 @@ for (model_choice in c( run_list )) {
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
-	    #for GLAF we use a predict from DMR which is compatible with GLAF models
+	    #for GLAMER we use a predict from DMR which is compatible with GLAMER models
 	    if (length(prediction)==2) {
 	      next
 	    }
@@ -277,9 +277,9 @@ for (model_choice in c( run_list )) {
 
 	  MSPE[run]<-mean((prediction[!is.na(prediction)] - antigua.test.70percent.y.no_error[!is.na(prediction)])^2)
 
-	  if (model_choice == "gic.DMRnet" | model_choice=="gic.GLAF")
+	  if (model_choice == "gic.DMRnet" | model_choice=="gic.GLAMER")
 	    dfmin[run]<-gic$df.min
-	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAF")
+	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAMER")
 	    dfmin[run]<-model.70percent$df.min
 	  if (model_choice == "cv.glmnet" )
 	    dfmin[run]<-sum(coef(model.70percent, s="lambda.min")!=0)-1

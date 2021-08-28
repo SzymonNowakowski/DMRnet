@@ -1,4 +1,4 @@
-source("glaf_stats.R")
+source("glamer_stats.R")
 
 part2beta_4lm_help <- function(b, S, X, y, fl){
   Z <- data.frame(y)
@@ -83,7 +83,7 @@ clusters_4lm_help <- function(S, betas_with_intercept, X, y, clust.method = 'com
     Tmats <- lapply(1:n.factors, function(i) {
       i1 <- ifelse(i == 1, 1, sum(n.levels[1:(i - 1)]-1) +1)
       i2 <- sum(n.levels[1:i]-1)
-      out <- glaf_stats(c(0,betas[i1:i2]))   #appending 0 as a beta for the constrained level. Each factor has one level constrained to have beta==0 in AP's PhD Thesis (2.2) and (2.3)
+      out <- glamer_stats(c(0,betas[i1:i2]))   #appending 0 as a beta for the constrained level. Each factor has one level constrained to have beta==0 in AP's PhD Thesis (2.2) and (2.3)
       rownames(out) <- colnames(out) <- levels(X[,faki[i]])
       return(out)
     })
@@ -191,7 +191,7 @@ clusters_4lm_help <- function(S, betas_with_intercept, X, y, clust.method = 'com
 }
 
 
-glaf_4lm_help <- function(S, betas_with_intercept, mL, X, y, fl, clust.method){
+glamer_4lm_help <- function(S, betas_with_intercept, mL, X, y, fl, clust.method){
   if (sum(S) == 0) {
     mm <- stats::lm.fit(as.matrix(rep(1,length(y))), y)
     return(list(b = c(1, rep(0, sum(fl-1))), rss = sum(mm$res^2)))
@@ -201,7 +201,7 @@ glaf_4lm_help <- function(S, betas_with_intercept, mL, X, y, fl, clust.method){
   return(mfin)
 }
 
-glaf_4lm <- function(X, y, clust.method = "complete", nlambda = 100, maxp = ceiling(length(y)/2)){
+glamer_4lm <- function(X, y, clust.method = "complete", nlambda = 100, maxp = ceiling(length(y)/2)){
     n <- nrow(X)
     if(n != length(y)){
               stop("Error: non-conforming data: nrow(X) not equal to length(y)")
@@ -282,7 +282,7 @@ glaf_4lm <- function(X, y, clust.method = "complete", nlambda = 100, maxp = ceil
 
     bb<-bb[,ii==FALSE, drop=FALSE]   #betas but for active lambdas only
 
-    mm <- lapply(1:ncol(SS), function(i) glaf_4lm_help(SS[,i], bb[,i], mL, X, y, fl, clust.method))
+    mm <- lapply(1:ncol(SS), function(i) glamer_4lm_help(SS[,i], bb[,i], mL, X, y, fl, clust.method))
     maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$rss)))
     rss <- sapply(1:length(mm), function(i) c(rep(Inf, maxl - length(mm[[i]]$rss)), mm[[i]]$rss))
     ind <- apply(rss, 1, which.min)

@@ -158,11 +158,11 @@ for (model_choice in c( run_list )) {
 	    if (model.10percent[[1]] == "red_light") {
 	      next
 	    }
-	  } else  if (model_choice=="gic.GLAF") {
-	    cat("GLAF with GIC only\n")
-	    model.10percent <- tryCatch(glaf_4lm(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100),
+	  } else  if (model_choice=="gic.GLAMER") {
+	    cat("GLAMER with GIC only\n")
+	    model.10percent <- tryCatch(glamer_4lm(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100),
 	                                error=function(cond) {
-	                                  message("Numerical instability in gic.GLAF detected. Will skip this 10-percent set. Original error:")
+	                                  message("Numerical instability in gic.GLAMER detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
@@ -173,11 +173,11 @@ for (model_choice in c( run_list )) {
 
 	    cat("GIC\n")
 	    gic <- gic.DMR(model.10percent)
-	  } else  if (model_choice=="cv.GLAF") {
-	    cat("GLAF with cv\n")
-	    model.10percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, method="GLAF", nlambda=100, family="gaussian", nfolds=5, agressive=TRUE),
+	  } else  if (model_choice=="cv.GLAMER") {
+	    cat("GLAMER with cv\n")
+	    model.10percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, method="GLAMER", nlambda=100, family="gaussian", nfolds=5, agressive=TRUE),
 	                                error=function(cond) {
-	                                  message("Numerical instability in cv.GLAF detected. Will skip this 10-percent set. Original error:")
+	                                  message("Numerical instability in cv.GLAMER detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
@@ -210,7 +210,7 @@ for (model_choice in c( run_list )) {
 
 
 
-	  if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAF") {
+	  if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.10percent, newx=insurance.test.10percent.x, df = gic$df.min, type="response"),
 	                          error=function(cond) {
@@ -218,11 +218,11 @@ for (model_choice in c( run_list )) {
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
-	    #for GLAF we use a predict from DMR which is compatible with GLAF models
+	    #for GLAMER we use a predict from DMR which is compatible with GLAMER models
 	    if (length(prediction)==2) {
 	      next
 	    }
-	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAF") {
+	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.10percent, newx=insurance.test.10percent.x, type="response"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
@@ -230,7 +230,7 @@ for (model_choice in c( run_list )) {
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
-	    #for GLAF we use a predict from DMR which is compatible with GLAF models
+	    #for GLAMER we use a predict from DMR which is compatible with GLAMER models
 	    if (length(prediction)==2) {
 	      next
 	    }
@@ -264,9 +264,9 @@ for (model_choice in c( run_list )) {
 
 	  MSPE[run]<-mean((prediction[!is.na(prediction)] - insurance.test.10percent.y.no_error[!is.na(prediction)])^2)
 
-	  if (model_choice == "gic.DMRnet" | model_choice=="gic.GLAF")
+	  if (model_choice == "gic.DMRnet" | model_choice=="gic.GLAMER")
 	    dfmin[run]<-gic$df.min
-	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAF")
+	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAMER")
 	    dfmin[run]<-model.10percent$df.min
 	  if (model_choice == "cv.glmnet" )
 	    dfmin[run]<-sum(coef(model.10percent, s="lambda.min")!=0)-1

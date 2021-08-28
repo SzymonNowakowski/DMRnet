@@ -12,7 +12,7 @@ library(digest)
 
 set.seed(strtoi(substr(digest("adult", "md5", serialize = FALSE),1,7),16))
 
-source("glaf_4glm.R")
+source("glamer_4glm.R")
 source("cv_DMRnet.R")
 
 adult.train<-read.csv("adult.data", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
@@ -74,7 +74,7 @@ gamma<-100
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-1000
-for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "scope", "scope", "cv.GLAF", "gic.GLAF")) {
+for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "scope", "scope", "cv.GLAMER", "gic.GLAMER")) {
 	gamma <- 350 - gamma    #it alternates between 250 and 100
 	times<-dfmin<-misclassification_error<-lengths<-rep(0,runs)
 	run<-1
@@ -150,11 +150,11 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sc
 	    #plot(model.1percent)
 	    #gic <- gic.DMR(model.1percent, c = 2)
 	    #plot(gic)
-	  } else if (model_choice=="gic.GLAF") {
-	    cat("GLAF method\n")
-	    model.1percent <- tryCatch(glaf_4glm(adult.train.1percent.x, adult.train.1percent.y, nlambda=100),
+	  } else if (model_choice=="gic.GLAMER") {
+	    cat("GLAMER method\n")
+	    model.1percent <- tryCatch(glamer_4glm(adult.train.1percent.x, adult.train.1percent.y, nlambda=100),
 	                               error=function(cond) {
-	                                 message("Numerical instability in GLAF detected. Will skip this 1-percent set. Original error:")
+	                                 message("Numerical instability in GLAMER detected. Will skip this 1-percent set. Original error:")
 	                                 message(cond)
 	                                 return(list("red_light"))
 	                               })
@@ -164,13 +164,13 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sc
 	    }
 
 	    cat("GIC\n")
-	    gic <- gic.DMR(model.1percent)   #we are using existing gic calculation which is compatible with GLAF models
+	    gic <- gic.DMR(model.1percent)   #we are using existing gic calculation which is compatible with GLAMER models
 
-	  } else  if (model_choice=="cv.GLAF") {
-	    cat("GLAF with cv\n")
-	    model.1percent <- tryCatch(cv_DMRnet(adult.train.1percent.x, adult.train.1percent.y, method="GLAF", nlambda=100, family="binomial", nfolds=5),
+	  } else  if (model_choice=="cv.GLAMER") {
+	    cat("GLAMER with cv\n")
+	    model.1percent <- tryCatch(cv_DMRnet(adult.train.1percent.x, adult.train.1percent.y, method="GLAMER", nlambda=100, family="binomial", nfolds=5),
 	                               error=function(cond) {
-	                                 message("Numerical instability in cv.GLAF detected. Will skip this 1-percent set. Original error:")
+	                                 message("Numerical instability in cv.GLAMER detected. Will skip this 1-percent set. Original error:")
 	                                 message(cond)
 	                                 return(list("red_light"))
 	                               })
@@ -210,7 +210,7 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sc
 
 
 
-	  if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAF") {
+	  if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.1percent, newx=adult.test.1percent.x, df = gic$df.min, type="class"),
 	                          error=function(cond) {
@@ -222,7 +222,7 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sc
 	    if (length(prediction)==2) {
 	      next
 	    }
-	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAF") {
+	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.1percent, newx=adult.test.1percent.x, type="class"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
@@ -277,9 +277,9 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sc
 	  prediction[is.na(prediction)] <- 0
 	  misclassification_error[run]<-mean(prediction[!is.na(prediction)] != adult.test.1percent.y[!is.na(prediction)])
 
-	  if (model_choice == "gic.DMRnet" | model_choice == "gic.GLAF")
+	  if (model_choice == "gic.DMRnet" | model_choice == "gic.GLAMER")
 	    dfmin[run]<-gic$df.min
-	  if (model_choice == "cv.DMRnet"  | model_choice == "cv.GLAF")
+	  if (model_choice == "cv.DMRnet"  | model_choice == "cv.GLAMER")
 	    dfmin[run]<-model.1percent$df.min
 	  if (model_choice == "cv.glmnet" )
 	    dfmin[run]<-sum(coef(model.1percent, s="lambda.min")!=0)-1

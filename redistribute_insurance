@@ -1,26 +1,26 @@
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.01.R
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.02.R
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.03.R
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.04.R
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.05.R
+cp insurance_DMRnet.R insurance_DMRnet1.R
+cp insurance_DMRnet.R insurance_DMRnet2.R
+cp insurance_DMRnet.R insurance_DMRnet3.R
+cp insurance_DMRnet.R insurance_DMRnet4.R
+cp insurance_DMRnet.R insurance_DMRnet5.R
 
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.06.R
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.07.R
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.08.R
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.09.R
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.0a.R
+cp insurance_DMRnet.R insurance_DMRnet6.R
+cp insurance_DMRnet.R insurance_DMRnet7.R
+cp insurance_DMRnet.R insurance_DMRnet8.R
+cp insurance_DMRnet.R insurance_DMRnet9.R
+cp insurance_DMRnet.R insurance_DMRneta.R
 
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.0b.R
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.0c.R
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.0d.R
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.0e.R
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.0f.R
+cp insurance_DMRnet.R insurance_DMRnetb.R
+cp insurance_DMRnet.R insurance_DMRnetc.R
+cp insurance_DMRnet.R insurance_DMRnetd.R
+cp insurance_DMRnet.R insurance_DMRnete.R
+cp insurance_DMRnet.R insurance_DMRnetf.R
 
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.0g.R
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.0h.R
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.0i.R
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.0j.R
-cp insurance_DMRnet_s1.0.R insurance_DMRnet_s1.0k.R
+cp insurance_DMRnet.R insurance_DMRnetg.R
+cp insurance_DMRnet.R insurance_DMRneth.R
+cp insurance_DMRnet.R insurance_DMRneti.R
+cp insurance_DMRnet.R insurance_DMRnetj.R
+cp insurance_DMRnet.R insurance_DMRnetk.R
 
 
 cp insurance_DMRnet_s0.1.R insurance_DMRnet_s0.11.R
@@ -97,104 +97,104 @@ cp insurance_DMRnet_orig.R insurance_DMRnet_origi.R
 cp insurance_DMRnet_orig.R insurance_DMRnet_origj.R
 cp insurance_DMRnet_orig.R insurance_DMRnet_origk.R
 
-cp insurance_glaf_s1.0.R insurance_glaf_s1.01.R
-cp insurance_glaf_s1.0.R insurance_glaf_s1.02.R
-cp insurance_glaf_s1.0.R insurance_glaf_s1.03.R
-cp insurance_glaf_s1.0.R insurance_glaf_s1.04.R
-cp insurance_glaf_s1.0.R insurance_glaf_s1.05.R
+cp insurance_glamer.R insurance_glamer1.R
+cp insurance_glamer.R insurance_glamer2.R
+cp insurance_glamer.R insurance_glamer3.R
+cp insurance_glamer.R insurance_glamer4.R
+cp insurance_glamer.R insurance_glamer5.R
 
-cp insurance_glaf_s1.0.R insurance_glaf_s1.06.R
-cp insurance_glaf_s1.0.R insurance_glaf_s1.07.R
-cp insurance_glaf_s1.0.R insurance_glaf_s1.08.R
-cp insurance_glaf_s1.0.R insurance_glaf_s1.09.R
-cp insurance_glaf_s1.0.R insurance_glaf_s1.0a.R
+cp insurance_glamer.R insurance_glamer6.R
+cp insurance_glamer.R insurance_glamer7.R
+cp insurance_glamer.R insurance_glamer8.R
+cp insurance_glamer.R insurance_glamer9.R
+cp insurance_glamer.R insurance_glamera.R
 
-cp insurance_glaf_s1.0.R insurance_glaf_s1.0b.R
-cp insurance_glaf_s1.0.R insurance_glaf_s1.0c.R
-cp insurance_glaf_s1.0.R insurance_glaf_s1.0d.R
-cp insurance_glaf_s1.0.R insurance_glaf_s1.0e.R
-cp insurance_glaf_s1.0.R insurance_glaf_s1.0f.R
+cp insurance_glamer.R insurance_glamerb.R
+cp insurance_glamer.R insurance_glamerc.R
+cp insurance_glamer.R insurance_glamerd.R
+cp insurance_glamer.R insurance_glamere.R
+cp insurance_glamer.R insurance_glamerf.R
 
-cp insurance_glaf_s1.0.R insurance_glaf_s1.0g.R
-cp insurance_glaf_s1.0.R insurance_glaf_s1.0h.R
-cp insurance_glaf_s1.0.R insurance_glaf_s1.0i.R
-cp insurance_glaf_s1.0.R insurance_glaf_s1.0j.R
-cp insurance_glaf_s1.0.R insurance_glaf_s1.0k.R
-
-
-cp insurance_glaf_s0.1.R insurance_glaf_s0.11.R
-cp insurance_glaf_s0.1.R insurance_glaf_s0.12.R
-cp insurance_glaf_s0.1.R insurance_glaf_s0.13.R
-cp insurance_glaf_s0.1.R insurance_glaf_s0.14.R
-cp insurance_glaf_s0.1.R insurance_glaf_s0.15.R
-
-cp insurance_glaf_s0.1.R insurance_glaf_s0.16.R
-cp insurance_glaf_s0.1.R insurance_glaf_s0.17.R
-cp insurance_glaf_s0.1.R insurance_glaf_s0.18.R
-cp insurance_glaf_s0.1.R insurance_glaf_s0.19.R
-cp insurance_glaf_s0.1.R insurance_glaf_s0.1a.R
-
-cp insurance_glaf_s0.1.R insurance_glaf_s0.1b.R
-cp insurance_glaf_s0.1.R insurance_glaf_s0.1c.R
-cp insurance_glaf_s0.1.R insurance_glaf_s0.1d.R
-cp insurance_glaf_s0.1.R insurance_glaf_s0.1e.R
-cp insurance_glaf_s0.1.R insurance_glaf_s0.1f.R
-
-cp insurance_glaf_s0.1.R insurance_glaf_s0.1g.R
-cp insurance_glaf_s0.1.R insurance_glaf_s0.1h.R
-cp insurance_glaf_s0.1.R insurance_glaf_s0.1i.R
-cp insurance_glaf_s0.1.R insurance_glaf_s0.1j.R
-cp insurance_glaf_s0.1.R insurance_glaf_s0.1k.R
+cp insurance_glamer.R insurance_glamerg.R
+cp insurance_glamer.R insurance_glamerh.R
+cp insurance_glamer.R insurance_glameri.R
+cp insurance_glamer.R insurance_glamerj.R
+cp insurance_glamer.R insurance_glamerk.R
 
 
-cp insurance_glaf_s0.03.R insurance_glaf_s0.031.R
-cp insurance_glaf_s0.03.R insurance_glaf_s0.032.R
-cp insurance_glaf_s0.03.R insurance_glaf_s0.033.R
-cp insurance_glaf_s0.03.R insurance_glaf_s0.034.R
-cp insurance_glaf_s0.03.R insurance_glaf_s0.035.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.11.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.12.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.13.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.14.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.15.R
 
-cp insurance_glaf_s0.03.R insurance_glaf_s0.036.R
-cp insurance_glaf_s0.03.R insurance_glaf_s0.037.R
-cp insurance_glaf_s0.03.R insurance_glaf_s0.038.R
-cp insurance_glaf_s0.03.R insurance_glaf_s0.039.R
-cp insurance_glaf_s0.03.R insurance_glaf_s0.03a.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.16.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.17.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.18.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.19.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.1a.R
 
-cp insurance_glaf_s0.03.R insurance_glaf_s0.03b.R
-cp insurance_glaf_s0.03.R insurance_glaf_s0.03c.R
-cp insurance_glaf_s0.03.R insurance_glaf_s0.03d.R
-cp insurance_glaf_s0.03.R insurance_glaf_s0.03e.R
-cp insurance_glaf_s0.03.R insurance_glaf_s0.03f.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.1b.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.1c.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.1d.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.1e.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.1f.R
 
-cp insurance_glaf_s0.03.R insurance_glaf_s0.03g.R
-cp insurance_glaf_s0.03.R insurance_glaf_s0.03h.R
-cp insurance_glaf_s0.03.R insurance_glaf_s0.03i.R
-cp insurance_glaf_s0.03.R insurance_glaf_s0.03j.R
-cp insurance_glaf_s0.03.R insurance_glaf_s0.03k.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.1g.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.1h.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.1i.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.1j.R
+cp insurance_glamer_s0.1.R insurance_glamer_s0.1k.R
 
 
-cp insurance_glaf_orig.R insurance_glaf_orig1.R
-cp insurance_glaf_orig.R insurance_glaf_orig2.R
-cp insurance_glaf_orig.R insurance_glaf_orig3.R
-cp insurance_glaf_orig.R insurance_glaf_orig4.R
-cp insurance_glaf_orig.R insurance_glaf_orig5.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.031.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.032.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.033.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.034.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.035.R
 
-cp insurance_glaf_orig.R insurance_glaf_orig6.R
-cp insurance_glaf_orig.R insurance_glaf_orig7.R
-cp insurance_glaf_orig.R insurance_glaf_orig8.R
-cp insurance_glaf_orig.R insurance_glaf_orig9.R
-cp insurance_glaf_orig.R insurance_glaf_origa.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.036.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.037.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.038.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.039.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.03a.R
 
-cp insurance_glaf_orig.R insurance_glaf_origb.R
-cp insurance_glaf_orig.R insurance_glaf_origc.R
-cp insurance_glaf_orig.R insurance_glaf_origd.R
-cp insurance_glaf_orig.R insurance_glaf_orige.R
-cp insurance_glaf_orig.R insurance_glaf_origf.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.03b.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.03c.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.03d.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.03e.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.03f.R
 
-cp insurance_glaf_orig.R insurance_glaf_origg.R
-cp insurance_glaf_orig.R insurance_glaf_origh.R
-cp insurance_glaf_orig.R insurance_glaf_origi.R
-cp insurance_glaf_orig.R insurance_glaf_origj.R
-cp insurance_glaf_orig.R insurance_glaf_origk.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.03g.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.03h.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.03i.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.03j.R
+cp insurance_glamer_s0.03.R insurance_glamer_s0.03k.R
+
+
+cp insurance_glamer_orig.R insurance_glamer_orig1.R
+cp insurance_glamer_orig.R insurance_glamer_orig2.R
+cp insurance_glamer_orig.R insurance_glamer_orig3.R
+cp insurance_glamer_orig.R insurance_glamer_orig4.R
+cp insurance_glamer_orig.R insurance_glamer_orig5.R
+
+cp insurance_glamer_orig.R insurance_glamer_orig6.R
+cp insurance_glamer_orig.R insurance_glamer_orig7.R
+cp insurance_glamer_orig.R insurance_glamer_orig8.R
+cp insurance_glamer_orig.R insurance_glamer_orig9.R
+cp insurance_glamer_orig.R insurance_glamer_origa.R
+
+cp insurance_glamer_orig.R insurance_glamer_origb.R
+cp insurance_glamer_orig.R insurance_glamer_origc.R
+cp insurance_glamer_orig.R insurance_glamer_origd.R
+cp insurance_glamer_orig.R insurance_glamer_orige.R
+cp insurance_glamer_orig.R insurance_glamer_origf.R
+
+cp insurance_glamer_orig.R insurance_glamer_origg.R
+cp insurance_glamer_orig.R insurance_glamer_origh.R
+cp insurance_glamer_orig.R insurance_glamer_origi.R
+cp insurance_glamer_orig.R insurance_glamer_origj.R
+cp insurance_glamer_orig.R insurance_glamer_origk.R
 
 cp insurance_DMRnet_s2.0.R insurance_DMRnet_s2.01.R
 cp insurance_DMRnet_s2.0.R insurance_DMRnet_s2.02.R
@@ -220,29 +220,29 @@ cp insurance_DMRnet_s2.0.R insurance_DMRnet_s2.0i.R
 cp insurance_DMRnet_s2.0.R insurance_DMRnet_s2.0j.R
 cp insurance_DMRnet_s2.0.R insurance_DMRnet_s2.0k.R
 
-cp insurance_glaf_s2.0.R insurance_glaf_s2.01.R
-cp insurance_glaf_s2.0.R insurance_glaf_s2.02.R
-cp insurance_glaf_s2.0.R insurance_glaf_s2.03.R
-cp insurance_glaf_s2.0.R insurance_glaf_s2.04.R
-cp insurance_glaf_s2.0.R insurance_glaf_s2.05.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.01.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.02.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.03.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.04.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.05.R
 
-cp insurance_glaf_s2.0.R insurance_glaf_s2.06.R
-cp insurance_glaf_s2.0.R insurance_glaf_s2.07.R
-cp insurance_glaf_s2.0.R insurance_glaf_s2.08.R
-cp insurance_glaf_s2.0.R insurance_glaf_s2.09.R
-cp insurance_glaf_s2.0.R insurance_glaf_s2.0a.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.06.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.07.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.08.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.09.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.0a.R
 
-cp insurance_glaf_s2.0.R insurance_glaf_s2.0b.R
-cp insurance_glaf_s2.0.R insurance_glaf_s2.0c.R
-cp insurance_glaf_s2.0.R insurance_glaf_s2.0d.R
-cp insurance_glaf_s2.0.R insurance_glaf_s2.0e.R
-cp insurance_glaf_s2.0.R insurance_glaf_s2.0f.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.0b.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.0c.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.0d.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.0e.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.0f.R
 
-cp insurance_glaf_s2.0.R insurance_glaf_s2.0g.R
-cp insurance_glaf_s2.0.R insurance_glaf_s2.0h.R
-cp insurance_glaf_s2.0.R insurance_glaf_s2.0i.R
-cp insurance_glaf_s2.0.R insurance_glaf_s2.0j.R
-cp insurance_glaf_s2.0.R insurance_glaf_s2.0k.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.0g.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.0h.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.0i.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.0j.R
+cp insurance_glamer_s2.0.R insurance_glamer_s2.0k.R
 
 cp insurance_DMRnet_s4.0.R insurance_DMRnet_s4.01.R
 cp insurance_DMRnet_s4.0.R insurance_DMRnet_s4.02.R
@@ -268,29 +268,29 @@ cp insurance_DMRnet_s4.0.R insurance_DMRnet_s4.0i.R
 cp insurance_DMRnet_s4.0.R insurance_DMRnet_s4.0j.R
 cp insurance_DMRnet_s4.0.R insurance_DMRnet_s4.0k.R
 
-cp insurance_glaf_s4.0.R insurance_glaf_s4.01.R
-cp insurance_glaf_s4.0.R insurance_glaf_s4.02.R
-cp insurance_glaf_s4.0.R insurance_glaf_s4.03.R
-cp insurance_glaf_s4.0.R insurance_glaf_s4.04.R
-cp insurance_glaf_s4.0.R insurance_glaf_s4.05.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.01.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.02.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.03.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.04.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.05.R
 
-cp insurance_glaf_s4.0.R insurance_glaf_s4.06.R
-cp insurance_glaf_s4.0.R insurance_glaf_s4.07.R
-cp insurance_glaf_s4.0.R insurance_glaf_s4.08.R
-cp insurance_glaf_s4.0.R insurance_glaf_s4.09.R
-cp insurance_glaf_s4.0.R insurance_glaf_s4.0a.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.06.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.07.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.08.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.09.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.0a.R
 
-cp insurance_glaf_s4.0.R insurance_glaf_s4.0b.R
-cp insurance_glaf_s4.0.R insurance_glaf_s4.0c.R
-cp insurance_glaf_s4.0.R insurance_glaf_s4.0d.R
-cp insurance_glaf_s4.0.R insurance_glaf_s4.0e.R
-cp insurance_glaf_s4.0.R insurance_glaf_s4.0f.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.0b.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.0c.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.0d.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.0e.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.0f.R
 
-cp insurance_glaf_s4.0.R insurance_glaf_s4.0g.R
-cp insurance_glaf_s4.0.R insurance_glaf_s4.0h.R
-cp insurance_glaf_s4.0.R insurance_glaf_s4.0i.R
-cp insurance_glaf_s4.0.R insurance_glaf_s4.0j.R
-cp insurance_glaf_s4.0.R insurance_glaf_s4.0k.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.0g.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.0h.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.0i.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.0j.R
+cp insurance_glamer_s4.0.R insurance_glamer_s4.0k.R
 
 cp insurance_DMRnet_s8.0.R insurance_DMRnet_s8.01.R
 cp insurance_DMRnet_s8.0.R insurance_DMRnet_s8.02.R
@@ -316,26 +316,26 @@ cp insurance_DMRnet_s8.0.R insurance_DMRnet_s8.0i.R
 cp insurance_DMRnet_s8.0.R insurance_DMRnet_s8.0j.R
 cp insurance_DMRnet_s8.0.R insurance_DMRnet_s8.0k.R
 
-cp insurance_glaf_s8.0.R insurance_glaf_s8.01.R
-cp insurance_glaf_s8.0.R insurance_glaf_s8.02.R
-cp insurance_glaf_s8.0.R insurance_glaf_s8.03.R
-cp insurance_glaf_s8.0.R insurance_glaf_s8.04.R
-cp insurance_glaf_s8.0.R insurance_glaf_s8.05.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.01.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.02.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.03.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.04.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.05.R
 
-cp insurance_glaf_s8.0.R insurance_glaf_s8.06.R
-cp insurance_glaf_s8.0.R insurance_glaf_s8.07.R
-cp insurance_glaf_s8.0.R insurance_glaf_s8.08.R
-cp insurance_glaf_s8.0.R insurance_glaf_s8.09.R
-cp insurance_glaf_s8.0.R insurance_glaf_s8.0a.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.06.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.07.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.08.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.09.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.0a.R
 
-cp insurance_glaf_s8.0.R insurance_glaf_s8.0b.R
-cp insurance_glaf_s8.0.R insurance_glaf_s8.0c.R
-cp insurance_glaf_s8.0.R insurance_glaf_s8.0d.R
-cp insurance_glaf_s8.0.R insurance_glaf_s8.0e.R
-cp insurance_glaf_s8.0.R insurance_glaf_s8.0f.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.0b.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.0c.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.0d.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.0e.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.0f.R
 
-cp insurance_glaf_s8.0.R insurance_glaf_s8.0g.R
-cp insurance_glaf_s8.0.R insurance_glaf_s8.0h.R
-cp insurance_glaf_s8.0.R insurance_glaf_s8.0i.R
-cp insurance_glaf_s8.0.R insurance_glaf_s8.0j.R
-cp insurance_glaf_s8.0.R insurance_glaf_s8.0k.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.0g.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.0h.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.0i.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.0j.R
+cp insurance_glamer_s8.0.R insurance_glamer_s8.0k.R

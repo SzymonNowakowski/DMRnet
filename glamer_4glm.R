@@ -1,5 +1,5 @@
 
-source("glaf_stats.R")
+source("glamer_stats.R")
 
 
 part2beta_glm_help <- function(b, S, fl){
@@ -62,7 +62,7 @@ clusters_4glm_help <- function(S, betas_with_intercept, X, y, clust.method = 'co
     Wmats <- lapply(1:n.factors, function(i) {
       i1 <- ifelse(i == 1, 1, sum(n.levels[1:(i - 1)]-1) +1)
       i2 <- sum(n.levels[1:i]-1)
-      out <- glaf_stats(c(0,betas[i1:i2]))   #appending 0 as a beta for the constrained level. Each factor has one level constrained to have beta==0 in AP's PhD Thesis (2.2) and (2.3)
+      out <- glamer_stats(c(0,betas[i1:i2]))   #appending 0 as a beta for the constrained level. Each factor has one level constrained to have beta==0 in AP's PhD Thesis (2.2) and (2.3)
       rownames(out) <- colnames(out) <- levels(X[,faki[i]])
       return(out)
     })
@@ -168,7 +168,7 @@ clusters_4glm_help <- function(S, betas_with_intercept, X, y, clust.method = 'co
 }
 
 
-glaf_4glm_help <- function(S, betas_with_intercept, X, y, fl, clust.method, lam){
+glamer_4glm_help <- function(S, betas_with_intercept, X, y, fl, clust.method, lam){
   if (sum(S) == 0) {
     m <- stats::glm.fit(as.matrix(rep(1, length(y))), y, family = stats::binomial())
     zb = exp(m$coef*rep(1, length(y)))
@@ -183,7 +183,7 @@ glaf_4glm_help <- function(S, betas_with_intercept, X, y, fl, clust.method, lam)
 
 
 
-glaf_4glm <- function(X, y, clust.method = "complete", nlambda = 100, lam = 10^(-7), maxp = ceiling(length(y)/4)){
+glamer_4glm <- function(X, y, clust.method = "complete", nlambda = 100, lam = 10^(-7), maxp = ceiling(length(y)/4)){
     if (class(y) != "factor"){
        stop("Error: y should be a factor")
     }
@@ -278,7 +278,7 @@ glaf_4glm <- function(X, y, clust.method = "complete", nlambda = 100, lam = 10^(
         #ncol = active lambdas
     #if (p >= n) SS <- SS[,-1]    #what is the purpose of that line - it is mistery to me. commenting for now
     bb<-bb[,ii==FALSE, drop=FALSE]   #betas but for active lambdas only
-    mm <- lapply(1:ncol(SS), function(i) glaf_4glm_help(SS[,i], bb[,i], X, y, fl, clust.method = clust.method, lam = lam))
+    mm <- lapply(1:ncol(SS), function(i) glamer_4glm_help(SS[,i], bb[,i], X, y, fl, clust.method = clust.method, lam = lam))
     maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$loglik)))
     loglik <- sapply(1:length(mm), function(i) c(rep(-Inf, maxl - length(mm[[i]]$loglik)), mm[[i]]$loglik))
     ind <- apply(loglik, 1, which.max)
