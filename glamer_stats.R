@@ -1,4 +1,4 @@
-glaf_stats <- function(betas_for_all_levels){
+glamer_stats <- function(betas_for_all_levels){
   n <- length(betas_for_all_levels)
   #returns a nxn similarity matrix (upper triangular) with 0-diagonal
 
