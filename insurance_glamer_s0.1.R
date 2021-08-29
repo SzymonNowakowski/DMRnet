@@ -2,7 +2,7 @@ library(digest)
 library(scriptName)
 library(DMRnet)  #predict functions, gic from DMRnet work with GLAMER models too
 
-run_list = c( "gic.GLAMER", "gic.GLAMER")
+run_list = c( "cv.GLAMER", "gic.GLAMER")
 runs<-50
 sigma<-0.1
 
@@ -13,6 +13,6 @@ set.seed(strtoi(substr(digest(part_filename_and_number, "md5", serialize = FALSE
 cat("seed set as md5 hash of the following string: ", part_filename_and_number,"\n\n")
 cat("search for the result files postfixed with the same string: ", part_filename_and_number,"\n\n")
 
-debugSource("glamer_4lm.R")
+source("glamer_4lm.R")
 
 source("insurance.R")
