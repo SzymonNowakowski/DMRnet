@@ -93,9 +93,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
 
     for (fold in 1:nfolds){
       cat("gaussian fold:", fold, "\n")
-      if (fold==2) {
-        xx<-4
-      }
+
       Xte <- X[foldid == fold, ,drop = FALSE]
       yte <- y[foldid == fold]
       Xtr <- X[foldid != fold, ,drop = FALSE]
