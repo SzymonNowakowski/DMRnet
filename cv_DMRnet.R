@@ -150,18 +150,17 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
     #plot(mdGIC[length(laGIC):1],errGIC[length(laGIC):1]/s2, xlab="MD", ylab="PE", type="o")
 
     r <- dmr.full$rss
-    # Plateau-resistant CV:
-    errMin <- min(errGIC)
-    errS <- sd(errGIC)
     kt <- which(errGIC == min(errGIC))
-    if (plateau_resistant_CV)
-      indGIC <- which(errGIC <= errMin + errS)[1]
-    else
-      indGIC <- kt[length(kt)]
+    indGIC <- kt[length(kt)]
 
     gic.full <- (r+laGIC[indGIC]*length(r):1)/(real_n*s2)
     #plot(gic.full[length(gic.full):1])
-    indMod <- which.min(gic.full)
+    # Plateau-resistant CV:
+    if (plateau_resistant_CV) {
+      indMods <- which(gic.full <= min(gic.full) + sd(gic.full))
+      indMod <- indMods[length(indMods)]
+    } else
+      indMod <- which.min(gic.full)
     df.min <- dmr.full$df[indMod]
 
 
@@ -243,19 +242,18 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
       #plot(mdGIC[length(laGIC):1],errGIC[length(laGIC):1]/s2, xlab="MD", ylab="PE", type="o")
 
       ll <- -2*dmr.full$loglik
-
-      # Plateau-resistant CV:
-      errMin <- min(errGIC)
-      errS <- sd(errGIC)
       kt <- which(errGIC == min(errGIC))
-      if (plateau_resistant_CV)
-        indGIC <- which(errGIC <= errMin + errS)[1]
-      else
-        indGIC <- kt[length(kt)]
+      indGIC <- kt[length(kt)]
 
       gic.full <- (ll+laGIC[indGIC]*length(ll):1)/real_n
       #plot(gic.full[length(gic.full):1])
-      indMod <- which.min(gic.full)
+      # Plateau-resistant CV:
+      if (plateau_resistant_CV) {
+        indMods <- which(gic.full <= min(gic.full) + sd(gic.full))
+        indMod <- indMods[length(indMods)]
+      } else
+        indMod <- which.min(gic.full)
+
       df.min <- dmr.full$df[indMod]
 
     }
