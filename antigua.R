@@ -10,10 +10,12 @@ library(DMRnet)
 #load_all()
 
 runs<-1000
-run_list = c("RF", "cv.DMRnet", "gic.DMRnet", "cv.GLAMER", "gic.GLAMER", "scope", "scope", "lr", "cv.glmnet")
+run_list = c( "cv.GLAMER", "gic.GLAMER", "cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF")
 
 source("cv_DMRnet.R")
-source("glamer_4lm.R")
+debugSource("cv_glamer_cutpoints.R")
+debugSource("glamer_4lm.R")
+
 
 library(DAAG)
 data(antigua)
@@ -173,7 +175,7 @@ for (model_choice in c( run_list )) {
 	    gic <- gic.DMR(model.70percent)
 	  } else  if (model_choice=="cv.GLAMER") {
 	    cat("GLAMER with cv\n")
-	    model.70percent <- tryCatch(cv_DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, method="GLAMER", nlambda=100, family="gaussian", nfolds=5),
+	    model.70percent <- tryCatch(cv_glamer_cutpoints(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=5),
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv.GLAMER detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
