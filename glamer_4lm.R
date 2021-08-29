@@ -187,14 +187,14 @@ clusters_4lm_help <- function(S, betas_with_intercept, X, y, clust.method = 'com
   r22 <- Tr%*%wyn
   RSS <- (sum(y^2) - sum(z^2))
   RSS2 <- c(RSS, as.vector(RSS + r22))
-  return(list(b = b, rss = RSS2))
+  return(list(b = b, rss = RSS2, heights = heig))
 }
 
 
 glamer_4lm_help <- function(S, betas_with_intercept, mL, X, y, fl, clust.method){
   if (sum(S) == 0) {
     mm <- stats::lm.fit(as.matrix(rep(1,length(y))), y)
-    return(list(b = c(1, rep(0, sum(fl-1))), rss = sum(mm$res^2)))
+    return(list(b = c(1, rep(0, sum(fl-1))), rss = sum(mm$res^2), heights = 0))
   }
 
   mfin <- clusters_4lm_help(S, betas_with_intercept, X, y, clust.method = clust.method)
@@ -292,7 +292,12 @@ glamer_4lm <- function(X, y, clust.method = "complete", nlambda = 100, maxp = ce
     } else{
        idx <- 1:length(ind)
     }
-    be <- sapply(idx, function(i) {b_matrix<-mm[[ind[i]]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_4lm_help(b = b_matrix[,i - sum(rss[, ind[i]] == Inf)], S = SS[,ind[i]], X = X, y = y, fl=fl)})
+    model_group <- function(i) {ind[i]}
+    model_index_within_group <- function(i) {i - sum(rss[, model_group(i)] == Inf)}
+    model_index_within_group_inverted <- function(i) {length(mm[[model_group(i)]]$heights)-model_index_within_group(i)+1}
+
+    be <- sapply(idx, function(i) {b_matrix<-mm[[model_group(i)]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_4lm_help(b = b_matrix[, model_index_within_group(i)], S = SS[, model_group(i)], X = X, y = y, fl=fl)})
+    heights <- sapply(idx, function(i) mm[[model_group(i)]]$heights[model_index_within_group_inverted(i)])
     rownames(be) <- colnames(x.full)
     if(length(ord) > 0){
                   ind1 <- c(1:p)
@@ -300,7 +305,7 @@ glamer_4lm <- function(X, y, clust.method = "complete", nlambda = 100, maxp = ce
                   ind1[ord] = (p - length(ord) + 1):p
                   be = be[ind1,]
    }
-   fit <- list(beta = be, df = length(idx):1, rss = rss[cbind(idx, ind[idx])], n = n, levels.listed = n.levels.listed, arguments = list(family = "gaussian", clust.method = clust.method, nlambda = nlambda, maxp = maxp), interc = TRUE)
+   fit <- list(beta = be, df = length(idx):1, rss = rss[cbind(idx, ind[idx])], n = n, levels.listed = n.levels.listed, heights = heights, arguments = list(family = "gaussian", clust.method = clust.method, nlambda = nlambda, maxp = maxp), interc = TRUE)
    class(fit) = "DMR"
    return(fit)
 }

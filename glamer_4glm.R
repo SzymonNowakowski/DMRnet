@@ -164,7 +164,7 @@ clusters_4glm_help <- function(S, betas_with_intercept, X, y, clust.method = 'co
   zb = exp(m$coef*rep(1, length(y)))
   pix = zb/(zb + 1)
   loglik = c(loglik, sum(log(pix)[y == 1]) + sum(log(1-pix)[y == 0]))
-  return(list(beta = b, loglik = loglik))
+  return(list(beta = b, loglik = loglik, heights = heig))
 }
 
 
@@ -175,7 +175,7 @@ glamer_4glm_help <- function(S, betas_with_intercept, X, y, fl, clust.method, la
     pix = zb/(zb + 1)
     loglik = sum(log(pix)[y == 1]) + sum(log(1-pix)[y == 0])
     b = c(m$coef, rep(0,sum(fl-1)))   #!!!!!!!!!!!important stability change. Added rep(0,...)
-    return(list(b = b, loglik = loglik))
+    return(list(b = b, loglik = loglik, heights = 0))
   }
   mfin <- clusters_4glm_help(S, betas_with_intercept, X, y, clust.method = clust.method, lam = lam)
   return(mfin)
@@ -288,8 +288,16 @@ glamer_4glm <- function(X, y, clust.method = "complete", nlambda = 100, lam = 10
     } else{
        idx <- 1:length(ind)
     }
-    be <- sapply(idx, function(i) {b_matrix<-mm[[ind[i]]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_glm_help(b = b_matrix[,i - sum(loglik[, ind[i]] == -Inf)], S = SS[,ind[i]], fl=fl)})
+
+    model_group <- function(i) {ind[i]}
+    model_index_within_group <- function(i) {i - sum(rss[, model_group(i)] == Inf)}
+    model_index_within_group_inverted <- function(i) {length(mm[[model_group(i)]]$heights)-model_index_within_group(i)+1}
+
+    be <- sapply(idx, function(i) {b_matrix<-mm[[model_group(i)]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_glm_help(b = b_matrix[,model_index_within_group(i)], S = SS[,model_group(i)], fl=fl)})
     #!!!!!!!!!!!important stability change. Added matrix( ...$b)
+
+    heights <- sapply(idx, function(i) mm[[model_group(i)]]$heights[model_index_within_group_inverted(i)])
+
     rownames(be) <- colnames(x.full)
     if(length(ord) > 0){
                   ind1 <- c(1:p)
@@ -297,7 +305,7 @@ glamer_4glm <- function(X, y, clust.method = "complete", nlambda = 100, lam = 10
                   ind1[ord] = (p - length(ord) + 1):p
                   be = be[ind1,]
    }
-   fit <- list(beta = be, df = length(idx):1, loglik = loglik[cbind(idx, ind[idx])], n = n, levels.listed = n.levels.listed ,arguments = list(family = "binomial", clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp), interc = TRUE)
+   fit <- list(beta = be, df = length(idx):1, loglik = loglik[cbind(idx, ind[idx])], n = n, levels.listed = n.levels.listed, heights = heights, arguments = list(family = "binomial", clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp), interc = TRUE)
    class(fit) = "DMR"
    return(fit)
 }
