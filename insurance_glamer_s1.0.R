@@ -2,7 +2,6 @@ library(digest)
 library(scriptName)
 library(DMRnet)  #predict functions, gic from DMRnet work with GLAMER models too
 
-
 run_list = c( "cv.GLAMER", "gic.GLAMER")
 runs<-50
 sigma<-1.0
