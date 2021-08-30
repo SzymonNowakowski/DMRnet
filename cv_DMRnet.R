@@ -89,7 +89,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
     #PP new code foldid <- cvfolds(n, nfolds)
     foldid <- sample(rep(1:nfolds,length.out=n))   #PP replaces nfolds by a simpler sample(rep()) function
     #PP new code error <- list()
-    err <- list(); rss <- list(); #md <- list()
+    err <- list(); rss <- list(); md <- list()
 
     for (fold in 1:nfolds){
       cat("gaussian fold:", fold, "\n")
@@ -117,6 +117,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
       pred <- predict(dmr, newx = as.data.frame(Xte))
       #PP new code error[[fold]] <- apply(pred, 2, function(z) sum((z - yte)^2))
       err[[fold]] <- apply(pred, 2, function(z) mean((z - yte)^2))
+      md[[fold]] <- length(err[[fold]]):1
 
     }
 
@@ -126,6 +127,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
     len_err <- sapply(err, length)
     foldmin <- min(len_err)
     ERR <- sapply(1:nfolds, function(i) err[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
+    MD <- sapply(1:nfolds, function(i) md[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
     #err <- rowMeans(ERR); kt <- which(err == min(err)); df.min <- dmr$df[kt[length(kt)]]; plot(err, type="o")
 
     #PP rename dmr.fit
@@ -140,25 +142,25 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
     s2 <- dmr.full$rss[1]/(n-p1)
     Const <- exp(seq(log(2/50),log(2*50), length=80))
     laGIC <- Const*log(p1)*s2
-    RSS <- sapply(1:nfolds, function(i) rss[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
+    RSS <- sapply(1:nfolds, function(i) rss[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )   #size: MODEL x FOLD
     #MD <- sapply(1:nfolds, function(i)  md[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
-    IND <- apply( RSS, 2, function(r) sapply( laGIC, function(la) which.min(r+la*length(r):1) ) )
-    errGIC <- apply( IND, 1, function(ind) mean(ERR[cbind(ind,1:nfolds)]) )
-    #mdGIC  <- apply( IND, 1, function(ind) mean(MD[cbind(ind,1:10)]) )
+    IND <- apply( RSS, 2, function(r) sapply( laGIC, function(la) which.min(r+la*length(r):1) ) )  #size: GIC_CONST x FOLD - optimal model indices by size-penalized RSS
+    errGIC <- apply( IND, 1, function(ind) mean(ERR[cbind(ind,1:nfolds)]) )    #size: GIC_CONST - mean cv error of optimal models
+    mdGIC  <- apply( IND, 1, function(ind) mean(MD[cbind(ind,1:nfolds)]) )     #size: GIC_CONST - mean model size of optimal models
     #plot(mdGIC[length(laGIC):1],errGIC[length(laGIC):1]/s2, xlab="MD", ylab="PE", type="o")
 
+    if (plateau_resistant_CV)
+      conglomerateGIC<-max(errGIC) * (mdGIC - min(mdGIC))/min(mdGIC) + max(mdGIC) * (errGIC - min(errGIC))/min(errGIC)
+    else
+      conglomerateGIC <- errGIC
+    kt <- which(conglomerateGIC == min(conglomerateGIC))
+    indGIC <- kt[length(kt)]  #best gic_const - of best model chosen by best mean cv error
+
     r <- dmr.full$rss
-    kt <- which(errGIC == min(errGIC))
-    indGIC <- kt[length(kt)]
 
     gic.full <- (r+laGIC[indGIC]*length(r):1)/(real_n*s2)
     #plot(gic.full[length(gic.full):1])
-    # Plateau-resistant CV:
-    if (plateau_resistant_CV) {
-      indMods <- which(gic.full <= min(gic.full) + sd(gic.full))
-      indMod <- indMods[length(indMods)]
-    } else
-      indMod <- which.min(gic.full)
+    indMod <- which.min(gic.full)    #best model chosen on full RSS with chosen best gic constant
     df.min <- dmr.full$df[indMod]
 
 
@@ -245,13 +247,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
 
       gic.full <- (ll+laGIC[indGIC]*length(ll):1)/real_n
       #plot(gic.full[length(gic.full):1])
-      # Plateau-resistant CV:
-      if (plateau_resistant_CV) {
-        indMods <- which(gic.full <= min(gic.full) + sd(gic.full))
-        indMod <- indMods[length(indMods)]
-      } else
-        indMod <- which.min(gic.full)
-
+      indMod <- which.min(gic.full)
       df.min <- dmr.full$df[indMod]
 
     }

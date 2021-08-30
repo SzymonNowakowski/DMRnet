@@ -10,7 +10,7 @@ library(DMRnet)
 #load_all()
 
 runs<-1000
-run_list = c("RF", "cv.DMRnet", "gic.DMRnet", "cv.GLAMER", "gic.GLAMER", "scope", "scope", "lr", "cv.glmnet")
+run_list = c( "cv.DMRnet", "gic.DMRnet", "cv.GLAMER", "gic.GLAMER", "scope", "scope", "lr", "cv.glmnet", "RF")
 
 source("cv_DMRnet.R")
 source("glamer_4lm.R")

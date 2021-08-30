@@ -296,7 +296,7 @@ glamer_4glm <- function(X, y, clust.method = "complete", nlambda = 100, lam = 10
     be <- sapply(idx, function(i) {b_matrix<-mm[[model_group(i)]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_glm_help(b = b_matrix[,model_index_within_group(i)], S = SS[,model_group(i)], fl=fl)})
     #!!!!!!!!!!!important stability change. Added matrix( ...$b)
 
-    heights <- sapply(idx, function(i) mm[[model_group(i)]]$heights[model_index_within_group_inverted(i)])
+    heights <- sapply(length(idx):1, function(i) mm[[model_group(i)]]$heights[model_index_within_group_inverted(i)])
 
     rownames(be) <- colnames(x.full)
     if(length(ord) > 0){

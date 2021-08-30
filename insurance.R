@@ -13,7 +13,7 @@ library(CatReg)
 
 
 source("cv_DMRnet.R")
-source("cv_glamer_cutpoints.R")
+source("cv_glamer.R")
 
 insurance.all<-read.csv("insurance_train", header=TRUE, comment.char="|", stringsAsFactors = TRUE)
 insurance.all<-insurance.all[,apply(apply(insurance.all,2,is.na), 2, sum)==0]  #removing columns with NA
@@ -206,7 +206,7 @@ for (model_choice in c( run_list )) {
 	    gic <- gic.DMR(model.10percent)
 	  } else  if (model_choice=="cv.GLAMER") {
 	    cat("GLAMER with cv\n")
-	    model.10percent <- tryCatch(cv_glamer_cutpoints(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=5, agressive=TRUE),
+	    model.10percent <- tryCatch(cv_glamer(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=5, agressive=TRUE),
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv.GLAMER detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
