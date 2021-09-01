@@ -7,7 +7,7 @@ cv_glamer <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
   X <- data.frame(X, check.names = TRUE, stringsAsFactors = TRUE)
   if (family == "gaussian"){
     n <- length(y)
-    foldid <- cvfolds(n, nfolds)
+    foldid <- sample(rep(1:nfolds,length.out=n))   #PP replaces nfolds by a simpler sample(rep()) function
     error <- list()
 
     real_n <- 0 #recount  of test instances
