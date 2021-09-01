@@ -201,7 +201,7 @@ glamer_4lm_help <- function(S, betas_with_intercept, mL, X, y, fl, clust.method)
   return(mfin)
 }
 
-glamer_4lm <- function(X, y, clust.method = "complete", nlambda = 100, maxp = ceiling(length(y)/2)){
+glamer_4lm <- function(X, y, clust.method = "complete", lambda = NULL, nlambda = 100, maxp = ceiling(length(y)/2)){
     n <- nrow(X)
     if(n != length(y)){
               stop("Error: non-conforming data: nrow(X) not equal to length(y)")
@@ -252,7 +252,15 @@ glamer_4lm <- function(X, y, clust.method = "complete", nlambda = 100, maxp = ce
     p <- ncol(x.full)
     fl <- c(n.levels, rep(2, n.cont))
     x.full <- apply(x.full, 2, function(x) sqrt(n/sum(x^2))*x)
-    mL <- grpreg::grpreg(x.full[,-1], y, group=rep(1:p.x, fl-1) , penalty = "grLasso", family ="gaussian", nlambda = nlambda)
+
+    if (is.null(lambda)) {
+      user.lambdas<-substitute()    #make user.lambdas - paradoxically - not present in a call to grpreg
+    } else {
+      nlambda <- length(lambda)   #override this parameter
+      user.lambdas <- lambda
+    }
+
+    mL <- grpreg::grpreg(x.full[,-1], y, group=rep(1:p.x, fl-1) , penalty = "grLasso", family ="gaussian", nlambda = nlambda, lambda = user.lambdas)
     RL <- mL$lambda
     dfy <- apply(mL$beta, 2, function(x) sum(x!=0))
     kt <- 1:length(RL)
@@ -305,7 +313,7 @@ glamer_4lm <- function(X, y, clust.method = "complete", nlambda = 100, maxp = ce
                   ind1[ord] = (p - length(ord) + 1):p
                   be = be[ind1,]
    }
-   fit <- list(beta = be, df = length(idx):1, rss = rss[cbind(idx, ind[idx])], n = n, levels.listed = n.levels.listed, heights = heights, arguments = list(family = "gaussian", clust.method = clust.method, nlambda = nlambda, maxp = maxp), interc = TRUE)
+   fit <- list(beta = be, df = length(idx):1, rss = rss[cbind(idx, ind[idx])], n = n, levels.listed = n.levels.listed, heights = heights, lambda = mL$lambda, arguments = list(family = "gaussian", clust.method = clust.method, nlambda = nlambda, maxp = maxp), interc = TRUE)
    class(fit) = "DMR"
    return(fit)
 }

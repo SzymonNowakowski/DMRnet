@@ -1,10 +1,11 @@
 library(digest)
+library(grpreg)
 
 
 
 
-run_list = c("scope", "scope", "lr", "cv.glmnet")
-runs<-1000
+run_list = c("scope", "scope", "lr", "cv.glmnet", "cv.MCP", "cv.grLasso")
+runs<-100
 
 part_filename_and_number = "insurance_orig"
 print(part_filename_and_number)

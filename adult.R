@@ -6,6 +6,7 @@ library(stats)  #glm
 library(CatReg)
 library(DMRnet)
 library(digest)
+library(grpreg)
 
 #library(devtools)
 #load_all()
@@ -14,6 +15,7 @@ set.seed(strtoi(substr(digest("adult", "md5", serialize = FALSE),1,7),16))
 
 source("glamer_4glm.R")
 source("cv_DMRnet.R")
+source("cv_glamer.R")
 
 adult.train<-read.csv("adult.data", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
 adult.test<-read.csv("adult.test", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
@@ -73,8 +75,8 @@ computation_times<-list()
 gamma<-100
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
-runs<-1000
-for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "scope", "scope", "cv.GLAMER", "gic.GLAMER")) {
+runs<-100
+for (model_choice in c( "cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF", "cv.MCP", "cv.grLasso")) {
 	gamma <- 350 - gamma    #it alternates between 250 and 100
 	times<-dfmin<-misclassification_error<-lengths<-rep(0,runs)
 	run<-1
@@ -118,7 +120,23 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sc
 	  start.time <- Sys.time()
 	  cat("Started: ", start.time,"\n")
 
-	  if (model_choice=="gic.DMRnet") {
+	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP") {
+	    cat(model_choice, "with CV\n")
+	    X<-stats::model.matrix(~., adult.train.1percent.x)
+	    level_count <- sapply(lapply(adult.train.1percent.x, levels), length)
+	    level_count[level_count == 0] <- 2   #make it two for continous variables
+	    groups<-rep(1:length(level_count), level_count-1)
+	    if (model_choice == "cv.grLasso") {
+	      penalty <-  "grLasso"
+	    } else
+	      penalty <- "grMCP"
+
+	    lev <- levels(factor(adult.train.1percent.y))
+	    y <- ifelse(adult.train.1percent.y == lev[2], 1, 0)
+
+	    model.1percent <- cv.grpreg(X[,-1], y, group=groups, penalty=penalty, family="binomial", nfolds=10)
+
+	  } else if (model_choice=="gic.DMRnet") {
 	    cat("DMRnet with GIC only\n")
 	    model.1percent <- tryCatch(DMRnet(adult.train.1percent.x, adult.train.1percent.y, nlambda=100, family="binomial"),
 	                               error=function(cond) {
@@ -134,9 +152,13 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sc
 	    cat("GIC\n")
 	    gic <- gic.DMR(model.1percent)
 
-	  } else  if (model_choice=="cv.DMRnet") {
-	      cat("DMRnet with cv\n")
-	      model.1percent <- tryCatch(cv_DMRnet(adult.train.1percent.x, adult.train.1percent.y, nlambda=100, family="binomial", nfolds=5),
+	  } else  if (model_choice=="cv.DMRnet" | model_choice == "pl.DMRnet") {
+	      cat(model_choice, "with cv\n")
+	      if (model_choice == "pl.DMRnet") {
+	        plateau_resistant <- TRUE
+	      } else
+	        plateau_resistant <- FALSE
+	      model.1percent <- tryCatch(cv_DMRnet(adult.train.1percent.x, adult.train.1percent.y, nlambda=100, family="binomial", nfolds=10, plateau_resistant_CV =  plateau_resistant),
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 1-percent set. Original error:")
 	                                  message(cond)
@@ -147,9 +169,6 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sc
 	      next
 	    }
 
-	    #plot(model.1percent)
-	    #gic <- gic.DMR(model.1percent, c = 2)
-	    #plot(gic)
 	  } else if (model_choice=="gic.GLAMER") {
 	    cat("GLAMER method\n")
 	    model.1percent <- tryCatch(glamer_4glm(adult.train.1percent.x, adult.train.1percent.y, nlambda=100),
@@ -168,7 +187,7 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sc
 
 	  } else  if (model_choice=="cv.GLAMER") {
 	    cat("GLAMER with cv\n")
-	    model.1percent <- tryCatch(cv_DMRnet(adult.train.1percent.x, adult.train.1percent.y, method="GLAMER", nlambda=100, family="binomial", nfolds=5),
+	    model.1percent <- tryCatch(cv_glamer(adult.train.1percent.x, adult.train.1percent.y, nlambda=100, family="binomial", nfolds=10),
 	                               error=function(cond) {
 	                                 message("Numerical instability in cv.GLAMER detected. Will skip this 1-percent set. Original error:")
 	                                 message(cond)
@@ -203,14 +222,18 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sc
 	    model.1percent <- glm(adult.train.1percent.y~., data = adult.train.1percent.x, family="binomial")
 	  } else if (model_choice=="cv.glmnet") {
 	    cat("glmnet with cv\n")
-	    model.1percent<-cv.glmnet(makeX(adult.train.1percent.x), adult.train.1percent.y, family="binomial", nfolds=5)
+	    model.1percent<-cv.glmnet(makeX(adult.train.1percent.x), adult.train.1percent.y, family="binomial", nfolds=10)
 	  } else
 	    stop("Uknown method")
 
 
 
 
-	  if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
+	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP") {
+	    cat(model_choice, "with CV prediction\n")
+	    X_test<-stats::model.matrix(~., adult.test.1percent.x)
+	    prediction<-predict(model.1percent, X_test[,-1])
+	  } else if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.1percent, newx=adult.test.1percent.x, df = gic$df.min, type="class"),
 	                          error=function(cond) {
@@ -222,7 +245,7 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sc
 	    if (length(prediction)==2) {
 	      next
 	    }
-	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAMER") {
+	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAMER" | model_choice == "pl.DMRnet") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.1percent, newx=adult.test.1percent.x, type="class"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
@@ -277,9 +300,11 @@ for (model_choice in c(  "cv.DMRnet", "gic.DMRnet", "RF", "lr", "cv.glmnet", "sc
 	  prediction[is.na(prediction)] <- 0
 	  misclassification_error[run]<-mean(prediction[!is.na(prediction)] != adult.test.1percent.y[!is.na(prediction)])
 
+	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP")
+	    dfmin[run]<-sum(coef(model.70percent)!=0)
 	  if (model_choice == "gic.DMRnet" | model_choice == "gic.GLAMER")
 	    dfmin[run]<-gic$df.min
-	  if (model_choice == "cv.DMRnet"  | model_choice == "cv.GLAMER")
+	  if (model_choice == "cv.DMRnet"  | model_choice == "cv.GLAMER" | model_choice == "pl.DMRnet")
 	    dfmin[run]<-model.1percent$df.min
 	  if (model_choice == "cv.glmnet" )
 	    dfmin[run]<-sum(coef(model.1percent, s="lambda.min")!=0)-1
@@ -328,19 +353,19 @@ write.csv(sizes, "adult_model_sizes.csv")
 write.csv(computation_times, "adult_computation_times.csv")
 
 
-pdf("adult_computation_times.pdf",width=12,height=5)
+pdf("adult_computation_times.pdf",width=18,height=5)
 boxplot(computation_times)
 dev.off()
 
-pdf("adult_errors.pdf",width=12,height=5)
+pdf("adult_errors.pdf",width=18,height=5)
 boxplot(errors, ylim=c(0.16, 0.26))
 dev.off()
 
-pdf("adult_model_sizes.pdf",width=9,height=5)
+pdf("adult_model_sizes.pdf",width=15,height=5)
 boxplot(sizes)
 dev.off()
 
-pdf("adult_effective_lengths.pdf",width=12,height=5)
+pdf("adult_effective_lengths.pdf",width=18,height=5)
 boxplot(effective_lengths)
 dev.off()
 
