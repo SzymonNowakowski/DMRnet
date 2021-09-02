@@ -41,7 +41,7 @@ computation_times<-list()
 gamma<-100
 runs<-10
 
-for (model_choice in c("cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF", "cv.MCP", "cv.grLasso")) {
+for (model_choice in c("cv.MCP", "cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF", "cv.MCP", "cv.grLasso")) {
 	gamma <- 350 - gamma    #it alternates between 250 and 100
 	times<-dfmin<-misclassification_error<-lengths<-rep(0,runs)
 	run<-1
@@ -195,7 +195,16 @@ for (model_choice in c("cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic
 	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP") {
 	    cat(model_choice, "with CV prediction\n")
 	    X_test<-stats::model.matrix(~., promoter.test.70percent.x)
-	    prediction<-predict(model.70percent, X_test[,-1])
+	    prediction<- tryCatch(predict(model.70percent, X_test[,-1], type="class"),
+	                          error=function(cond) {
+	                            message("Numerical instability in predict (grpreg) detected. Will skip this 1-percent set. Original error:")
+	                            message(cond)
+	                            return(c(1,1))
+	                          })
+
+	    if (length(prediction)==2) {
+	      next
+	    }
 	  } else if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.70percent, newx=promoter.test.70percent.x, df = gic$df.min, type="class"),

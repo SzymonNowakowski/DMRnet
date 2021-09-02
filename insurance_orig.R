@@ -230,7 +230,16 @@ for (model_choice in c( run_list )) {
 	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP") {
 	    cat(model_choice, "with CV prediction\n")
 	    X_test<-stats::model.matrix(~., insurance.test.10percent.x)
-	    prediction<-predict(model.10percent, X_test[,-1])
+	    prediction<- tryCatch(predict(model.10percent, X_test[,-1]),
+	                          error=function(cond) {
+	                            message("Numerical instability in predict (grpreg) detected. Will skip this 1-percent set. Original error:")
+	                            message(cond)
+	                            return(c(1,1))
+	                          })
+
+	    if (length(prediction)==2) {
+	      next
+	    }
 	  } else if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.10percent, newx=insurance.test.10percent.x, df = gic$df.min, type="response"),
@@ -286,7 +295,7 @@ for (model_choice in c( run_list )) {
 	  MSPE[run]<-mean((prediction[!is.na(prediction)] - insurance.test.10percent.y.no_error[!is.na(prediction)])^2)
 
 	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP")
-	    dfmin[run]<-sum(coef(model.70percent)!=0)
+	    dfmin[run]<-sum(coef(model.10percent)!=0)
 	  if (model_choice == "gic.DMRnet" | model_choice=="gic.GLAMER")
 	    dfmin[run]<-gic$df.min
 	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAMER" | model_choice == "pl.DMRnet")

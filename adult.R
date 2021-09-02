@@ -232,7 +232,16 @@ for (model_choice in c( "cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gi
 	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP") {
 	    cat(model_choice, "with CV prediction\n")
 	    X_test<-stats::model.matrix(~., adult.test.1percent.x)
-	    prediction<-predict(model.1percent, X_test[,-1])
+	    prediction<- tryCatch(predict(model.1percent, X_test[,-1], type="class"),
+	                          error=function(cond) {
+	                            message("Numerical instability in predict (grpreg) detected. Will skip this 1-percent set. Original error:")
+	                            message(cond)
+	                            return(c(1,1))
+	                          })
+
+	    if (length(prediction)==2) {
+	      next
+	    }
 	  } else if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.1percent, newx=adult.test.1percent.x, df = gic$df.min, type="class"),
@@ -301,7 +310,7 @@ for (model_choice in c( "cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gi
 	  misclassification_error[run]<-mean(prediction[!is.na(prediction)] != adult.test.1percent.y[!is.na(prediction)])
 
 	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP")
-	    dfmin[run]<-sum(coef(model.70percent)!=0)
+	    dfmin[run]<-sum(coef(model.1percent)!=0)
 	  if (model_choice == "gic.DMRnet" | model_choice == "gic.GLAMER")
 	    dfmin[run]<-gic$df.min
 	  if (model_choice == "cv.DMRnet"  | model_choice == "cv.GLAMER" | model_choice == "pl.DMRnet")
