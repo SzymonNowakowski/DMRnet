@@ -142,8 +142,16 @@ for (model_choice in c( run_list )) {
 	      penalty <-  "grLasso"
 	    } else
 	      penalty <- "grMCP"
-	    model.10percent <- cv.grpreg(X[,-1], insurance.train.10percent.y, group=groups, penalty=penalty, gamma=32, nfolds=10)
+	    model.10percent <- tryCatch(cv.grpreg(X[,-1], insurance.train.10percent.y, group=groups, penalty=penalty, gamma=32, nfolds=10),
+	                                error=function(cond) {
+	                                  message("Numerical instability in cv.grpreg detected. Will skip this 10-percent set. Original error:")
+	                                  message(cond)
+	                                  return(list("red_light"))
+	                                })
 
+	    if (model.10percent[[1]] == "red_light") {
+	      next
+	    }
 	  } else if (model_choice=="gic.DMRnet") {
 	    cat("DMRnet with GIC only\n")
 	    model.10percent <- tryCatch(DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian"),
