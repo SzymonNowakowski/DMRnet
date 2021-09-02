@@ -1,6 +1,10 @@
 source("glamer_stats.R")
 
-part2beta_4lm_help <- function(b, S, X, y, fl){
+part2beta_4lm_help <- function(b, S, X, y, fl, valid){
+  if (!valid) {
+    return(rep(0, sum(fl-1)+1))
+  }
+
   Z <- data.frame(y)
   if (sum(S == 0) > 0){
     b1 <- b[1]
@@ -41,7 +45,7 @@ part2beta_4lm_help <- function(b, S, X, y, fl){
   ZZ <- stats::model.matrix(y~., data = Z)
   m <- stats::lm.fit(ZZ, y)
   be <- c(0, m$coef[-1])
-  b[b == 0] = 1
+  b[b == 0] <- 1
   be <- be[b]
   be[1] <- m$coef[1]
   return(be)
@@ -132,8 +136,8 @@ clusters_4lm_help <- function(S, betas_with_intercept, X, y, cut_points, clust.m
 
   cut_point_model_reference <- rep(NA, length(cut_points)) #initiated as pointing to the no-model
         #or numeric(0) if the cut_points==NULL
-    ###only 1st cut point should reference to the 1st model
-  cut_point_model_reference[1] <- 1
+    ###only cut points == 0 should reference to the 1st model
+  cut_point_model_reference[cut_points==0] <- 1
   if (len >= 2){
     for (i in 2:(len)){
       a <- rep(0,p)
@@ -210,7 +214,7 @@ glamer_4lm_help <- function(S, betas_with_intercept, mL, X, y, fl, cut_points, c
   return(mfin)
 }
 
-glamer_4lm <- function(X, y, cut_points = NULL, clust.method = "complete", nlambda = 100, maxp = ceiling(length(y)/2)){
+glamer_4lm <- function(X, y, cut_points = NULL, clust.method = "complete", lambda = NULL, nlambda = 100, maxp = ceiling(length(y)/2)){
     n <- nrow(X)
     if(n != length(y)){
               stop("Error: non-conforming data: nrow(X) not equal to length(y)")
@@ -261,7 +265,15 @@ glamer_4lm <- function(X, y, cut_points = NULL, clust.method = "complete", nlamb
     p <- ncol(x.full)
     fl <- c(n.levels, rep(2, n.cont))
     x.full <- apply(x.full, 2, function(x) sqrt(n/sum(x^2))*x)
-    mL <- grpreg::grpreg(x.full[,-1], y, group=rep(1:p.x, fl-1) , penalty = "grLasso", family ="gaussian", nlambda = nlambda)
+
+    if (is.null(lambda)) {
+      user.lambdas<-substitute()    #make user.lambdas - paradoxically - not present in a call to grpreg
+    } else {
+      nlambda <- length(lambda)   #override this parameter
+      user.lambdas <- lambda
+    }
+
+    mL <- grpreg::grpreg(x.full[,-1], y, group=rep(1:p.x, fl-1) , penalty = "grLasso", family ="gaussian", nlambda = nlambda, lambda = user.lambdas)
     RL <- mL$lambda
     dfy <- apply(mL$beta, 2, function(x) sum(x!=0))
     kt <- 1:length(RL)
@@ -298,29 +310,52 @@ glamer_4lm <- function(X, y, cut_points = NULL, clust.method = "complete", nlamb
     if (length(cut_points)>0) {
       cut_point_model_reference <- sapply(1:length(mm), function(i) mm[[i]]$cut_point_model_reference)
       mask <- matrix(Inf, nrow=nrow(rss), ncol=ncol(rss))   #it will mask by Inf all models not back-referenced in cut_points
-      for (i in 1:length(mm))
-        mask[maxl - na.omit(cut_point_model_reference[,i]) + 1, i] <- 0
+      model_cut_point_reference_max <- model_cut_point_reference_min <- matrix(0, nrow=nrow(rss), ncol=ncol(rss))
+      for (i in 1:length(mm)) {
+        mask[sum(rss[, i] == Inf) + na.omit(cut_point_model_reference[,i]), i] <- 0
+
+        for (model in 1:length(mm[[i]]$rss)) {
+          model_cut_point_reference_min[sum(rss[, i] == Inf) + model, i] <- which(cut_point_model_reference[,i]==model)[1]   #first occurence of TRUE
+          model_cut_point_reference_max[sum(rss[, i] == Inf) + model, i] <- length(cut_point_model_reference[,i]) - which(rev(cut_point_model_reference[,i])==model)[1] +1   #last occurence of TRUE
+        }
+        # cut_point_model_reference, for each cutpoint, it lists models the cutpoint references
+        # on the other hand model_cut_point_reference is a reverse relation:
+        # model_cut_point_reference, for each model, it lists the cutpoints that originate the models (min and max such cutpoint)
+        # both 0 and NA mean "no related cutpoint"
+      }
       rss_with_mask <- rss + mask
     } else
       rss_with_mask <- rss
     ind <- apply(rss_with_mask, 1, which.min)  #in each row, which is the index of a model minimizing rss
-    indInf<- apply(rss_with_mask,1,min) == Inf
+    indInf <- apply(rss_with_mask,1,min) == Inf
+
+
 
     maxi <- min(p, maxp)
     if (length(ind) > maxi){
        idx <- (length(ind) - maxi):length(ind)   #but real model sizes are still length(idx):1
-    } else{
+    } else {
        idx <- 1:length(ind)
     }
 
     #smallest models are last
     model_group <- function(i) {ind[i]}
     model_index_within_group <- function(i) {i - sum(rss[, model_group(i)] == Inf)}
-    model_index_within_group_inverted <- function(i) {length(mm[[model_group(i)]]$heights)-model_index_within_group(i)+1}
+    #model_index_within_group_inverted <- function(i) {length(mm[[model_group(i)]]$heights)-model_index_within_group(i)+1}
 
-    be <- sapply(idx, function(i) {b_matrix<-mm[[model_group(i)]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_4lm_help(b = b_matrix[, model_index_within_group(i)], S = SS[, model_group(i)], X = X, y = y, fl=fl)})
-    heights <- sapply(rev(idx), function(i) mm[[model_group(i)]]$heights[model_index_within_group_inverted(i)])
+    be <- sapply(idx, function(i) {b_matrix<-mm[[model_group(i)]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_4lm_help(b = b_matrix[, model_index_within_group(i)], S = SS[, model_group(i)], X = X, y = y, fl=fl, valid=!indInf[i])})
+    heights <- sapply(idx, function(i) mm[[model_group(i)]]$heights[model_index_within_group(i)])
+    #heights from full model #1 with height == 0 to the last 1-element model with height > 0
 
+    if (length(cut_points>0)) {
+      cut_point_generated_models_min <- sapply(idx, function(i) {ifelse(indInf[i],0,model_cut_point_reference_min[i, model_group(i)])})
+      cut_point_generated_models_max <- sapply(idx, function(i) {ifelse(indInf[i],0,model_cut_point_reference_max[i, model_group(i)])})
+      rss_vec<-sapply(idx, function(i) {ifelse(indInf[i],Inf,rss[i, model_group(i)])})
+    }
+    else {
+      cut_point_generated_models_min <- cut_point_generated_models_max <- rep(0, length(idx))
+      rss_vec<-rss[cbind(idx, ind[idx])]
+    }
     rownames(be) <- colnames(x.full)
     if(length(ord) > 0){
                   ind1 <- c(1:p)
@@ -328,7 +363,7 @@ glamer_4lm <- function(X, y, cut_points = NULL, clust.method = "complete", nlamb
                   ind1[ord] = (p - length(ord) + 1):p
                   be = be[ind1,]
    }
-   fit <- list(beta = be, df = length(idx):1, rss = rss[cbind(idx, ind[idx])], n = n, levels.listed = n.levels.listed, heights = heights, arguments = list(family = "gaussian", clust.method = clust.method, nlambda = nlambda, maxp = maxp), interc = TRUE)
+   fit <- list(beta = be, df = length(idx):1, rss = rss_vec, n = n, levels.listed = n.levels.listed, heights = heights, lambda = mL$lambda, cut_point_generated_models = list(min = cut_point_generated_models_min, max = cut_point_generated_models_max), arguments = list(family = "gaussian", clust.method = clust.method, nlambda = nlambda, maxp = maxp), interc = TRUE)
    class(fit) = "DMR"
    return(fit)
 }
