@@ -5,6 +5,7 @@ library(stats)  #glm, model.matrix
 library(CatReg)
 library(DMRnet)
 library(grpreg)
+library(digest)
 
 #
 #library(devtools)
