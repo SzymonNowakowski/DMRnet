@@ -15,10 +15,11 @@ library(digest)
 set.seed(strtoi(substr(digest("antigua", "md5", serialize = FALSE),1,7),16))
 
 runs<-200
-run_list = c(   "cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF", "cv.MCP", "cv.grLasso")
+run_list = c(   "cp.GLAMER", "cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF", "cv.MCP", "cv.grLasso")
 
 source("cv_DMRnet.R")
 source("cv_glamer.R")
+source("cv_glamer_cutpoints.R")
 source("glamer_4lm.R")
 
 library(DAAG)
@@ -207,6 +208,20 @@ for (model_choice in c( run_list )) {
 	    if (model.70percent[[1]] == "red_light") {
 	      next
 	    }
+	  } else  if (model_choice=="cp.GLAMER") {
+	    cat("GLAMER with cv with cutpoints\n")
+
+	    model.70percent <- tryCatch(cv_glamer_cutpoints(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10),
+
+	                                error=function(cond) {
+	                                  message("Numerical instability in cp.GLAMER detected. Will skip this 10-percent set. Original error:")
+	                                  message(cond)
+	                                  return(list("red_light"))
+	                                })
+
+	    if (model.70percent[[1]] == "red_light") {
+	      next
+	    }
 	  } else if (model_choice=="scope") {
 	    cat("Scope, no cv, gamma=", gamma,"\n")
 	    model.70percent <- tryCatch(scope(antigua.train.70percent.x, antigua.train.70percent.y, gamma=gamma),
@@ -250,7 +265,7 @@ for (model_choice in c( run_list )) {
 	    if (length(prediction)==2) {
 	      next
 	    }
-	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAMER" | model_choice == "pl.DMRnet") {
+	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAMER" | model_choice == "pl.DMRnet" | model_choice == "cp.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.70percent, newx=antigua.test.70percent.x, type="response"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
@@ -308,7 +323,7 @@ for (model_choice in c( run_list )) {
 	    dfmin[run]<-sum(coef(model.70percent)!=0)
 	  if (model_choice == "gic.DMRnet" | model_choice=="gic.GLAMER")
 	    dfmin[run]<-gic$df.min
-	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAMER" | model_choice == "pl.DMRnet")
+	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAMER" | model_choice == "pl.DMRnet" | model_choice == "cp.GLAMER")
 	    dfmin[run]<-model.70percent$df.min
 	  if (model_choice == "cv.glmnet" )
 	    dfmin[run]<-sum(coef(model.70percent, s="lambda.min")!=0)-1
@@ -358,19 +373,19 @@ write.csv(sizes, "antigua_model_sizes.csv")
 write.csv(computation_times, "antigua_computation_times.csv")
 
 
-pdf("antigua_computation_times.pdf",width=18,height=5)
+pdf("antigua_computation_times.pdf",width=20,height=5)
 boxplot(computation_times)
 dev.off()
 
-pdf("antigua_errors.pdf",width=18,height=5)
+pdf("antigua_errors.pdf",width=20,height=5)
 boxplot(errors)
 dev.off()
 
-pdf("antigua_model_sizes.pdf",width=15,height=5)
+pdf("antigua_model_sizes.pdf",width=17,height=5)
 boxplot(sizes)
 dev.off()
 
-pdf("antigua_effective_lengths.pdf",width=18,height=5)
+pdf("antigua_effective_lengths.pdf",width=20,height=5)
 boxplot(effective_lengths)
 dev.off()
 

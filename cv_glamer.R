@@ -26,6 +26,7 @@ cv_glamer <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
       ytr<-helper$ytr
       Xte<-helper$Xte
       yte<-helper$yte
+      real_n<-helper$real_n
 
       glamer <- glamer_4lm(Xtr, ytr, clust.method = clust.method, lambda = lambdas.full, maxp = ceiling(maxp))
       #above: lambda - when provided - overrides nlambda
@@ -35,8 +36,8 @@ cv_glamer <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
     }
     foldmin <- min(sapply(error, length))
     error <- sapply(1:length(error), function(i) error[[i]][(length(error[[i]]) - foldmin + 1) : length(error[[i]])])
-    error <- rowSums(error)/n
-    kt <- which(error == min(error))
+    error <- rowSums(error)/real_n
+    kt <- which(error <= min(na.omit(error)) + sd(na.omit(error)))
     df.min <- glamer$df[kt[length(kt)]]
   } else{
     if (family == "binomial"){
@@ -72,6 +73,7 @@ cv_glamer <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
         ytr<-helper$ytr
         Xte<-helper$Xte
         yte<-helper$yte
+        real_n<-helper$real_n
 
         glamer <- glamer_4glm(Xtr, ytr, clust.method = clust.method, lambda = lambdas.full, maxp = ceiling(maxp))
         #above: lambda - when provided - overrides nlambda
@@ -81,8 +83,8 @@ cv_glamer <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
       }
       foldmin <- min(sapply(error, length))
       error <- sapply(1:length(error), function(i) error[[i]][(length(error[[i]]) - foldmin + 1) : length(error[[i]])])
-      error <- rowSums(error)/(n1 + n2)
-      kt <- which(error == min(error))
+      error <- rowSums(error)/real_n
+      kt <- which(error <= min(na.omit(error)) + sd(na.omit(error)))
       df.min <- glamer$df[kt[length(kt)]]
     }
     else{

@@ -190,7 +190,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
     }
   }
   #PP: out <- list(df.min = df.min, dmr.fit = dmr.fit, cvm = error, foldid = foldid)
-  out <- list(df.min = df.min, dmr.fit = dmr.full, cvm = errGIC, foldid = foldid)
+  out <- list(df.min = df.min, dmr.fit = dmr.full, cvm = conglomerateGIC, foldid = foldid)
   class(out) <- "cv.DMR"
   cat("cv.out\n")
   return(out)

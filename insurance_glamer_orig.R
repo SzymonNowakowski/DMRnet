@@ -4,7 +4,7 @@ library(DMRnet)  #predict functions, gic from DMRnet work with GLAMER models too
 
 
 
-run_list = c( "cv.GLAMER", "gic.GLAMER")
+run_list = c( "cp.GLAMER", "cv.GLAMER", "gic.GLAMER")
 runs<-5
 
 filename_and_dirs <- current_filename()

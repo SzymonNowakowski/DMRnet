@@ -202,6 +202,18 @@ for (model_choice in c( run_list )) {
 	    if (model.10percent[[1]] == "red_light") {
 	      next
 	    }
+	  } else  if (model_choice=="cp.GLAMER") {
+	    cat("GLAMER with cv with cutpoints\n")
+	    model.10percent <- tryCatch(cv_glamer_cutpoints(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=10, agressive=TRUE),
+	                                error=function(cond) {
+	                                  message("Numerical instability in cp.GLAMER detected. Will skip this 10-percent set. Original error:")
+	                                  message(cond)
+	                                  return(list("red_light"))
+	                                })
+
+	    if (model.10percent[[1]] == "red_light") {
+	      next
+	    }
 	  } else if (model_choice=="scope") {
 	    cat("Scope, no cv, gamma=", gamma,"\n")
 	    model.10percent <- tryCatch(scope(insurance.train.10percent.x, insurance.train.10percent.y, gamma=gamma),
@@ -252,7 +264,7 @@ for (model_choice in c( run_list )) {
 	    if (length(prediction)==2) {
 	      next
 	    }
-	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAMER"| model_choice == "pl.DMRnet") {
+	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAMER"| model_choice == "pl.DMRnet" | model_choice=="cp.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.10percent, newx=insurance.test.10percent.x, type="response"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
@@ -298,7 +310,7 @@ for (model_choice in c( run_list )) {
 	    dfmin[run]<-sum(coef(model.10percent)!=0)
 	  if (model_choice == "gic.DMRnet" | model_choice=="gic.GLAMER")
 	    dfmin[run]<-gic$df.min
-	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAMER" | model_choice == "pl.DMRnet")
+	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAMER" | model_choice == "pl.DMRnet" | model_choice=="cp.GLAMER")
 	    dfmin[run]<-model.10percent$df.min
 	  if (model_choice == "cv.glmnet" )
 	    dfmin[run]<-sum(coef(model.10percent, s="lambda.min")!=0)-1
