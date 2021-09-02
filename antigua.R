@@ -11,6 +11,7 @@ library(digest)
 #library(devtools)
 #load_all()
 
+
 set.seed(strtoi(substr(digest("antigua", "md5", serialize = FALSE),1,7),16))
 
 runs<-200
@@ -194,7 +195,9 @@ for (model_choice in c( run_list )) {
 	    gic <- gic.DMR(model.70percent)
 	  } else  if (model_choice=="cv.GLAMER") {
 	    cat("GLAMER with cv\n")
+
 	    model.70percent <- tryCatch(cv_glamer(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10),
+
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv.GLAMER detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)

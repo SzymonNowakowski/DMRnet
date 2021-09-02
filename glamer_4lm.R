@@ -1,6 +1,10 @@
 source("glamer_stats.R")
 
-part2beta_4lm_help <- function(b, S, X, y, fl){
+part2beta_4lm_help <- function(b, S, X, y, fl, valid){
+  if (!valid) {
+    return(rep(0, sum(fl-1)+1))
+  }
+
   Z <- data.frame(y)
   if (sum(S == 0) > 0){
     b1 <- b[1]
@@ -41,14 +45,14 @@ part2beta_4lm_help <- function(b, S, X, y, fl){
   ZZ <- stats::model.matrix(y~., data = Z)
   m <- stats::lm.fit(ZZ, y)
   be <- c(0, m$coef[-1])
-  b[b == 0] = 1
+  b[b == 0] <- 1
   be <- be[b]
   be[1] <- m$coef[1]
   return(be)
 }
 
 
-clusters_4lm_help <- function(S, betas_with_intercept, X, y, clust.method = 'complete'){
+clusters_4lm_help <- function(S, betas_with_intercept, X, y, cut_points, clust.method){
 
   X <- X[, S==1, drop = FALSE]
   betas_with_intercept <- betas_with_intercept[betas_with_intercept>0]
@@ -129,10 +133,19 @@ clusters_4lm_help <- function(S, betas_with_intercept, X, y, clust.method = 'com
   names(b) <- colnames(x.full)
   A <- c()
   form <- namCont
+
+  cut_point_model_reference <- rep(NA, length(cut_points)) #initiated as pointing to the no-model
+        #or numeric(0) if the cut_points==NULL
+    ###only cut points == 0 should reference to the 1st model
+  cut_point_model_reference[cut_points==0] <- 1
   if (len >= 2){
     for (i in 2:(len)){
       a <- rep(0,p)
       kt <- names(heig)[i]
+      if (length(cut_points) > 0) {
+        ###all cut points located between this heig[i] and the previous heig[i-1] should back-reference to the model we create in this step
+        cut_point_model_reference[cut_points > heig[i-1] & cut_points <= heig[i]] <- i
+      }
       if(length(intersect(kt, namCont)) > 0){
         jj <- which(form == kt)
         form <- form[-which(form == kt)]
@@ -187,21 +200,23 @@ clusters_4lm_help <- function(S, betas_with_intercept, X, y, clust.method = 'com
   r22 <- Tr%*%wyn
   RSS <- (sum(y^2) - sum(z^2))
   RSS2 <- c(RSS, as.vector(RSS + r22))
-  return(list(b = b, rss = RSS2, heights = heig))
+  return(list(b = b, rss = RSS2, heights = heig, cut_point_model_reference = cut_point_model_reference))
 }
 
 
-glamer_4lm_help <- function(S, betas_with_intercept, mL, X, y, fl, clust.method){
+glamer_4lm_help <- function(S, betas_with_intercept, mL, X, y, fl, cut_points, clust.method){
   if (sum(S) == 0) {
     mm <- stats::lm.fit(as.matrix(rep(1,length(y))), y)
-    return(list(b = c(1, rep(0, sum(fl-1))), rss = sum(mm$res^2), heights = 0))
+    return(list(b = c(1, rep(0, sum(fl-1))), rss = sum(mm$res^2), heights = 0, cut_point_model_reference = rep(1, length(cut_points))))
   }
 
-  mfin <- clusters_4lm_help(S, betas_with_intercept, X, y, clust.method = clust.method)
+  mfin <- clusters_4lm_help(S, betas_with_intercept, X, y, cut_points, clust.method)
   return(mfin)
 }
 
-glamer_4lm <- function(X, y, clust.method = "complete", lambda = NULL, nlambda = 100, maxp = ceiling(length(y)/2)){
+
+glamer_4lm <- function(X, y, cut_points = NULL, clust.method = "complete", lambda = NULL, nlambda = 100, maxp = ceiling(length(y)/2)){
+
     n <- nrow(X)
     if(n != length(y)){
               stop("Error: non-conforming data: nrow(X) not equal to length(y)")
@@ -290,25 +305,61 @@ glamer_4lm <- function(X, y, clust.method = "complete", lambda = NULL, nlambda =
 
     bb<-bb[,ii==FALSE, drop=FALSE]   #betas but for active lambdas only
 
-    mm <- lapply(1:ncol(SS), function(i) glamer_4lm_help(SS[,i], bb[,i], mL, X, y, fl, clust.method))
+    mm <- lapply(1:ncol(SS), function(i) glamer_4lm_help(SS[,i], bb[,i], mL, X, y, fl, cut_points, clust.method))
     maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$rss)))
     rss <- sapply(1:length(mm), function(i) c(rep(Inf, maxl - length(mm[[i]]$rss)), mm[[i]]$rss))
-    ind <- apply(rss, 1, which.min)
+
+    if (length(cut_points)>0) {
+      cut_point_model_reference <- sapply(1:length(mm), function(i) mm[[i]]$cut_point_model_reference)
+      mask <- matrix(Inf, nrow=nrow(rss), ncol=ncol(rss))   #it will mask by Inf all models not back-referenced in cut_points
+      model_cut_point_reference_max <- model_cut_point_reference_min <- matrix(0, nrow=nrow(rss), ncol=ncol(rss))
+      for (i in 1:length(mm)) {
+        mask[sum(rss[, i] == Inf) + na.omit(cut_point_model_reference[,i]), i] <- 0
+
+        for (model in 1:length(mm[[i]]$rss)) {
+          model_cut_point_reference_min[sum(rss[, i] == Inf) + model, i] <- which(cut_point_model_reference[,i]==model)[1]   #first occurence of TRUE
+          model_cut_point_reference_max[sum(rss[, i] == Inf) + model, i] <- length(cut_point_model_reference[,i]) - which(rev(cut_point_model_reference[,i])==model)[1] +1   #last occurence of TRUE
+        }
+        # cut_point_model_reference, for each cutpoint, it lists models the cutpoint references
+        # on the other hand model_cut_point_reference is a reverse relation:
+        # model_cut_point_reference, for each model, it lists the cutpoints that originate the models (min and max such cutpoint)
+        # both 0 and NA mean "no related cutpoint"
+      }
+      rss_with_mask <- rss + mask
+    } else
+      rss_with_mask <- rss
+    ind <- apply(rss_with_mask, 1, which.min)  #in each row, which is the index of a model minimizing rss
+    indInf <- apply(rss_with_mask,1,min) == Inf
+
+
+
     maxi <- min(p, maxp)
     if (length(ind) > maxi){
-       idx <- (length(ind) - maxi):length(ind)
-    } else{
+       idx <- (length(ind) - maxi):length(ind)   #but real model sizes are still length(idx):1
+    } else {
        idx <- 1:length(ind)
     }
+
+    #smallest models are last
     model_group <- function(i) {ind[i]}
     model_index_within_group <- function(i) {i - sum(rss[, model_group(i)] == Inf)}
     #model_index_within_group_inverted <- function(i) {length(mm[[model_group(i)]]$heights)-model_index_within_group(i)+1}
 
-    be <- sapply(idx, function(i) {b_matrix<-mm[[model_group(i)]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_4lm_help(b = b_matrix[, model_index_within_group(i)], S = SS[, model_group(i)], X = X, y = y, fl=fl)})
-    
+
+    be <- sapply(idx, function(i) {b_matrix<-mm[[model_group(i)]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_4lm_help(b = b_matrix[, model_index_within_group(i)], S = SS[, model_group(i)], X = X, y = y, fl=fl, valid=!indInf[i])})
     heights <- sapply(idx, function(i) mm[[model_group(i)]]$heights[model_index_within_group(i)])
     #heights from full model #1 with height == 0 to the last 1-element model with height > 0
-                      
+
+    if (length(cut_points>0)) {
+      cut_point_generated_models_min <- sapply(idx, function(i) {ifelse(indInf[i],0,model_cut_point_reference_min[i, model_group(i)])})
+      cut_point_generated_models_max <- sapply(idx, function(i) {ifelse(indInf[i],0,model_cut_point_reference_max[i, model_group(i)])})
+      rss_vec<-sapply(idx, function(i) {ifelse(indInf[i],Inf,rss[i, model_group(i)])})
+    }
+    else {
+      cut_point_generated_models_min <- cut_point_generated_models_max <- rep(0, length(idx))
+      rss_vec<-rss[cbind(idx, ind[idx])]
+    }
+
     rownames(be) <- colnames(x.full)
     if(length(ord) > 0){
                   ind1 <- c(1:p)
@@ -316,7 +367,9 @@ glamer_4lm <- function(X, y, clust.method = "complete", lambda = NULL, nlambda =
                   ind1[ord] = (p - length(ord) + 1):p
                   be = be[ind1,]
    }
-   fit <- list(beta = be, df = length(idx):1, rss = rss[cbind(idx, ind[idx])], n = n, levels.listed = n.levels.listed, heights = heights, lambda = mL$lambda, arguments = list(family = "gaussian", clust.method = clust.method, nlambda = nlambda, maxp = maxp), interc = TRUE)
+
+   fit <- list(beta = be, df = length(idx):1, rss = rss_vec, n = n, levels.listed = n.levels.listed, heights = heights, lambda = mL$lambda, cut_point_generated_models = list(min = cut_point_generated_models_min, max = cut_point_generated_models_max), arguments = list(family = "gaussian", clust.method = clust.method, nlambda = nlambda, maxp = maxp), interc = TRUE)
+
    class(fit) = "DMR"
    return(fit)
 }
