@@ -299,12 +299,13 @@ glamer_4glm <- function(X, y, clust.method = "complete", lambda = NULL, nlambda 
 
     model_group <- function(i) {ind[i]}
     model_index_within_group <- function(i) {i - sum(loglik[, model_group(i)] == -Inf)}
-    model_index_within_group_inverted <- function(i) {length(mm[[model_group(i)]]$heights)-model_index_within_group(i)+1}
+    #model_index_within_group_inverted <- function(i) {length(mm[[model_group(i)]]$heights)-model_index_within_group(i)+1}
 
     be <- sapply(idx, function(i) {b_matrix<-mm[[model_group(i)]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_glm_help(b = b_matrix[,model_index_within_group(i)], S = SS[,model_group(i)], fl=fl)})
     #!!!!!!!!!!!important stability change. Added matrix( ...$b)
 
-    heights <- sapply(length(idx):1, function(i) mm[[model_group(i)]]$heights[model_index_within_group_inverted(i)])
+    heights <- sapply(idx, function(i) mm[[model_group(i)]]$heights[model_index_within_group(i)])
+    #heights from full model #1 with height == 0 to the last 1-element model with height > 0
 
     rownames(be) <- colnames(x.full)
     if(length(ord) > 0){
