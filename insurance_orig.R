@@ -12,7 +12,8 @@ library(CatReg)
 
 
 
-source("cv_DMRnet.R")
+
+
 
 insurance.all<-read.csv("insurance_train", header=TRUE, comment.char="|", stringsAsFactors = TRUE)
 insurance.all<-insurance.all[,apply(apply(insurance.all,2,is.na), 2, sum)==0]  #removing columns with NA
@@ -131,7 +132,19 @@ for (model_choice in c( run_list )) {
 	  start.time <- Sys.time()
 	  cat("Started: ", start.time,"\n")
 
-	  if (model_choice=="gic.DMRnet") {
+	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP") {
+	    cat(model_choice, "with CV\n")
+	    X<-stats::model.matrix(~., insurance.train.10percent.x)
+	    level_count <- sapply(lapply(insurance.train.10percent.x, levels), length)
+	    level_count[level_count == 0] <- 2   #make it two for continous variables
+	    groups<-rep(1:length(level_count), level_count-1)
+	    if (model_choice == "cv.grLasso") {
+	      penalty <-  "grLasso"
+	    } else
+	      penalty <- "grMCP"
+	    model.10percent <- cv.grpreg(X[,-1], insurance.train.10percent.y, group=groups, penalty=penalty, gamma=32, nfolds=10)
+
+	  } else if (model_choice=="gic.DMRnet") {
 	    cat("DMRnet with GIC only\n")
 	    model.10percent <- tryCatch(DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian"),
 	                               error=function(cond) {
@@ -146,9 +159,13 @@ for (model_choice in c( run_list )) {
 
 	    cat("GIC\n")
 	    gic <- gic.DMR(model.10percent)
-	  } else  if (model_choice=="cv.DMRnet") {
-	      cat("DMRnet with cv\n")
-	      model.10percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=5, agressive=TRUE),
+	  } else  if (model_choice=="cv.DMRnet"| model_choice == "pl.DMRnet") {
+	      cat(model_choice, "with cv\n")
+	      if (model_choice == "pl.DMRnet") {
+	        plateau_resistant <- TRUE
+	      } else
+	        plateau_resistant <- FALSE
+	      model.10percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=10, agressive=TRUE, plateau_resistant_CV = plateau_resistant),
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
@@ -175,7 +192,7 @@ for (model_choice in c( run_list )) {
 	    gic <- gic.DMR(model.10percent)
 	  } else  if (model_choice=="cv.GLAMER") {
 	    cat("GLAMER with cv\n")
-	    model.10percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, method="GLAMER", nlambda=100, family="gaussian", nfolds=5, agressive=TRUE),
+	    model.10percent <- tryCatch(cv_glamer(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=10, agressive=TRUE),
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv.GLAMER detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
@@ -203,14 +220,27 @@ for (model_choice in c( run_list )) {
 	    model.10percent <- glm(insurance.train.10percent.y~., data = insurance.train.10percent.x, family="gaussian")
 	  } else if (model_choice=="cv.glmnet") {
 	    cat("glmnet with cv\n")
-	    model.10percent<-cv.glmnet(makeX(insurance.train.10percent.x), insurance.train.10percent.y, family="gaussian", nfolds=5)
+	    model.10percent<-cv.glmnet(makeX(insurance.train.10percent.x), insurance.train.10percent.y, family="gaussian", nfolds=10)
 	  } else
 	    stop("Uknown method")
 
 
 
 
-	  if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
+	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP") {
+	    cat(model_choice, "with CV prediction\n")
+	    X_test<-stats::model.matrix(~., insurance.test.10percent.x)
+	    prediction<- tryCatch(predict(model.10percent, X_test[,-1]),
+	                          error=function(cond) {
+	                            message("Numerical instability in predict (grpreg) detected. Will skip this 1-percent set. Original error:")
+	                            message(cond)
+	                            return(c(1,1))
+	                          })
+
+	    if (length(prediction)==2) {
+	      next
+	    }
+	  } else if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.10percent, newx=insurance.test.10percent.x, df = gic$df.min, type="response"),
 	                          error=function(cond) {
@@ -222,7 +252,7 @@ for (model_choice in c( run_list )) {
 	    if (length(prediction)==2) {
 	      next
 	    }
-	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAMER") {
+	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAMER"| model_choice == "pl.DMRnet") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.10percent, newx=insurance.test.10percent.x, type="response"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
@@ -264,15 +294,17 @@ for (model_choice in c( run_list )) {
 
 	  MSPE[run]<-mean((prediction[!is.na(prediction)] - insurance.test.10percent.y.no_error[!is.na(prediction)])^2)
 
+	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP")
+	    dfmin[run]<-sum(coef(model.10percent)!=0)
 	  if (model_choice == "gic.DMRnet" | model_choice=="gic.GLAMER")
 	    dfmin[run]<-gic$df.min
-	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAMER")
+	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAMER" | model_choice == "pl.DMRnet")
 	    dfmin[run]<-model.10percent$df.min
 	  if (model_choice == "cv.glmnet" )
 	    dfmin[run]<-sum(coef(model.10percent, s="lambda.min")!=0)-1
 	  if (model_choice == "scope")
 	    dfmin[run]<-sum(abs(model.10percent$beta.best[[1]]) > 1e-10) +
-	                sum(sapply(sapply(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels), unique), length)-1)
+	                sum(sapply(sapply(sapply(lapply(model.10percent$beta.best[[2]], as.factor), levels), unique), length)-1)
 	  #  length(unique(c(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels), sapply(sapply(model.10percent$beta.best[[1]], as.factor), levels),recursive=TRUE)))-1 + #-1 is for "0" level
 	   #             -sum(sapply(sapply(model.10percent$beta.best[[2]], as.factor), levels)!="0")   #and we subtract the number of factors = number of constraints from eq. (8) in Stokell et al.
                        #the commented formula above had problems with levels close to 0 but nonzero, like these:
@@ -316,19 +348,19 @@ write.csv(sizes, paste(part_filename_and_number, "_model_sizes.csv", sep=""))
 write.csv(computation_times, paste(part_filename_and_number, "_computation_times.csv", sep=""))
 
 
-pdf(paste(part_filename_and_number, "_computation_times.pdf", sep=""),width=12,height=5)
+pdf(paste(part_filename_and_number, "_computation_times.pdf", sep=""),width=18,height=5)
 boxplot(computation_times)
 dev.off()
 
-pdf(paste(part_filename_and_number, "_errors.pdf", sep=""),width=12,height=5)
+pdf(paste(part_filename_and_number, "_errors.pdf", sep=""),width=18,height=5)
 boxplot(errors)
 dev.off()
 
-pdf(paste(part_filename_and_number, "_model_sizes.pdf", sep=""),width=9,height=5)
+pdf(paste(part_filename_and_number, "_model_sizes.pdf", sep=""),width=15,height=5)
 boxplot(sizes)
 dev.off()
 
-pdf(paste(part_filename_and_number, "_effective_lengths.pdf", sep=""),width=12,height=5)
+pdf(paste(part_filename_and_number, "_effective_lengths.pdf", sep=""),width=18,height=5)
 boxplot(effective_lengths)
 dev.off()
 

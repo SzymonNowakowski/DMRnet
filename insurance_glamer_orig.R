@@ -5,7 +5,7 @@ library(DMRnet)  #predict functions, gic from DMRnet work with GLAMER models too
 
 
 run_list = c( "cv.GLAMER", "gic.GLAMER")
-runs<-50
+runs<-5
 
 filename_and_dirs <- current_filename()
 part_filename_and_number <- substr(filename_and_dirs, nchar(filename_and_dirs)-21, nchar(filename_and_dirs))
@@ -15,5 +15,6 @@ cat("seed set as md5 hash of the following string: ", part_filename_and_number,"
 cat("search for the result files postfixed with the same string: ", part_filename_and_number,"\n\n")
 
 source("glamer_4lm.R")
+source("cv_glamer.R")
 
 source("insurance_orig.R")

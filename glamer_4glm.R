@@ -183,7 +183,7 @@ glamer_4glm_help <- function(S, betas_with_intercept, X, y, fl, clust.method, la
 
 
 
-glamer_4glm <- function(X, y, clust.method = "complete", nlambda = 100, lam = 10^(-7), maxp = ceiling(length(y)/4)){
+glamer_4glm <- function(X, y, clust.method = "complete", lambda = NULL, nlambda = 100, lam = 10^(-7), maxp = ceiling(length(y)/4)){
     if (class(y) != "factor"){
        stop("Error: y should be a factor")
     }
@@ -242,7 +242,15 @@ glamer_4glm <- function(X, y, clust.method = "complete", nlambda = 100, lam = 10
     p <- ncol(x.full)
     fl <- c(n.levels, rep(2, n.cont))
     x.full <- apply(x.full, 2, function(x) sqrt(n/sum(x^2))*x)
-    mL <- grpreg::grpreg(x.full[,-1], y, group=rep(1:p.x, fl-1) , penalty = "grLasso", family ="binomial", nlambda = nlambda)
+
+    if (is.null(lambda)) {
+      user.lambdas<-substitute()    #make user.lambdas - paradoxically - not present in a call to grpreg
+    } else {
+      nlambda <- length(lambda)   #override this parameter
+      user.lambdas <- lambda
+    }
+
+    mL <- grpreg::grpreg(x.full[,-1], y, group=rep(1:p.x, fl-1) , penalty = "grLasso", family ="binomial", nlambda = nlambda, lambda = user.lambdas)
     RL <- mL$lambda
     dfy <- apply(mL$beta, 2, function(x) sum(x!=0))
     kt <- 1:length(RL)
@@ -290,13 +298,16 @@ glamer_4glm <- function(X, y, clust.method = "complete", nlambda = 100, lam = 10
     }
 
     model_group <- function(i) {ind[i]}
-    model_index_within_group <- function(i) {i - sum(rss[, model_group(i)] == Inf)}
-    model_index_within_group_inverted <- function(i) {length(mm[[model_group(i)]]$heights)-model_index_within_group(i)+1}
+    model_index_within_group <- function(i) {i - sum(loglik[, model_group(i)] == -Inf)}
+    #model_index_within_group_inverted <- function(i) {length(mm[[model_group(i)]]$heights)-model_index_within_group(i)+1}
 
     be <- sapply(idx, function(i) {b_matrix<-mm[[model_group(i)]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_glm_help(b = b_matrix[,model_index_within_group(i)], S = SS[,model_group(i)], fl=fl)})
     #!!!!!!!!!!!important stability change. Added matrix( ...$b)
 
-    heights <- sapply(rev(idx), function(i) mm[[model_group(i)]]$heights[model_index_within_group_inverted(i)])
+
+    heights <- sapply(idx, function(i) mm[[model_group(i)]]$heights[model_index_within_group(i)])
+    #heights from full model #1 with height == 0 to the last 1-element model with height > 0
+
 
     rownames(be) <- colnames(x.full)
     if(length(ord) > 0){
@@ -305,7 +316,7 @@ glamer_4glm <- function(X, y, clust.method = "complete", nlambda = 100, lam = 10
                   ind1[ord] = (p - length(ord) + 1):p
                   be = be[ind1,]
    }
-   fit <- list(beta = be, df = length(idx):1, loglik = loglik[cbind(idx, ind[idx])], n = n, levels.listed = n.levels.listed, heights = heights, arguments = list(family = "binomial", clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp), interc = TRUE)
+   fit <- list(beta = be, df = length(idx):1, loglik = loglik[cbind(idx, ind[idx])], n = n, levels.listed = n.levels.listed, heights = heights, lambda = mL$lambda, arguments = list(family = "binomial", clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp), interc = TRUE)
    class(fit) = "DMR"
    return(fit)
 }

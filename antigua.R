@@ -1,21 +1,25 @@
 
 library(randomForest)
 library(glmnet)
-library(stats)  #glm
+library(stats)  #glm, model.matrix
 library(CatReg)
 library(DMRnet)
+library(grpreg)
+library(digest)
 
 #
 #library(devtools)
 #load_all()
 
-runs<-1000
-run_list = c( "cv.GLAMER", "gic.GLAMER", "cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF")
+
+set.seed(strtoi(substr(digest("antigua", "md5", serialize = FALSE),1,7),16))
+
+runs<-200
+run_list = c(   "cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF", "cv.MCP", "cv.grLasso")
 
 source("cv_DMRnet.R")
-debugSource("cv_glamer_cutpoints.R")
-debugSource("glamer_4lm.R")
-
+source("cv_glamer.R")
+source("glamer_4lm.R")
 
 library(DAAG)
 data(antigua)
@@ -131,7 +135,19 @@ for (model_choice in c( run_list )) {
 	  start.time <- Sys.time()
 	  cat("Started: ", start.time,"\n")
 
-	  if (model_choice=="gic.DMRnet") {
+	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP") {
+	    cat(model_choice, "with CV\n")
+	    X<-stats::model.matrix(~., antigua.train.70percent.x)
+	    level_count <- sapply(lapply(antigua.train.70percent.x, levels), length)
+	    level_count[level_count == 0] <- 2   #make it two for continous variables
+	    groups<-rep(1:length(level_count), level_count-1)
+	    if (model_choice == "cv.grLasso") {
+	      penalty <-  "grLasso"
+	    } else
+	      penalty <- "grMCP"
+	    model.70percent <- cv.grpreg(X[,-1], antigua.train.70percent.y, group=groups, penalty=penalty, gamma=32, nfolds=10)
+
+	  } else if (model_choice=="gic.DMRnet") {
 	    cat("DMRnet with GIC only\n")
 	    model.70percent <- tryCatch(DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian"),
 	                               error=function(cond) {
@@ -146,9 +162,13 @@ for (model_choice in c( run_list )) {
 
 	    cat("GIC\n")
 	    gic <- gic.DMR(model.70percent)
-	  } else  if (model_choice=="cv.DMRnet") {
-	      cat("DMRnet with cv\n")
-	      model.70percent <- tryCatch(cv_DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=5),
+	  } else  if (model_choice=="cv.DMRnet" | model_choice == "pl.DMRnet") {
+	      cat(model_choice, "with cv\n")
+	      if (model_choice == "pl.DMRnet") {
+	        plateau_resistant <- TRUE
+	      } else
+	        plateau_resistant <- FALSE
+	      model.70percent <- tryCatch(cv_DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10, plateau_resistant_CV =  plateau_resistant),
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
@@ -175,7 +195,9 @@ for (model_choice in c( run_list )) {
 	    gic <- gic.DMR(model.70percent)
 	  } else  if (model_choice=="cv.GLAMER") {
 	    cat("GLAMER with cv\n")
-	    model.70percent <- tryCatch(cv_glamer_cutpoints(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=5),
+
+	    model.70percent <- tryCatch(cv_glamer(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10),
+
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv.GLAMER detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
@@ -206,14 +228,17 @@ for (model_choice in c( run_list )) {
 	    model.70percent <- glm(antigua.train.70percent.y~., data = antigua.train.70percent.x, family="gaussian")
 	  } else if (model_choice=="cv.glmnet") {
 	    cat("glmnet with cv\n")
-	    model.70percent<-cv.glmnet(makeX(antigua.train.70percent.x), antigua.train.70percent.y, family="gaussian", nfolds=5)
+	    model.70percent<-cv.glmnet(makeX(antigua.train.70percent.x), antigua.train.70percent.y, family="gaussian", nfolds=10)
 	  } else
 	    stop("Uknown method")
 
 
 
-
-	  if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
+	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP") {
+	    cat(model_choice, "with CV prediction\n")
+	    X_test<-stats::model.matrix(~., antigua.test.70percent.x)
+	    prediction<-predict(model.70percent, X_test[,-1])
+	  } else if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.70percent, newx=antigua.test.70percent.x, df = gic$df.min, type="response"),
 	                          error=function(cond) {
@@ -225,7 +250,7 @@ for (model_choice in c( run_list )) {
 	    if (length(prediction)==2) {
 	      next
 	    }
-	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAMER") {
+	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAMER" | model_choice == "pl.DMRnet") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.70percent, newx=antigua.test.70percent.x, type="response"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
@@ -279,15 +304,17 @@ for (model_choice in c( run_list )) {
 
 	  MSPE[run]<-mean((prediction[!is.na(prediction)] - antigua.test.70percent.y.no_error[!is.na(prediction)])^2)
 
+	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP")
+	    dfmin[run]<-sum(coef(model.70percent)!=0)
 	  if (model_choice == "gic.DMRnet" | model_choice=="gic.GLAMER")
 	    dfmin[run]<-gic$df.min
-	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAMER")
+	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAMER" | model_choice == "pl.DMRnet")
 	    dfmin[run]<-model.70percent$df.min
 	  if (model_choice == "cv.glmnet" )
 	    dfmin[run]<-sum(coef(model.70percent, s="lambda.min")!=0)-1
 	  if (model_choice == "scope")
 	    dfmin[run]<-sum(abs(model.70percent$beta.best[[1]]) > 1e-10) +
-	                sum(sapply(sapply(sapply(sapply(model.70percent$beta.best[[2]], as.factor), levels), unique), length)-1)
+	                sum(sapply(sapply(sapply(lapply(model.70percent$beta.best[[2]], as.factor), levels), unique), length)-1)
 	  #  length(unique(c(sapply(sapply(model.70percent$beta.best[[2]], as.factor), levels), sapply(sapply(model.70percent$beta.best[[1]], as.factor), levels),recursive=TRUE)))-1 + #-1 is for "0" level
 	   #             -sum(sapply(sapply(model.70percent$beta.best[[2]], as.factor), levels)!="0")   #and we subtract the number of factors = number of constraints from eq. (8) in Stokell et al.
                        #the commented formula above had problems with levels close to 0 but nonzero, like these:
@@ -331,19 +358,19 @@ write.csv(sizes, "antigua_model_sizes.csv")
 write.csv(computation_times, "antigua_computation_times.csv")
 
 
-pdf("antigua_computation_times.pdf",width=12,height=5)
+pdf("antigua_computation_times.pdf",width=18,height=5)
 boxplot(computation_times)
 dev.off()
 
-pdf("antigua_errors.pdf",width=12,height=5)
+pdf("antigua_errors.pdf",width=18,height=5)
 boxplot(errors)
 dev.off()
 
-pdf("antigua_model_sizes.pdf",width=9,height=5)
+pdf("antigua_model_sizes.pdf",width=15,height=5)
 boxplot(sizes)
 dev.off()
 
-pdf("antigua_effective_lengths.pdf",width=12,height=5)
+pdf("antigua_effective_lengths.pdf",width=18,height=5)
 boxplot(effective_lengths)
 dev.off()
 

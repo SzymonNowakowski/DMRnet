@@ -214,7 +214,9 @@ glamer_4lm_help <- function(S, betas_with_intercept, mL, X, y, fl, cut_points, c
   return(mfin)
 }
 
+
 glamer_4lm <- function(X, y, cut_points = NULL, clust.method = "complete", lambda = NULL, nlambda = 100, maxp = ceiling(length(y)/2)){
+
     n <- nrow(X)
     if(n != length(y)){
               stop("Error: non-conforming data: nrow(X) not equal to length(y)")
@@ -343,6 +345,7 @@ glamer_4lm <- function(X, y, cut_points = NULL, clust.method = "complete", lambd
     model_index_within_group <- function(i) {i - sum(rss[, model_group(i)] == Inf)}
     #model_index_within_group_inverted <- function(i) {length(mm[[model_group(i)]]$heights)-model_index_within_group(i)+1}
 
+
     be <- sapply(idx, function(i) {b_matrix<-mm[[model_group(i)]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_4lm_help(b = b_matrix[, model_index_within_group(i)], S = SS[, model_group(i)], X = X, y = y, fl=fl, valid=!indInf[i])})
     heights <- sapply(idx, function(i) mm[[model_group(i)]]$heights[model_index_within_group(i)])
     #heights from full model #1 with height == 0 to the last 1-element model with height > 0
@@ -356,6 +359,7 @@ glamer_4lm <- function(X, y, cut_points = NULL, clust.method = "complete", lambd
       cut_point_generated_models_min <- cut_point_generated_models_max <- rep(0, length(idx))
       rss_vec<-rss[cbind(idx, ind[idx])]
     }
+
     rownames(be) <- colnames(x.full)
     if(length(ord) > 0){
                   ind1 <- c(1:p)
@@ -363,7 +367,9 @@ glamer_4lm <- function(X, y, cut_points = NULL, clust.method = "complete", lambd
                   ind1[ord] = (p - length(ord) + 1):p
                   be = be[ind1,]
    }
+
    fit <- list(beta = be, df = length(idx):1, rss = rss_vec, n = n, levels.listed = n.levels.listed, heights = heights, lambda = mL$lambda, cut_point_generated_models = list(min = cut_point_generated_models_min, max = cut_point_generated_models_max), arguments = list(family = "gaussian", clust.method = clust.method, nlambda = nlambda, maxp = maxp), interc = TRUE)
+
    class(fit) = "DMR"
    return(fit)
 }
