@@ -10,6 +10,8 @@ library(grpreg)
 #library(devtools)
 #load_all()
 
+set.seed(strtoi(substr(digest("antigua", "md5", serialize = FALSE),1,7),16))
+
 runs<-200
 run_list = c(   "cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF", "cv.MCP", "cv.grLasso")
 
