@@ -22,7 +22,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
                         real_n<-helper$real_n
 
                         dmr <- DMRnet(Xtr, ytr, family = "gaussian", clust.method = clust.method, o = o, nlambda = nlambda, interc = interc, maxp = ceiling(maxp))
-                        pred <- predict.DMR(dmr, newx = as.data.frame(Xte))
+                        pred <- predict(dmr, newx = as.data.frame(Xte))
                         error[[fold]] <- apply(pred, 2, function(z) sum((z - yte)^2))
                 }
                 foldmin <- min(sapply(error, length))
@@ -63,7 +63,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
                                 real_n<-helper$real_n
 
                                 dmr <- DMRnet(Xtr, ytr, family = "binomial", clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, interc = interc, maxp = maxp)
-                                pred <- predict.DMR(dmr, newx = as.data.frame(Xte), type = "class")
+                                pred <- predict(dmr, newx = as.data.frame(Xte), type = "class")
                                 error[[fold]] <- apply(pred, 2, function(z) sum(z != yte))
                         }
                         foldmin <- min(sapply(error, length))
