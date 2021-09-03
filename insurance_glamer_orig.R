@@ -16,5 +16,6 @@ cat("search for the result files postfixed with the same string: ", part_filenam
 
 source("glamer_4lm.R")
 source("cv_glamer.R")
+source("cv_glamer_cutpoints.R")
 source("cv_sd_glamer.R")
 source("insurance_orig.R")
