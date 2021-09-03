@@ -18,7 +18,7 @@ source("cv_DMRnet.R")
 source("cvg_DMRnet.R")
 source("cv_glamer.R")
 source("cv_sd_glamer.R")
-source("cv_glamer_cutpoints.R")
+
 
 adult.train<-read.csv("adult.data", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
 adult.test<-read.csv("adult.test", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
@@ -79,7 +79,7 @@ gamma<-100
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-50
-for (model_choice in c("cp+sd.GLAMER", "cv+sd.GLAMER", "cv.GLAMER", "gic.GLAMER", "cvg(e+m).DMRnet", "cvg.DMRnet", "cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF", "cv.MCP", "cv.grLasso")) {
+for (model_choice in c( "cv+sd.GLAMER", "cv.GLAMER", "gic.GLAMER", "cvg(e+m).DMRnet", "cvg.DMRnet", "cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF", "cv.MCP", "cv.grLasso")) {
 	gamma <- 350 - gamma    #it alternates between 250 and 100
 	times<-dfmin<-misclassification_error<-lengths<-rep(0,runs)
 	run<-1
