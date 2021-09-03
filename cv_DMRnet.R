@@ -6,7 +6,7 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
         if (family == "gaussian"){
                 n <- length(y)
                 real_n <- 0
-                foldid <- cvfolds(n, nfolds)
+                foldid <- sample(rep(1:nfolds,length.out=n))  #same as cvfolds, but written with available functions
                 error <- list()
                 for (fold in 1:nfolds){
                         Xte <- X[foldid == fold, ,drop = FALSE]
@@ -43,8 +43,8 @@ cv_DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
                         n1 <- table(y)[1]
                         n2 <- table(y)[2]
                         real_n <- 0
-                        foldid1 <- cvfolds(n1, nfolds)
-                        foldid2 <- cvfolds(n2, nfolds)
+                        foldid1 <- sample(rep(1:nfolds,length.out=n1))   #same as cvfolds, but written with available functions
+                        foldid2 <- sample(rep(1:nfolds,length.out=n2))
                         foldid <- c()
                         foldid[which(y == levels(factor(y))[1])] = foldid1
                         foldid[which(y == levels(factor(y))[2])] = foldid2

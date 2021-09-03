@@ -156,7 +156,7 @@ for (model_choice in c( "cv+sd.GLAMER", "cv.GLAMER", "gic.GLAMER", "cvg(e+m).DMR
 	    gic <- gic.DMR(model.1percent)
 
 	  } else  if (model_choice=="cvg.DMRnet" | model_choice == "cvg(e+m).DMRnet") {
-	    cat(model_choice, "with cv\n")
+	    cat(model_choice, "with cvg\n")
 	    if (model_choice == "cvg(e+m).DMRnet") {
 	      plateau_resistant <- TRUE
 	    } else
@@ -176,7 +176,7 @@ for (model_choice in c( "cv+sd.GLAMER", "cv.GLAMER", "gic.GLAMER", "cvg(e+m).DMR
 	    cat(model_choice, "with cv\n")
 	    model.1percent <- tryCatch(cv_DMRnet(adult.train.1percent.x, adult.train.1percent.y, nlambda=100, family="binomial", nfolds=10),
 	                               error=function(cond) {
-	                                 message("Numerical instability in cvg.DMRnet detected. Will skip this 1-percent set. Original error:")
+	                                 message("Numerical instability in cv.DMRnet detected. Will skip this 1-percent set. Original error:")
 	                                 message(cond)
 	                                 return(list("red_light"))
 	                               })
@@ -218,7 +218,7 @@ for (model_choice in c( "cv+sd.GLAMER", "cv.GLAMER", "gic.GLAMER", "cvg(e+m).DMR
 	    #gic <- gic.DMR(model.1percent, c = 2)
 	    #plot(gic)
 	  } else  if (model_choice=="cv+sd.GLAMER") {
-	    cat("GLAMER with cv\n")
+	    cat("GLAMER with cv+sd\n")
 	    model.1percent <- tryCatch(cv_sd_glamer(adult.train.1percent.x, adult.train.1percent.y, nlambda=100, family="binomial", nfolds=10),
 	                               error=function(cond) {
 	                                 message("Numerical instability in cv+sd.GLAMER detected. Will skip this 1-percent set. Original error:")
@@ -237,7 +237,7 @@ for (model_choice in c( "cv+sd.GLAMER", "cv.GLAMER", "gic.GLAMER", "cvg(e+m).DMR
 	    cat("GLAMER with cv\n")
 	    model.1percent <- tryCatch(cv_glamer(adult.train.1percent.x, adult.train.1percent.y, nlambda=100, family="binomial", nfolds=10),
 	                               error=function(cond) {
-	                                 message("Numerical instability in cv+sd.GLAMER detected. Will skip this 1-percent set. Original error:")
+	                                 message("Numerical instability in cv.GLAMER detected. Will skip this 1-percent set. Original error:")
 	                                 message(cond)
 	                                 return(list("red_light"))
 	                               })

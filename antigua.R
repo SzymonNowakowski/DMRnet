@@ -166,7 +166,7 @@ for (model_choice in c( run_list )) {
 	    cat("GIC\n")
 	    gic <- gic.DMR(model.70percent)
 	  } else  if (model_choice=="cvg.DMRnet" | model_choice == "cvg(e+m).DMRnet") {
-	    cat(model_choice, "with cv\n")
+	    cat(model_choice, "with cvg\n")
 	    if (model_choice == "cvg(e+m).DMRnet") {
 	      plateau_resistant <- TRUE
 	    } else
@@ -185,7 +185,7 @@ for (model_choice in c( run_list )) {
 	    cat(model_choice, "with cv\n")
 	    model.70percent <- tryCatch(cv_DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10),
 	                                error=function(cond) {
-	                                  message("Numerical instability in cvg.DMRnet detected. Will skip this 70-percent set. Original error:")
+	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 70-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
@@ -209,7 +209,7 @@ for (model_choice in c( run_list )) {
 	    cat("GIC\n")
 	    gic <- gic.DMR(model.70percent)
 	  } else  if (model_choice=="cv+sd.GLAMER") {
-	    cat("GLAMER with cv\n")
+	    cat("GLAMER with cv+sd\n")
 
 	    model.70percent <- tryCatch(cv_sd_glamer(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10),
 
@@ -228,7 +228,7 @@ for (model_choice in c( run_list )) {
 	    model.70percent <- tryCatch(cv_glamer(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10),
 
 	                                error=function(cond) {
-	                                  message("Numerical instability in cv+sd.GLAMER detected. Will skip this 70-percent set. Original error:")
+	                                  message("Numerical instability in cv.GLAMER detected. Will skip this 70-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
