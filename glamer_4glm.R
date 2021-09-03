@@ -2,7 +2,11 @@
 source("glamer_stats.R")
 
 
-part2beta_glm_help <- function(b, S, fl){
+part2beta_glm_help <- function(b, S, fl, valid) {
+  if (!valid) {
+    return(rep(0, sum(fl-1)+1))
+  }
+
   if (sum(S == 0) > 0){
     b1 <- b[1]
     b <- b[-1]
@@ -23,7 +27,7 @@ part2beta_glm_help <- function(b, S, fl){
 
 
 
-clusters_4glm_help <- function(S, betas_with_intercept, X, y, clust.method = 'complete', lam = 10^(-7)){
+clusters_4glm_help <- function(S, betas_with_intercept, X, y, cut_points, clust.method, lam){
 
   X <- X[, S==1, drop = FALSE]
   betas_with_intercept <- betas_with_intercept[betas_with_intercept>0]
@@ -117,9 +121,21 @@ clusters_4glm_help <- function(S, betas_with_intercept, X, y, clust.method = 'co
   pix = zb/(zb + 1)
   loglik = sum(log(pix)[y == 1]) + sum(log(1-pix)[y == 0]) - lam*sum(m$beta@x^2)
   form <- namCont
+
+  cut_point_model_reference <- rep(NA, length(cut_points)) #initiated as pointing to the no-model
+  #or numeric(0) if the cut_points==NULL
+  ###only cut points == 0 should reference to the 1st model
+  cut_point_model_reference[cut_points==0] <- 1
+
   if (len > 2){
-    for (i in 2:(len - 1)){
+    for (i in 2:(len-1)){
       kt <- names(heig)[i]
+
+      if (length(cut_points) > 0) {
+        ###all cut points located between this heig[i] and the previous heig[i-1] should back-reference to the model we create in this step
+        cut_point_model_reference[cut_points > heig[i-1] & cut_points <= heig[i]] <- i
+      }
+
       if(length(intersect(kt, namCont)) > 0){
         form <- form[-which(form == kt)]
         Z2 <- Z2[, form, drop = FALSE]
@@ -160,30 +176,37 @@ clusters_4glm_help <- function(S, betas_with_intercept, X, y, clust.method = 'co
     }
   }
   m <- stats::glm.fit(as.matrix(rep(1, length(y))), y, family = stats::binomial())
+
+  if (length(cut_points) > 0) {
+    ###all cut points gigher than the previous heig[len-1] should back-reference to the len-th model
+    ### THIS IS DIFFERENT THAN in gaussian family
+    cut_point_model_reference[cut_points > heig[len-1]] <- len
+  }
+
   b = cbind(b, c(m$coef, rep(0, length(heig) - 1)))
   zb = exp(m$coef*rep(1, length(y)))
   pix = zb/(zb + 1)
   loglik = c(loglik, sum(log(pix)[y == 1]) + sum(log(1-pix)[y == 0]))
-  return(list(beta = b, loglik = loglik, heights = heig))
+  return(list(b = b, loglik = loglik, heights = heig, cut_point_model_reference = cut_point_model_reference))
 }
 
 
-glamer_4glm_help <- function(S, betas_with_intercept, X, y, fl, clust.method, lam){
+glamer_4glm_help <- function(S, betas_with_intercept, X, y, fl, cut_points, clust.method, lam){
   if (sum(S) == 0) {
     m <- stats::glm.fit(as.matrix(rep(1, length(y))), y, family = stats::binomial())
     zb = exp(m$coef*rep(1, length(y)))
     pix = zb/(zb + 1)
     loglik = sum(log(pix)[y == 1]) + sum(log(1-pix)[y == 0])
     b = c(m$coef, rep(0,sum(fl-1)))   #!!!!!!!!!!!important stability change. Added rep(0,...)
-    return(list(b = b, loglik = loglik, heights = 0))
+    return(list(b = b, loglik = loglik, heights = 0, cut_point_model_reference = rep(1, length(cut_points))))
   }
-  mfin <- clusters_4glm_help(S, betas_with_intercept, X, y, clust.method = clust.method, lam = lam)
+  mfin <- clusters_4glm_help(S, betas_with_intercept, X, y, cut_points, clust.method, lam)
   return(mfin)
 }
 
 
 
-glamer_4glm <- function(X, y, clust.method = "complete", lambda = NULL, nlambda = 100, lam = 10^(-7), maxp = ceiling(length(y)/4)){
+glamer_4glm <- function(X, y, cut_points = NULL, clust.method = "complete", lambda = NULL, nlambda = 100, lam = 10^(-7), maxp = ceiling(length(y)/4)){
     if (class(y) != "factor"){
        stop("Error: y should be a factor")
     }
@@ -286,10 +309,36 @@ glamer_4glm <- function(X, y, clust.method = "complete", lambda = NULL, nlambda 
         #ncol = active lambdas
     #if (p >= n) SS <- SS[,-1]    #what is the purpose of that line - it is mistery to me. commenting for now
     bb<-bb[,ii==FALSE, drop=FALSE]   #betas but for active lambdas only
-    mm <- lapply(1:ncol(SS), function(i) glamer_4glm_help(SS[,i], bb[,i], X, y, fl, clust.method = clust.method, lam = lam))
+    mm <- lapply(1:ncol(SS), function(i) glamer_4glm_help(SS[,i], bb[,i], X, y, fl, cut_points, clust.method = clust.method, lam = lam))
     maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$loglik)))
     loglik <- sapply(1:length(mm), function(i) c(rep(-Inf, maxl - length(mm[[i]]$loglik)), mm[[i]]$loglik))
-    ind <- apply(loglik, 1, which.max)
+
+    shift <- function(i) {sum(loglik[, i] == -Inf)}
+
+    if (length(cut_points)>0) {
+      cut_point_model_reference <- sapply(1:length(mm), function(i) mm[[i]]$cut_point_model_reference)
+      mask <- matrix(-Inf, nrow=nrow(loglik), ncol=ncol(loglik))   #it will mask by Inf all models not back-referenced in cut_points
+      model_cut_point_reference_max <- model_cut_point_reference_min <- matrix(0, nrow=nrow(loglik), ncol=ncol(loglik))
+      for (i in 1:length(mm)) {
+        mask[shift(i) + na.omit(cut_point_model_reference[,i]), i] <- 0
+
+        for (model in 1:length(mm[[i]]$loglik)) {
+          model_cut_point_reference_min[shift(i) + model, i] <- which(cut_point_model_reference[,i]==model)[1]   #first occurence of TRUE
+          model_cut_point_reference_max[shift(i) + model, i] <- length(cut_point_model_reference[,i]) - which(rev(cut_point_model_reference[,i])==model)[1] +1   #last occurence of TRUE
+        }
+        # cut_point_model_reference, for each cutpoint, it lists models the cutpoint references
+        # on the other hand model_cut_point_reference is a reverse relation:
+        # model_cut_point_reference, for each model, it lists the cutpoints that originate the models (min and max such cutpoint)
+        # both 0 and NA mean "no related cutpoint"
+      }
+      loglik_with_mask <- loglik + mask
+    } else
+      loglik_with_mask <- loglik
+    ind <- apply(loglik_with_mask, 1, which.max)  #in each row, which is the index of a model maximizing loglik
+    indInf <- apply(loglik_with_mask,1,max) == -Inf
+
+
+
     maxi <- min(p, maxp)
     if (length(ind) > maxi){
        idx <- (length(ind) - maxi):length(ind)
@@ -298,16 +347,24 @@ glamer_4glm <- function(X, y, clust.method = "complete", lambda = NULL, nlambda 
     }
 
     model_group <- function(i) {ind[i]}
-    model_index_within_group <- function(i) {i - sum(loglik[, model_group(i)] == -Inf)}
+    model_index_within_group <- function(i) {i - shift(model_group(i))}
     #model_index_within_group_inverted <- function(i) {length(mm[[model_group(i)]]$heights)-model_index_within_group(i)+1}
 
-    be <- sapply(idx, function(i) {b_matrix<-mm[[model_group(i)]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_glm_help(b = b_matrix[,model_index_within_group(i)], S = SS[,model_group(i)], fl=fl)})
+    be <- sapply(idx, function(i) {b_matrix<-mm[[model_group(i)]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_glm_help(b = b_matrix[,model_index_within_group(i)], S = SS[,model_group(i)], fl=fl, valid=!indInf[i])})
     #!!!!!!!!!!!important stability change. Added matrix( ...$b)
-
 
     heights <- sapply(idx, function(i) mm[[model_group(i)]]$heights[model_index_within_group(i)])
     #heights from full model #1 with height == 0 to the last 1-element model with height > 0
 
+    if (length(cut_points>0)) {
+      cut_point_generated_models_min <- sapply(idx, function(i) {ifelse(indInf[i],0,model_cut_point_reference_min[i, model_group(i)])})
+      cut_point_generated_models_max <- sapply(idx, function(i) {ifelse(indInf[i],0,model_cut_point_reference_max[i, model_group(i)])})
+      loglik_vec<-sapply(idx, function(i) {ifelse(indInf[i],Inf,loglik[i, model_group(i)])})
+    }
+    else {
+      cut_point_generated_models_min <- cut_point_generated_models_max <- rep(0, length(idx))
+      loglik_vec<-loglik[cbind(idx, ind[idx])]
+    }
 
     rownames(be) <- colnames(x.full)
     if(length(ord) > 0){
@@ -316,7 +373,7 @@ glamer_4glm <- function(X, y, clust.method = "complete", lambda = NULL, nlambda 
                   ind1[ord] = (p - length(ord) + 1):p
                   be = be[ind1,]
    }
-   fit <- list(beta = be, df = length(idx):1, loglik = loglik[cbind(idx, ind[idx])], n = n, levels.listed = n.levels.listed, heights = heights, lambda = mL$lambda, arguments = list(family = "binomial", clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp), interc = TRUE)
+   fit <- list(beta = be, df = length(idx):1, loglik = loglik_vec, n = n, levels.listed = n.levels.listed, heights = heights, lambda = mL$lambda, cut_point_generated_models = list(min = cut_point_generated_models_min, max = cut_point_generated_models_max), arguments = list(family = "binomial", clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp), interc = TRUE)
    class(fit) = "DMR"
    return(fit)
 }

@@ -167,15 +167,27 @@ for (model_choice in c( run_list )) {
 
 	    cat("GIC\n")
 	    gic <- gic.DMR(model.10percent)
-	  } else  if (model_choice=="cv.DMRnet"| model_choice == "pl.DMRnet") {
-	      cat(model_choice, "with cv\n")
-	      if (model_choice == "pl.DMRnet") {
-	        plateau_resistant <- TRUE
-	      } else
-	        plateau_resistant <- FALSE
-	      model.10percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=10, agressive=TRUE, plateau_resistant_CV = plateau_resistant),
+	  } else  if (model_choice=="cvg.DMRnet"| model_choice == "cvg(e+m).DMRnet") {
+	    cat(model_choice, "with cv\n")
+	    if (model_choice == "cvg(e+m).DMRnet") {
+	      plateau_resistant <- TRUE
+	    } else
+	      plateau_resistant <- FALSE
+	    model.10percent <- tryCatch(cvg_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=10, agressive=TRUE, plateau_resistant_CV = plateau_resistant),
 	                                error=function(cond) {
-	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 10-percent set. Original error:")
+	                                  message("Numerical instability in cvg.DMRnet detected. Will skip this 10-percent set. Original error:")
+	                                  message(cond)
+	                                  return(list("red_light"))
+	                                })
+
+	    if (model.10percent[[1]] == "red_light") {
+	      next
+	    }
+	  } else  if (model_choice=="cv.DMRnet") {
+	    cat(model_choice, "with cv\n")
+	    model.10percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=10, agressive=TRUE),
+	                                error=function(cond) {
+	                                  message("Numerical instability in cvg.DMRnet detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
@@ -198,11 +210,11 @@ for (model_choice in c( run_list )) {
 
 	    cat("GIC\n")
 	    gic <- gic.DMR(model.10percent)
-	  } else  if (model_choice=="cv.GLAMER") {
+	  } else  if (model_choice=="cv+sd.GLAMER") {
 	    cat("GLAMER with cv\n")
-	    model.10percent <- tryCatch(cv_glamer(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=10, agressive=TRUE),
+	    model.10percent <- tryCatch(cv_sd_glamer(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=10, agressive=TRUE),
 	                                error=function(cond) {
-	                                  message("Numerical instability in cv.GLAMER detected. Will skip this 10-percent set. Original error:")
+	                                  message("Numerical instability in cv+sd.GLAMER detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
@@ -210,11 +222,23 @@ for (model_choice in c( run_list )) {
 	    if (model.10percent[[1]] == "red_light") {
 	      next
 	    }
-	  } else  if (model_choice=="cp.GLAMER") {
+	  } else  if (model_choice=="cv.GLAMER") {
+	    cat("GLAMER with cv\n")
+	    model.10percent <- tryCatch(cv_glamer(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=10, agressive=TRUE),
+	                                error=function(cond) {
+	                                  message("Numerical instability in cv+sd.GLAMER detected. Will skip this 10-percent set. Original error:")
+	                                  message(cond)
+	                                  return(list("red_light"))
+	                                })
+
+	    if (model.10percent[[1]] == "red_light") {
+	      next
+	    }
+	  } else  if (model_choice=="cp+sd.GLAMER") {
 	    cat("GLAMER with cv with cutpoints\n")
 	    model.10percent <- tryCatch(cv_glamer_cutpoints(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=10, agressive=TRUE),
 	                                error=function(cond) {
-	                                  message("Numerical instability in cp.GLAMER detected. Will skip this 10-percent set. Original error:")
+	                                  message("Numerical instability in cp+sd.GLAMER detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
@@ -252,7 +276,7 @@ for (model_choice in c( run_list )) {
 	    X_test<-stats::model.matrix(~., insurance.test.10percent.x)
 	    prediction<- tryCatch(predict(model.10percent, X_test[,-1]),
 	                          error=function(cond) {
-	                            message("Numerical instability in predict (grpreg) detected. Will skip this 1-percent set. Original error:")
+	                            message("Numerical instability in predict (grpreg) detected. Will skip this 10-percent set. Original error:")
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
@@ -272,7 +296,7 @@ for (model_choice in c( run_list )) {
 	    if (length(prediction)==2) {
 	      next
 	    }
-	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAMER"| model_choice == "pl.DMRnet" | model_choice=="cp.GLAMER") {
+	  } else  if (model_choice=="cvg.DMRnet" | model_choice=="cv+sd.GLAMER" | model_choice == "cv.GLAMER" | model_choice == "cv.DMRnet" | model_choice == "cvg(e+m).DMRnet" | model_choice=="cp+sd.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.10percent, newx=insurance.test.10percent.x, type="response"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
@@ -318,7 +342,7 @@ for (model_choice in c( run_list )) {
 	    dfmin[run]<-sum(coef(model.10percent)!=0)
 	  if (model_choice == "gic.DMRnet" | model_choice=="gic.GLAMER")
 	    dfmin[run]<-gic$df.min
-	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAMER" | model_choice == "pl.DMRnet" | model_choice=="cp.GLAMER")
+	  if (model_choice == "cvg.DMRnet" | model_choice=="cv+sd.GLAMER" | model_choice == "cv.GLAMER" | model_choice == "cv.DMRnet" | model_choice == "cvg(e+m).DMRnet" | model_choice=="cp+sd.GLAMER")
 	    dfmin[run]<-model.10percent$df.min
 	  if (model_choice == "cv.glmnet" )
 	    dfmin[run]<-sum(coef(model.10percent, s="lambda.min")!=0)-1
@@ -368,19 +392,19 @@ write.csv(sizes, paste(part_filename_and_number, "_model_sizes.csv", sep=""))
 write.csv(computation_times, paste(part_filename_and_number, "_computation_times.csv", sep=""))
 
 
-pdf(paste(part_filename_and_number, "_computation_times.pdf", sep=""),width=18,height=5)
+pdf(paste(part_filename_and_number, "_computation_times.pdf", sep=""),width=24,height=5)
 boxplot(computation_times)
 dev.off()
 
-pdf(paste(part_filename_and_number, "_errors.pdf", sep=""),width=18,height=5)
+pdf(paste(part_filename_and_number, "_errors.pdf", sep=""),width=24,height=5)
 boxplot(errors)
 dev.off()
 
-pdf(paste(part_filename_and_number, "_model_sizes.pdf", sep=""),width=15,height=5)
+pdf(paste(part_filename_and_number, "_model_sizes.pdf", sep=""),width=21,height=5)
 boxplot(sizes)
 dev.off()
 
-pdf(paste(part_filename_and_number, "_effective_lengths.pdf", sep=""),width=18,height=5)
+pdf(paste(part_filename_and_number, "_effective_lengths.pdf", sep=""),width=24,height=5)
 boxplot(effective_lengths)
 dev.off()
 

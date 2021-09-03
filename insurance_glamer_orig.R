@@ -4,8 +4,8 @@ library(DMRnet)  #predict functions, gic from DMRnet work with GLAMER models too
 
 
 
-run_list = c( "cp.GLAMER", "cv.GLAMER", "gic.GLAMER")
-runs<-5
+run_list = c( "cp+sd.GLAMER", "cv+sd.GLAMER", "cv.GLAMER", "gic.GLAMER")
+runs<-1
 
 filename_and_dirs <- current_filename()
 part_filename_and_number <- substr(filename_and_dirs, nchar(filename_and_dirs)-23, nchar(filename_and_dirs))
@@ -16,5 +16,5 @@ cat("search for the result files postfixed with the same string: ", part_filenam
 
 source("glamer_4lm.R")
 source("cv_glamer.R")
-
+source("cv_sd_glamer.R")
 source("insurance_orig.R")

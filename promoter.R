@@ -10,7 +10,10 @@ library(grpreg)
 
 source("glamer_4glm.R")
 source("cv_DMRnet.R")
+source("cvg_DMRnet.R")
 source("cv_glamer.R")
+source("cv_sd_glamer.R")
+source("cv_glamer_cutpoints.R")
 
 #library(devtools)
 #load_all()
@@ -41,7 +44,7 @@ computation_times<-list()
 gamma<-100
 runs<-10
 
-for (model_choice in c("cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF", "cv.MCP", "cv.grLasso")) {
+for (model_choice in c("cp+sd.GLAMER", "cv+sd.GLAMER", "cv.GLAMER", "gic.GLAMER", "cvg(e+m).DMRnet", "cvg.DMRnet", "cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF", "cv.MCP", "cv.grLasso")) {
 	gamma <- 350 - gamma    #it alternates between 250 and 100
 	times<-dfmin<-misclassification_error<-lengths<-rep(0,runs)
 	run<-1
@@ -103,7 +106,7 @@ for (model_choice in c("cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic
 	    cat("DMRnet with GIC only\n")
 	    model.70percent <- tryCatch(DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100, family="binomial"),
 	                               error=function(cond) {
-	                                 message("Numerical instability in DMRnet detected. Will skip this 1-percent set. Original error:")
+	                                 message("Numerical instability in DMRnet detected. Will skip this 70-percent set. Original error:")
 	                                 message(cond)
 	                                 return(list("red_light"))
 	                               })
@@ -115,15 +118,28 @@ for (model_choice in c("cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic
 	    cat("GIC\n")
 	    gic <- gic.DMR(model.70percent, c = 2)
 
-	  } else  if (model_choice=="cv.DMRnet"| model_choice == "pl.DMRnet") {
-	      cat(model_choice, "with cv\n")
-	      if (model_choice == "pl.DMRnet") {
-	        plateau_resistant <- TRUE
-	      } else
-	        plateau_resistant <- FALSE
-	      model.70percent <- tryCatch(cv_DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100, family="binomial", nfolds=10, plateau_resistant_CV = plateau_resistant),
+	  } else  if (model_choice=="cvg.DMRnet"| model_choice == "cvg(e+m).DMRnet") {
+	    cat(model_choice, "with cv\n")
+	    if (model_choice == "cvg(e+m).DMRnet") {
+	      plateau_resistant <- TRUE
+	    } else
+	      plateau_resistant <- FALSE
+	    model.70percent <- tryCatch(cvg_DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100, family="binomial", nfolds=10, plateau_resistant_CV = plateau_resistant),
 	                                error=function(cond) {
-	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 1-percent set. Original error:")
+	                                  message("Numerical instability in cvg.DMRnet detected. Will skip this 70-percent set. Original error:")
+	                                  message(cond)
+	                                  return(list("red_light"))
+	                                })
+
+	    if (model.70percent[[1]] == "red_light") {
+	      next
+	    }
+
+	  } else  if (model_choice=="cv.DMRnet") {
+	    cat(model_choice, "with cv\n")
+	    model.70percent <- tryCatch(cv_DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100, family="binomial", nfolds=10),
+	                                error=function(cond) {
+	                                  message("Numerical instability in cvg.DMRnet detected. Will skip this 70-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
@@ -136,7 +152,7 @@ for (model_choice in c("cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic
 	    cat("GLAMER method\n")
 	    model.70percent <- tryCatch(glamer_4glm(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100),
 	                               error=function(cond) {
-	                                 message("Numerical instability in GLAMER detected. Will skip this 1-percent set. Original error:")
+	                                 message("Numerical instability in GLAMER detected. Will skip this 70-percent set. Original error:")
 	                                 message(cond)
 	                                 return(list("red_light"))
 	                               })
@@ -148,11 +164,43 @@ for (model_choice in c("cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic
 	    cat("GIC\n")
 	    gic <- gic.DMR(model.70percent, c = 2)   #we are using existing gic calculation which is compatible with GLAMER models
 
-	  } else  if (model_choice=="cv.GLAMER") {
+	  } else  if (model_choice=="cp+sd.GLAMER") {
+	    cat("GLAMER with cv with cutpoints\n")
+	    model.70percent <- tryCatch(cv_glamer_cutpoints(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100, family="binomial", nfolds=10),
+	                                error=function(cond) {
+	                                  message("Numerical instability in cp+sd.GLAMER detected. Will skip this 70-percent set. Original error:")
+	                                  message(cond)
+	                                  return(list("red_light"))
+	                                })
+
+	    if (model.70percent[[1]] == "red_light") {
+	      next
+	    }
+
+	    #plot(model.70percent)
+	    #gic <- gic.DMR(model.70percent, c = 2)
+	    #plot(gic)
+	  }  else  if (model_choice=="cv+sd.GLAMER") {
+	    cat("GLAMER with cv\n")
+	    model.70percent <- tryCatch(cv_sd_glamer(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100, family="binomial", nfolds=10),
+	                                error=function(cond) {
+	                                  message("Numerical instability in cv+sd.GLAMER detected. Will skip this 70-percent set. Original error:")
+	                                  message(cond)
+	                                  return(list("red_light"))
+	                                })
+
+	    if (model.70percent[[1]] == "red_light") {
+	      next
+	    }
+
+	    #plot(model.70percent)
+	    #gic <- gic.DMR(model.70percent, c = 2)
+	    #plot(gic)
+	  }  else  if (model_choice=="cv.GLAMER") {
 	    cat("GLAMER with cv\n")
 	    model.70percent <- tryCatch(cv_glamer(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100, family="binomial", nfolds=10),
 	                               error=function(cond) {
-	                                 message("Numerical instability in cv.DMRnet detected. Will skip this 1-percent set. Original error:")
+	                                 message("Numerical instability in cv+sd.GLAMER detected. Will skip this 70-percent set. Original error:")
 	                                 message(cond)
 	                                 return(list("red_light"))
 	                               })
@@ -168,7 +216,7 @@ for (model_choice in c("cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic
 	    cat("Scope, no cv, gamma=", gamma,"\n")
 	    model.70percent <- tryCatch(scope.logistic(promoter.train.70percent.x, as.numeric(levels(promoter.train.70percent.y))[promoter.train.70percent.y], gamma=gamma),
 	                               error=function(cond) {
-	                                 message("Numerical instability in SCOPE detected. Will skip this 1-percent set. Original error:")
+	                                 message("Numerical instability in SCOPE detected. Will skip this 70-percent set. Original error:")
 	                                 message(cond)
 	                                 return(list("red_light"))
 	                               })
@@ -197,7 +245,7 @@ for (model_choice in c("cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic
 	    X_test<-stats::model.matrix(~., promoter.test.70percent.x)
 	    prediction<- tryCatch(predict(model.70percent, X_test[,-1], type="class"),
 	                          error=function(cond) {
-	                            message("Numerical instability in predict (grpreg) detected. Will skip this 1-percent set. Original error:")
+	                            message("Numerical instability in predict (grpreg) detected. Will skip this 70-percent set. Original error:")
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
@@ -209,7 +257,7 @@ for (model_choice in c("cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.70percent, newx=promoter.test.70percent.x, df = gic$df.min, type="class"),
 	                          error=function(cond) {
-	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 1-percent set. Original error:")
+	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 70-percent set. Original error:")
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
@@ -217,11 +265,11 @@ for (model_choice in c("cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic
 	    if (length(prediction)==2) {
 	      next
 	    }
-	  } else  if (model_choice=="cv.DMRnet" | model_choice =="cv.GLAMER"| model_choice == "pl.DMRnet") {
+	  } else  if (model_choice=="cvg.DMRnet" | model_choice =="cv+sd.GLAMER" | model_choice == "cv.GLAMER" | model_choice == "cv.DMRnet" | model_choice == "cvg(e+m).DMRnet" | model_choice =="cp+sd.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.70percent, newx=promoter.test.70percent.x, type="class"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
-	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 1-percent set. Original error:")
+	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 70-percent set. Original error:")
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
@@ -236,7 +284,7 @@ for (model_choice in c("cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic
 	    cat("Random Forest pred\n")
 	    prediction<- tryCatch(predict(model.70percent, promoter.test.70percent.x, type="class"),
 	                          error=function(cond) {
-	                            message("Numerical instability in predict (RF) detected. Will skip this 1-percent set. Original error:")
+	                            message("Numerical instability in predict (RF) detected. Will skip this 70-percent set. Original error:")
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
@@ -251,7 +299,7 @@ for (model_choice in c("cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic
 	    cat("glmnet pred\n")
 	    prediction<- tryCatch(predict(model.70percent, newx=makeX(promoter.test.70percent.x), s="lambda.min", type="class"),
 	                          error=function(cond) {
-	                            message("Numerical instability in predict (cv.glmnet) detected. Will skip this 1-percent set. Original error:")
+	                            message("Numerical instability in predict (cv.glmnet) detected. Will skip this 70-percent set. Original error:")
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
@@ -276,7 +324,7 @@ for (model_choice in c("cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic
 	    dfmin[run]<-sum(coef(model.70percent)!=0)
 	  if (model_choice == "gic.DMRnet" | model_choice == "gic.GLAMER")
 	    dfmin[run]<-gic$df.min
-	  if (model_choice == "cv.DMRnet" | model_choice == "cv.GLAMER" | model_choice == "pl.DMRnet")
+	  if (model_choice == "cvg.DMRnet" | model_choice == "cv+sd.GLAMER" | model_choice == "cv.GLAMER" | model_choice == "cv.DMRnet" | model_choice == "cvg(e+m).DMRnet" | model_choice =="cp+sd.GLAMER")
 	    dfmin[run]<-model.70percent$df.min
 	  if (model_choice == "cv.glmnet" )
 	    dfmin[run]<-sum(coef(model.70percent, s="lambda.min")!=0)-1
@@ -325,19 +373,19 @@ write.csv(sizes, "promoter_model_sizes.csv")
 write.csv(computation_times, "promoter_computation_times.csv")
 
 
-pdf("promoter_computation_times.pdf",width=18,height=5)
+pdf("promoter_computation_times.pdf",width=24,height=5)
 boxplot(computation_times)
 dev.off()
 
-pdf("promoter_errors.pdf",width=18,height=5)
+pdf("promoter_errors.pdf",width=24,height=5)
 boxplot(errors)
 dev.off()
 
-pdf("promoter_model_sizes.pdf",width=15,height=5)
+pdf("promoter_model_sizes.pdf",width=21,height=5)
 boxplot(sizes)
 dev.off()
 
-pdf("promoter_effective_lengths.pdf",width=18,height=5)
+pdf("promoter_effective_lengths.pdf",width=24,height=5)
 boxplot(effective_lengths)
 dev.off()
 

@@ -1,6 +1,6 @@
 source("glamer_stats.R")
 
-part2beta_4lm_help <- function(b, S, X, y, fl, valid){
+part2beta_4lm_help <- function(b, S, X, y, fl, valid) {
   if (!valid) {
     return(rep(0, sum(fl-1)+1))
   }
@@ -138,14 +138,17 @@ clusters_4lm_help <- function(S, betas_with_intercept, X, y, cut_points, clust.m
         #or numeric(0) if the cut_points==NULL
     ###only cut points == 0 should reference to the 1st model
   cut_point_model_reference[cut_points==0] <- 1
+
   if (len >= 2){
     for (i in 2:(len)){
       a <- rep(0,p)
       kt <- names(heig)[i]
+
       if (length(cut_points) > 0) {
         ###all cut points located between this heig[i] and the previous heig[i-1] should back-reference to the model we create in this step
         cut_point_model_reference[cut_points > heig[i-1] & cut_points <= heig[i]] <- i
       }
+
       if(length(intersect(kt, namCont)) > 0){
         jj <- which(form == kt)
         form <- form[-which(form == kt)]
@@ -309,16 +312,18 @@ glamer_4lm <- function(X, y, cut_points = NULL, clust.method = "complete", lambd
     maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$rss)))
     rss <- sapply(1:length(mm), function(i) c(rep(Inf, maxl - length(mm[[i]]$rss)), mm[[i]]$rss))
 
+    shift <- function(i) {sum(rss[, i] == Inf)}
+
     if (length(cut_points)>0) {
       cut_point_model_reference <- sapply(1:length(mm), function(i) mm[[i]]$cut_point_model_reference)
       mask <- matrix(Inf, nrow=nrow(rss), ncol=ncol(rss))   #it will mask by Inf all models not back-referenced in cut_points
       model_cut_point_reference_max <- model_cut_point_reference_min <- matrix(0, nrow=nrow(rss), ncol=ncol(rss))
       for (i in 1:length(mm)) {
-        mask[sum(rss[, i] == Inf) + na.omit(cut_point_model_reference[,i]), i] <- 0
+        mask[shift(i) + na.omit(cut_point_model_reference[,i]), i] <- 0
 
         for (model in 1:length(mm[[i]]$rss)) {
-          model_cut_point_reference_min[sum(rss[, i] == Inf) + model, i] <- which(cut_point_model_reference[,i]==model)[1]   #first occurence of TRUE
-          model_cut_point_reference_max[sum(rss[, i] == Inf) + model, i] <- length(cut_point_model_reference[,i]) - which(rev(cut_point_model_reference[,i])==model)[1] +1   #last occurence of TRUE
+          model_cut_point_reference_min[shift(i) + model, i] <- which(cut_point_model_reference[,i]==model)[1]   #first occurence of TRUE
+          model_cut_point_reference_max[shift(i) + model, i] <- length(cut_point_model_reference[,i]) - which(rev(cut_point_model_reference[,i])==model)[1] +1   #last occurence of TRUE
         }
         # cut_point_model_reference, for each cutpoint, it lists models the cutpoint references
         # on the other hand model_cut_point_reference is a reverse relation:
@@ -342,7 +347,7 @@ glamer_4lm <- function(X, y, cut_points = NULL, clust.method = "complete", lambd
 
     #smallest models are last
     model_group <- function(i) {ind[i]}
-    model_index_within_group <- function(i) {i - sum(rss[, model_group(i)] == Inf)}
+    model_index_within_group <- function(i) {i - shift(model_group(i))}
     #model_index_within_group_inverted <- function(i) {length(mm[[model_group(i)]]$heights)-model_index_within_group(i)+1}
 
 

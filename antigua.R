@@ -15,10 +15,12 @@ library(digest)
 set.seed(strtoi(substr(digest("antigua", "md5", serialize = FALSE),1,7),16))
 
 runs<-200
-run_list = c(   "cp.GLAMER", "cv.GLAMER", "gic.GLAMER", "pl.DMRnet", "cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF", "cv.MCP", "cv.grLasso")
+run_list = c(   "cp+sd.GLAMER", "cv+sd.GLAMER","cv.GLAMER", "gic.GLAMER", "cvg(e+m).DMRnet", "cvg.DMRnet","cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF", "cv.MCP", "cv.grLasso")
 
 source("cv_DMRnet.R")
+source("cvg_DMRnet.R")
 source("cv_glamer.R")
+source("cv_sd_glamer.R")
 source("cv_glamer_cutpoints.R")
 source("glamer_4lm.R")
 
@@ -152,7 +154,7 @@ for (model_choice in c( run_list )) {
 	    cat("DMRnet with GIC only\n")
 	    model.70percent <- tryCatch(DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian"),
 	                               error=function(cond) {
-	                                 message("Numerical instability in DMRnet detected. Will skip this 10-percent set. Original error:")
+	                                 message("Numerical instability in DMRnet detected. Will skip this 70-percent set. Original error:")
 	                                 message(cond)
 	                                 return(list("red_light"))
 	                               })
@@ -163,15 +165,27 @@ for (model_choice in c( run_list )) {
 
 	    cat("GIC\n")
 	    gic <- gic.DMR(model.70percent)
-	  } else  if (model_choice=="cv.DMRnet" | model_choice == "pl.DMRnet") {
-	      cat(model_choice, "with cv\n")
-	      if (model_choice == "pl.DMRnet") {
-	        plateau_resistant <- TRUE
-	      } else
-	        plateau_resistant <- FALSE
-	      model.70percent <- tryCatch(cv_DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10, plateau_resistant_CV =  plateau_resistant),
+	  } else  if (model_choice=="cvg.DMRnet" | model_choice == "cvg(e+m).DMRnet") {
+	    cat(model_choice, "with cv\n")
+	    if (model_choice == "cvg(e+m).DMRnet") {
+	      plateau_resistant <- TRUE
+	    } else
+	      plateau_resistant <- FALSE
+	    model.70percent <- tryCatch(cvg_DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10, plateau_resistant_CV =  plateau_resistant),
 	                                error=function(cond) {
-	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 10-percent set. Original error:")
+	                                  message("Numerical instability in cvg.DMRnet detected. Will skip this 70-percent set. Original error:")
+	                                  message(cond)
+	                                  return(list("red_light"))
+	                                })
+
+	    if (model.70percent[[1]] == "red_light") {
+	      next
+	    }
+	  } else  if (model_choice=="cv.DMRnet" ) {
+	    cat(model_choice, "with cv\n")
+	    model.70percent <- tryCatch(cv_DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10),
+	                                error=function(cond) {
+	                                  message("Numerical instability in cvg.DMRnet detected. Will skip this 70-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
@@ -183,7 +197,7 @@ for (model_choice in c( run_list )) {
 	    cat("GLAMER with GIC only\n")
 	    model.70percent <- tryCatch(glamer_4lm(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100),
 	                                error=function(cond) {
-	                                  message("Numerical instability in gic.GLAMER detected. Will skip this 10-percent set. Original error:")
+	                                  message("Numerical instability in gic.GLAMER detected. Will skip this 70-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
@@ -194,13 +208,13 @@ for (model_choice in c( run_list )) {
 
 	    cat("GIC\n")
 	    gic <- gic.DMR(model.70percent)
-	  } else  if (model_choice=="cv.GLAMER") {
+	  } else  if (model_choice=="cv+sd.GLAMER") {
 	    cat("GLAMER with cv\n")
 
-	    model.70percent <- tryCatch(cv_glamer(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10),
+	    model.70percent <- tryCatch(cv_sd_glamer(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10),
 
 	                                error=function(cond) {
-	                                  message("Numerical instability in cv.GLAMER detected. Will skip this 10-percent set. Original error:")
+	                                  message("Numerical instability in cv+sd.GLAMER detected. Will skip this 70-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
@@ -208,13 +222,27 @@ for (model_choice in c( run_list )) {
 	    if (model.70percent[[1]] == "red_light") {
 	      next
 	    }
-	  } else  if (model_choice=="cp.GLAMER") {
+	  } else  if (model_choice=="cv.GLAMER") {
+	    cat("GLAMER with cv\n")
+
+	    model.70percent <- tryCatch(cv_glamer(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10),
+
+	                                error=function(cond) {
+	                                  message("Numerical instability in cv+sd.GLAMER detected. Will skip this 70-percent set. Original error:")
+	                                  message(cond)
+	                                  return(list("red_light"))
+	                                })
+
+	    if (model.70percent[[1]] == "red_light") {
+	      next
+	    }
+	  } else  if (model_choice=="cp+sd.GLAMER") {
 	    cat("GLAMER with cv with cutpoints\n")
 
 	    model.70percent <- tryCatch(cv_glamer_cutpoints(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10),
 
 	                                error=function(cond) {
-	                                  message("Numerical instability in cp.GLAMER detected. Will skip this 10-percent set. Original error:")
+	                                  message("Numerical instability in cp+sd.GLAMER detected. Will skip this 70-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
@@ -226,7 +254,7 @@ for (model_choice in c( run_list )) {
 	    cat("Scope, no cv, gamma=", gamma,"\n")
 	    model.70percent <- tryCatch(scope(antigua.train.70percent.x, antigua.train.70percent.y, gamma=gamma),
 	                               error=function(cond) {
-	                                 message("Numerical instability in SCOPE detected. Will skip this 10-percent set. Original error:")
+	                                 message("Numerical instability in SCOPE detected. Will skip this 70-percent set. Original error:")
 	                                 message(cond)
 	                                 return(list("red_light"))
 	                               })
@@ -257,7 +285,7 @@ for (model_choice in c( run_list )) {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.70percent, newx=antigua.test.70percent.x, df = gic$df.min, type="response"),
 	                          error=function(cond) {
-	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 10-percent set. Original error:")
+	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 70-percent set. Original error:")
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
@@ -265,11 +293,11 @@ for (model_choice in c( run_list )) {
 	    if (length(prediction)==2) {
 	      next
 	    }
-	  } else  if (model_choice=="cv.DMRnet" | model_choice=="cv.GLAMER" | model_choice == "pl.DMRnet" | model_choice == "cp.GLAMER") {
+	  } else  if (model_choice=="cvg.DMRnet" | model_choice=="cv+sd.GLAMER" | model_choice == "cv.GLAMER" | model_choice == "cv.DMRnet" | model_choice == "cvg(e+m).DMRnet" | model_choice == "cp+sd.GLAMER") {
 	    cat(model_choice, "pred\n")
 	    prediction<- tryCatch(predict(model.70percent, newx=antigua.test.70percent.x, type="response"),#df = gic$df.min, type="class"),
 	                          error=function(cond) {
-	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 10-percent set. Original error:")
+	                            message("Numerical instability in predict (DMRnet) detected. Will skip this 70-percent set. Original error:")
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
@@ -284,7 +312,7 @@ for (model_choice in c( run_list )) {
 	    cat("Random Forest pred\n")
 	    prediction<- tryCatch(predict(model.70percent, antigua.test.70percent.x, type="class"),
 	                          error=function(cond) {
-	                            message("Numerical instability in predict (RF) detected. Will skip this 1-percent set. Original error:")
+	                            message("Numerical instability in predict (RF) detected. Will skip this 70-percent set. Original error:")
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
@@ -299,7 +327,7 @@ for (model_choice in c( run_list )) {
 	    cat("glmnet pred\n")
 	    prediction<- tryCatch(predict(model.70percent, newx=makeX(antigua.test.70percent.x), s="lambda.min"),
 	                          error=function(cond) {
-	                            message("Numerical instability in predict (cv.glmnet) detected. Will skip this 10-percent set. Original error:")
+	                            message("Numerical instability in predict (cv.glmnet) detected. Will skip this 70-percent set. Original error:")
 	                            message(cond)
 	                            return(c(1,1))
 	                          })
@@ -323,7 +351,7 @@ for (model_choice in c( run_list )) {
 	    dfmin[run]<-sum(coef(model.70percent)!=0)
 	  if (model_choice == "gic.DMRnet" | model_choice=="gic.GLAMER")
 	    dfmin[run]<-gic$df.min
-	  if (model_choice == "cv.DMRnet" | model_choice=="cv.GLAMER" | model_choice == "pl.DMRnet" | model_choice == "cp.GLAMER")
+	  if (model_choice == "cvg.DMRnet" | model_choice=="cv+sd.GLAMER" | model_choice == "cv.GLAMER" | model_choice == "cv.DMRnet" | model_choice == "cvg(e+m).DMRnet" | model_choice == "cp+sd.GLAMER")
 	    dfmin[run]<-model.70percent$df.min
 	  if (model_choice == "cv.glmnet" )
 	    dfmin[run]<-sum(coef(model.70percent, s="lambda.min")!=0)-1
@@ -373,19 +401,19 @@ write.csv(sizes, "antigua_model_sizes.csv")
 write.csv(computation_times, "antigua_computation_times.csv")
 
 
-pdf("antigua_computation_times.pdf",width=20,height=5)
+pdf("antigua_computation_times.pdf",width=24,height=5)
 boxplot(computation_times)
 dev.off()
 
-pdf("antigua_errors.pdf",width=20,height=5)
+pdf("antigua_errors.pdf",width=24,height=5)
 boxplot(errors)
 dev.off()
 
-pdf("antigua_model_sizes.pdf",width=17,height=5)
+pdf("antigua_model_sizes.pdf",width=21,height=5)
 boxplot(sizes)
 dev.off()
 
-pdf("antigua_effective_lengths.pdf",width=20,height=5)
+pdf("antigua_effective_lengths.pdf",width=24,height=5)
 boxplot(effective_lengths)
 dev.off()
 
