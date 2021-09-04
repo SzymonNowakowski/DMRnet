@@ -1,14 +1,8 @@
 
 library(randomForest)
 library(glmnet)
-library(stats)  #glm
+library(stats)  #model.matrix
 library(CatReg)
-
-
-#
-#library(devtools)
-#load_all()
-
 
 
 
@@ -142,7 +136,27 @@ for (model_choice in c( run_list )) {
 	      penalty <-  "grLasso"
 	    } else
 	      penalty <- "grMCP"
-	    model.10percent <- tryCatch(cv.grpreg(X[,-1], insurance.train.10percent.y, group=groups, penalty=penalty, gamma=32, nfolds=10),
+	    model.10percent <- tryCatch(cv.grpreg(X[,-1], insurance.train.10percent.y, group=groups, penalty=penalty, nfolds=10),
+	                                error=function(cond) {
+	                                  message("Numerical instability in cv.grpreg detected. Will skip this 10-percent set. Original error:")
+	                                  message(cond)
+	                                  return(list("red_light"))
+	                                })
+
+	    if (model.10percent[[1]] == "red_light") {
+	      next
+	    }
+	  } else if (model_choice=="cv.MCP-g") {
+	    cat(model_choice, "with CV\n")
+	    X<-stats::model.matrix(~., insurance.train.10percent.x)
+	    level_count <- sapply(lapply(insurance.train.10percent.x, levels), length)
+	    level_count[level_count == 0] <- 2   #make it two for continous variables
+	    groups<-rep(1:length(level_count), level_count-1)
+	    if (model_choice == "cv.grLasso") {
+	      penalty <-  "grLasso"
+	    } else
+	      penalty <- "grMCP"
+	    model.10percent <- tryCatch(cv.grpreg(X[,-1], insurance.train.10percent.y, group=groups, penalty=penalty, gamma=gamma, nfolds=10),
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv.grpreg detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
@@ -183,18 +197,6 @@ for (model_choice in c( run_list )) {
 	    if (model.10percent[[1]] == "red_light") {
 	      next
 	    }
-	  } else  if (model_choice=="cv.DMRnet") {
-	    cat(model_choice, "with cv\n")
-	    model.10percent <- tryCatch(cv_DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=10, agressive=TRUE),
-	                                error=function(cond) {
-	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 10-percent set. Original error:")
-	                                  message(cond)
-	                                  return(list("red_light"))
-	                                })
-
-	    if (model.10percent[[1]] == "red_light") {
-	      next
-	    }
 	  } else  if (model_choice=="gic.GLAMER") {
 	    cat("GLAMER with GIC only\n")
 	    model.10percent <- tryCatch(glamer_4lm(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100),
@@ -215,30 +217,6 @@ for (model_choice in c( run_list )) {
 	    model.10percent <- tryCatch(cv_sd_glamer(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=10, agressive=TRUE),
 	                                error=function(cond) {
 	                                  message("Numerical instability in cv+sd.GLAMER detected. Will skip this 10-percent set. Original error:")
-	                                  message(cond)
-	                                  return(list("red_light"))
-	                                })
-
-	    if (model.10percent[[1]] == "red_light") {
-	      next
-	    }
-	  } else  if (model_choice=="cv.GLAMER") {
-	    cat("GLAMER with cv\n")
-	    model.10percent <- tryCatch(cv_glamer(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=10, agressive=TRUE),
-	                                error=function(cond) {
-	                                  message("Numerical instability in cv.GLAMER detected. Will skip this 10-percent set. Original error:")
-	                                  message(cond)
-	                                  return(list("red_light"))
-	                                })
-
-	    if (model.10percent[[1]] == "red_light") {
-	      next
-	    }
-	  } else  if (model_choice=="cp+sd.GLAMER") {
-	    cat("GLAMER with cv with cutpoints\n")
-	    model.10percent <- tryCatch(cv_glamer_cutpoints(insurance.train.10percent.x, insurance.train.10percent.y, nlambda=100, family="gaussian", nfolds=10, agressive=TRUE),
-	                                error=function(cond) {
-	                                  message("Numerical instability in cp+sd.GLAMER detected. Will skip this 10-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
@@ -271,7 +249,7 @@ for (model_choice in c( run_list )) {
 
 
 
-	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP") {
+	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP" | model_choice=="cv.MCP-g") {
 	    cat(model_choice, "with CV prediction\n")
 	    X_test<-stats::model.matrix(~., insurance.test.10percent.x)
 	    prediction<- tryCatch(predict(model.10percent, X_test[,-1]),
@@ -338,7 +316,7 @@ for (model_choice in c( run_list )) {
 
 	  MSPE[run]<-mean((prediction[!is.na(prediction)] - insurance.test.10percent.y.no_error[!is.na(prediction)])^2)
 
-	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP")
+	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP" | model_choice=="cv.MCP-g")
 	    dfmin[run]<-sum(coef(model.10percent)!=0)
 	  if (model_choice == "gic.DMRnet" | model_choice=="gic.GLAMER")
 	    dfmin[run]<-gic$df.min
@@ -375,6 +353,9 @@ for (model_choice in c( run_list )) {
 
 	model_name<-model_choice
 	if (model_choice == "scope")
+	  model_name<-paste(model_name, gamma, sep="-")
+
+	if (model_choice == "cv.MCP-g")
 	  model_name<-paste(model_name, gamma, sep="-")
 
 

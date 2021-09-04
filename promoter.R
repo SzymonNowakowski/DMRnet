@@ -2,21 +2,16 @@
 
 library(randomForest)
 library(glmnet)
-library(stats)  #glm
+library(stats)  #model.matrix
 library(CatReg)
 library(DMRnet)
 library(digest)
 library(grpreg)
 
 source("glamer_4glm.R")
-source("cv_DMRnet.R")
 source("cvg_DMRnet.R")
-source("cv_glamer.R")
 source("cv_sd_glamer.R")
-source("cv_glamer_cutpoints.R")
 
-#library(devtools)
-#load_all()
 
 set.seed(strtoi(substr(digest("promoter", "md5", serialize = FALSE),1,7),16))
 
@@ -44,7 +39,7 @@ computation_times<-list()
 gamma<-100
 runs<-10
 
-for (model_choice in c("cp+sd.GLAMER", "cv+sd.GLAMER", "cv.GLAMER", "gic.GLAMER", "cvg(e+m).DMRnet", "cvg.DMRnet", "cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF", "cv.MCP", "cv.grLasso")) {
+for (model_choice in c( "cv+sd.GLAMER",  "gic.GLAMER","cvg.DMRnet", "gic.DMRnet", "scope", "scope", "cv.glmnet", "RF", "cv.MCP", "cv.MCP-g", "cv.MCP-g", "cv.grLasso")) {
 	gamma <- 350 - gamma    #it alternates between 250 and 100
 	times<-dfmin<-misclassification_error<-lengths<-rep(0,runs)
 	run<-1
@@ -102,6 +97,22 @@ for (model_choice in c("cp+sd.GLAMER", "cv+sd.GLAMER", "cv.GLAMER", "gic.GLAMER"
 
 	    model.70percent <- cv.grpreg(X[,-1], y, group=groups, penalty=penalty, family="binomial", nfolds=10)
 
+	  } else if (model_choice=="cv.MCP-g") {
+	    cat(model_choice, "with CV\n")
+	    X<-stats::model.matrix(~., promoter.train.70percent.x)
+	    level_count <- sapply(lapply(promoter.train.70percent.x, levels), length)
+	    level_count[level_count == 0] <- 2   #make it two for continous variables
+	    groups<-rep(1:length(level_count), level_count-1)
+	    if (model_choice == "cv.grLasso") {
+	      penalty <-  "grLasso"
+	    } else
+	      penalty <- "grMCP"
+
+	    lev <- levels(factor(promoter.train.70percent.y))
+	    y <- ifelse(promoter.train.70percent.y == lev[2], 1, 0)
+
+	    model.70percent <- cv.grpreg(X[,-1], y, group=groups, penalty=penalty, family="binomial", gamma = gamma, nfolds=10)
+
 	  } else if (model_choice=="gic.DMRnet") {
 	    cat("DMRnet with GIC only\n")
 	    model.70percent <- tryCatch(DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100, family="binomial"),
@@ -135,19 +146,6 @@ for (model_choice in c("cp+sd.GLAMER", "cv+sd.GLAMER", "cv.GLAMER", "gic.GLAMER"
 	      next
 	    }
 
-	  } else  if (model_choice=="cv.DMRnet") {
-	    cat(model_choice, "with cv\n")
-	    model.70percent <- tryCatch(cv_DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100, family="binomial", nfolds=10),
-	                                error=function(cond) {
-	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 70-percent set. Original error:")
-	                                  message(cond)
-	                                  return(list("red_light"))
-	                                })
-
-	    if (model.70percent[[1]] == "red_light") {
-	      next
-	    }
-
 	  } else if (model_choice=="gic.GLAMER") {
 	    cat("GLAMER method\n")
 	    model.70percent <- tryCatch(glamer_4glm(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100),
@@ -164,22 +162,6 @@ for (model_choice in c("cp+sd.GLAMER", "cv+sd.GLAMER", "cv.GLAMER", "gic.GLAMER"
 	    cat("GIC\n")
 	    gic <- gic.DMR(model.70percent, c = 2)   #we are using existing gic calculation which is compatible with GLAMER models
 
-	  } else  if (model_choice=="cp+sd.GLAMER") {
-	    cat("GLAMER with cv with cutpoints\n")
-	    model.70percent <- tryCatch(cv_glamer_cutpoints(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100, family="binomial", nfolds=10),
-	                                error=function(cond) {
-	                                  message("Numerical instability in cp+sd.GLAMER detected. Will skip this 70-percent set. Original error:")
-	                                  message(cond)
-	                                  return(list("red_light"))
-	                                })
-
-	    if (model.70percent[[1]] == "red_light") {
-	      next
-	    }
-
-	    #plot(model.70percent)
-	    #gic <- gic.DMR(model.70percent, c = 2)
-	    #plot(gic)
 	  }  else  if (model_choice=="cv+sd.GLAMER") {
 	    cat("GLAMER with cv+sd\n")
 	    model.70percent <- tryCatch(cv_sd_glamer(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100, family="binomial", nfolds=10),
@@ -193,25 +175,6 @@ for (model_choice in c("cp+sd.GLAMER", "cv+sd.GLAMER", "cv.GLAMER", "gic.GLAMER"
 	      next
 	    }
 
-	    #plot(model.70percent)
-	    #gic <- gic.DMR(model.70percent, c = 2)
-	    #plot(gic)
-	  }  else  if (model_choice=="cv.GLAMER") {
-	    cat("GLAMER with cv\n")
-	    model.70percent <- tryCatch(cv_glamer(promoter.train.70percent.x, promoter.train.70percent.y, nlambda=100, family="binomial", nfolds=10),
-	                               error=function(cond) {
-	                                 message("Numerical instability in cv.GLAMER detected. Will skip this 70-percent set. Original error:")
-	                                 message(cond)
-	                                 return(list("red_light"))
-	                               })
-
-	    if (model.70percent[[1]] == "red_light") {
-	      next
-	    }
-
-	    #plot(model.70percent)
-	    #gic <- gic.DMR(model.70percent, c = 2)
-	    #plot(gic)
 	  }  else if (model_choice=="scope") {
 	    cat("Scope, no cv, gamma=", gamma,"\n")
 	    model.70percent <- tryCatch(scope.logistic(promoter.train.70percent.x, as.numeric(levels(promoter.train.70percent.y))[promoter.train.70percent.y], gamma=gamma),
@@ -240,7 +203,7 @@ for (model_choice in c("cp+sd.GLAMER", "cv+sd.GLAMER", "cv.GLAMER", "gic.GLAMER"
 
 
 
-	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP") {
+	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP" | model_choice=="cv.MCP-g") {
 	    cat(model_choice, "with CV prediction\n")
 	    X_test<-stats::model.matrix(~., promoter.test.70percent.x)
 	    prediction<- tryCatch(predict(model.70percent, X_test[,-1], type="class"),
@@ -320,7 +283,7 @@ for (model_choice in c("cp+sd.GLAMER", "cv+sd.GLAMER", "cv.GLAMER", "gic.GLAMER"
 	  prediction[is.na(prediction)] <- 0
 	  misclassification_error[run]<-mean(prediction[!is.na(prediction)] != promoter.test.70percent.y[!is.na(prediction)])
 
-	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP")
+	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP" | model_choice=="cv.MCP-g")
 	    dfmin[run]<-sum(coef(model.70percent)!=0)
 	  if (model_choice == "gic.DMRnet" | model_choice == "gic.GLAMER")
 	    dfmin[run]<-gic$df.min
@@ -356,6 +319,9 @@ for (model_choice in c("cp+sd.GLAMER", "cv+sd.GLAMER", "cv.GLAMER", "gic.GLAMER"
 
 	model_name<-model_choice
 	if (model_choice == "scope")
+	  model_name<-paste(model_name, gamma, sep="-")
+
+	if (model_choice == "cv.MCP-g")
 	  model_name<-paste(model_name, gamma, sep="-")
 
 

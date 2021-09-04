@@ -4,7 +4,7 @@ library(DMRnet)
 
 
 
-run_list = c("cvg(e+m).DMRnet", "cvg.DMRnet", "cv.DMRnet", "gic.DMRnet")
+run_list = c("cvg.DMRnet",  "gic.DMRnet")
 runs<-1
 
 filename_and_dirs <- current_filename()
@@ -14,7 +14,6 @@ set.seed(strtoi(substr(digest(part_filename_and_number, "md5", serialize = FALSE
 cat("seed set as md5 hash of the following string: ", part_filename_and_number,"\n\n")
 cat("search for the result files postfixed with the same string: ", part_filename_and_number,"\n\n")
 
-source("cv_DMRnet.R")
-source("cvg_DMRnet.R")
 
+source("cvg_DMRnet.R")
 source("insurance_orig.R")

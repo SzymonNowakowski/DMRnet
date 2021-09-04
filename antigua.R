@@ -1,27 +1,21 @@
 
 library(randomForest)
 library(glmnet)
-library(stats)  #glm, model.matrix
+library(stats)  # model.matrix
 library(CatReg)
 library(DMRnet)
 library(grpreg)
 library(digest)
 
-#
-#library(devtools)
-#load_all()
-
 
 set.seed(strtoi(substr(digest("antigua", "md5", serialize = FALSE),1,7),16))
 
 runs<-200
-run_list = c(   "cp+sd.GLAMER", "cv+sd.GLAMER","cv.GLAMER", "gic.GLAMER", "cvg(e+m).DMRnet", "cvg.DMRnet","cv.DMRnet", "gic.DMRnet", "scope", "scope", "lr", "cv.glmnet", "RF", "cv.MCP", "cv.grLasso")
+run_list = c(   "cv+sd.GLAMER","gic.GLAMER",  "cvg.DMRnet", "gic.DMRnet", "scope", "scope",  "cv.glmnet", "RF", "cv.MCP", "cv.MCP-g", "cv.MCP-g", "cv.grLasso")
 
-source("cv_DMRnet.R")
+
 source("cvg_DMRnet.R")
-source("cv_glamer.R")
 source("cv_sd_glamer.R")
-source("cv_glamer_cutpoints.R")
 source("glamer_4lm.R")
 
 library(DAAG)
@@ -99,41 +93,7 @@ for (model_choice in c( run_list )) {
   	  cat("removed", length(singular_factors), "columns due to singular factors\n")
 	  }
 
-# 	  antigua.make <- makeX(antigua.train.70percent.x)
-# 	  prev_pos <- length(levels(antigua.train.70percent.x[,1]))
-#   	for (i in 2:ncol(antigua.train.70percent.x))   #we use the fact that we KNOW the first column is a "Product_Info_1" factor
-# 	    if (!(i %in% cont_columns)) {  #removing columns from the last level, it is linearly dependent with the exception of the first column
-# 	     # cat(i, prev_pos, length(levels(antigua.train.70percent.x[,i])), "\n")
-# 	      antigua.make<-antigua.make[,-(prev_pos+length(levels(antigua.train.70percent.x[,i])))]
-# 	      prev_pos <- prev_pos+length(levels(antigua.train.70percent.x[,i])) - 1
-# 	    } else prev_pos<-prev_pos+1
-#
-# 	  QR<- qr(antigua.make)
-#
-# 	  if (QR$rank < ncol(antigua.make)) {  #singular
-# 	    reverse_lookup<-rep(0, ncol(antigua.make))
-# 	    pos<-1
-# 	    for (i in 1:ncol(antigua.train.70percent.x))
-# 	      if (!(i %in% cont_columns)) {
-# 	        if (i==1) {
-# 	          reverse_lookup[pos:(pos+length(levels(antigua.train.70percent.x[,i]))-1)]<-i  #there are levels columns corresponding to the first original column
-# 	          pos<-pos+length(levels(antigua.train.70percent.x[,i]))
-# 	        } else {
-# 	          reverse_lookup[pos:(pos+length(levels(antigua.train.70percent.x[,i]))-2)]<-i  #there are levels-1 columns corresponding to each original column other than the first
-# 	          pos<-pos+length(levels(antigua.train.70percent.x[,i]))-1
-# 	        }
-# 	      } else {
-# 	        reverse_lookup[pos]<-i
-# 	        pos<-pos+1
-# 	      }
-# 	    #removal of columns for pivot positions larger than rank
-# 	    remove_us<-reverse_lookup[QR$pivot[(QR$rank+1):length(QR$pivot)]]
-# 	    antigua.train.70percent.x <- antigua.train.70percent.x[,-remove_us]
-# 	    antigua.test.70percent.x <- antigua.test.70percent.x[,-remove_us]
-# 	    cat("removed", length(unique(remove_us)), "columns (data linearly dependent)\n")
-# 	  }
-
-	  cat("consolidated factors and columns\n")
+	  cat("consolidated factors\n")
 
 	  start.time <- Sys.time()
 	  cat("Started: ", start.time,"\n")
@@ -148,7 +108,19 @@ for (model_choice in c( run_list )) {
 	      penalty <-  "grLasso"
 	    } else
 	      penalty <- "grMCP"
-	    model.70percent <- cv.grpreg(X[,-1], antigua.train.70percent.y, group=groups, penalty=penalty, gamma=32, nfolds=10)
+	    model.70percent <- cv.grpreg(X[,-1], antigua.train.70percent.y, group=groups, penalty=penalty, nfolds=10)
+
+	  } else if (model_choice=="cv.MCP-g") {
+	    cat(model_choice, "with CV\n")
+	    X<-stats::model.matrix(~., antigua.train.70percent.x)
+	    level_count <- sapply(lapply(antigua.train.70percent.x, levels), length)
+	    level_count[level_count == 0] <- 2   #make it two for continous variables
+	    groups<-rep(1:length(level_count), level_count-1)
+	    if (model_choice == "cv.grLasso") {
+	      penalty <-  "grLasso"
+	    } else
+	      penalty <- "grMCP"
+	    model.70percent <- cv.grpreg(X[,-1], antigua.train.70percent.y, group=groups, penalty=penalty, gamma=gamma, nfolds=10)
 
 	  } else if (model_choice=="gic.DMRnet") {
 	    cat("DMRnet with GIC only\n")
@@ -174,18 +146,6 @@ for (model_choice in c( run_list )) {
 	    model.70percent <- tryCatch(cvg_DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10, plateau_resistant_CV =  plateau_resistant),
 	                                error=function(cond) {
 	                                  message("Numerical instability in cvg.DMRnet detected. Will skip this 70-percent set. Original error:")
-	                                  message(cond)
-	                                  return(list("red_light"))
-	                                })
-
-	    if (model.70percent[[1]] == "red_light") {
-	      next
-	    }
-	  } else  if (model_choice=="cv.DMRnet" ) {
-	    cat(model_choice, "with cv\n")
-	    model.70percent <- tryCatch(cv_DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10),
-	                                error=function(cond) {
-	                                  message("Numerical instability in cv.DMRnet detected. Will skip this 70-percent set. Original error:")
 	                                  message(cond)
 	                                  return(list("red_light"))
 	                                })
@@ -222,34 +182,6 @@ for (model_choice in c( run_list )) {
 	    if (model.70percent[[1]] == "red_light") {
 	      next
 	    }
-	  } else  if (model_choice=="cv.GLAMER") {
-	    cat("GLAMER with cv\n")
-
-	    model.70percent <- tryCatch(cv_glamer(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10),
-
-	                                error=function(cond) {
-	                                  message("Numerical instability in cv.GLAMER detected. Will skip this 70-percent set. Original error:")
-	                                  message(cond)
-	                                  return(list("red_light"))
-	                                })
-
-	    if (model.70percent[[1]] == "red_light") {
-	      next
-	    }
-	  } else  if (model_choice=="cp+sd.GLAMER") {
-	    cat("GLAMER with cv with cutpoints\n")
-
-	    model.70percent <- tryCatch(cv_glamer_cutpoints(antigua.train.70percent.x, antigua.train.70percent.y, nlambda=100, family="gaussian", nfolds=10),
-
-	                                error=function(cond) {
-	                                  message("Numerical instability in cp+sd.GLAMER detected. Will skip this 70-percent set. Original error:")
-	                                  message(cond)
-	                                  return(list("red_light"))
-	                                })
-
-	    if (model.70percent[[1]] == "red_light") {
-	      next
-	    }
 	  } else if (model_choice=="scope") {
 	    cat("Scope, no cv, gamma=", gamma,"\n")
 	    model.70percent <- tryCatch(scope(antigua.train.70percent.x, antigua.train.70percent.y, gamma=gamma),
@@ -277,7 +209,7 @@ for (model_choice in c( run_list )) {
 
 
 
-	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP") {
+	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP" | model_choice=="cv.MCP-g") {
 	    cat(model_choice, "with CV prediction\n")
 	    X_test<-stats::model.matrix(~., antigua.test.70percent.x)
 	    prediction<-predict(model.70percent, X_test[,-1])
@@ -347,7 +279,7 @@ for (model_choice in c( run_list )) {
 
 	  MSPE[run]<-mean((prediction[!is.na(prediction)] - antigua.test.70percent.y.no_error[!is.na(prediction)])^2)
 
-	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP")
+	  if (model_choice=="cv.grLasso" | model_choice=="cv.MCP" | model_choice=="cv.MCP-g")
 	    dfmin[run]<-sum(coef(model.70percent)!=0)
 	  if (model_choice == "gic.DMRnet" | model_choice=="gic.GLAMER")
 	    dfmin[run]<-gic$df.min
@@ -384,6 +316,9 @@ for (model_choice in c( run_list )) {
 
 	model_name<-model_choice
 	if (model_choice == "scope")
+	  model_name<-paste(model_name, gamma, sep="-")
+
+	if (model_choice == "cv.MCP-g")
 	  model_name<-paste(model_name, gamma, sep="-")
 
 
