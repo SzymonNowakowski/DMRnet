@@ -5,7 +5,7 @@ library(grpreg)
 
 
 run_list = c("scope", "scope", "cv.glmnet", "cv.MCP", "cv.MCP-g","cv.MCP-g","cv.grLasso")
-runs<-20
+runs<-100
 
 part_filename_and_number = "insurance_orig"
 print(part_filename_and_number)

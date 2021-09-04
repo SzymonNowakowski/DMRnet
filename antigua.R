@@ -10,7 +10,7 @@ library(digest)
 
 set.seed(strtoi(substr(digest("antigua", "md5", serialize = FALSE),1,7),16))
 
-runs<-200
+runs<-100
 run_list = c(   "cv+sd.GLAMER","gic.GLAMER",  "cvg.DMRnet", "gic.DMRnet", "scope", "scope",  "cv.glmnet", "RF", "cv.MCP", "cv.MCP-g", "cv.MCP-g", "cv.grLasso")
 
 
