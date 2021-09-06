@@ -20,7 +20,7 @@ source("glamer_4lm.R")
 
 library(DAAG)
 data(antigua)
-antigua[antigua[,6] == 9999,6] = NA
+antigua[antigua[,6] == -9999,6] = NA
 antigua <- na.omit(antigua)
 antigua.all.x <- antigua[, -c(1,7)]
 cont_columns<-c(3,5)
