@@ -17,7 +17,7 @@ set.seed(strtoi(substr(digest("promoter", "md5", serialize = FALSE),1,7),16))
 
 
 
-promoter.all<-read.csv("promoters.data", header=FALSE)
+promoter.all<-read.csv("promoter_data/promoters.data", header=FALSE)
 colnames <- c('class', "name", "nucleotides") #
 colnames(promoter.all) <- colnames
 promoter.all[,3] <- gsub("\\t", "", promoter.all[,3])  #removing tabs

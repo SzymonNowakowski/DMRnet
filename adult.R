@@ -16,8 +16,8 @@ source("cvg_DMRnet.R")
 source("cv_sd_glamer.R")
 
 
-adult.train<-read.csv("adult.data", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
-adult.test<-read.csv("adult.test", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
+adult.train<-read.csv("adult_data/adult.data", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
+adult.test<-read.csv("adult_data/adult.test", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
 
 colnames <- c('age', #
                      'workclass', #

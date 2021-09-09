@@ -9,7 +9,7 @@ library(CatReg)
 
 
 
-insurance.all<-read.csv("train.csv", header=TRUE, comment.char="|", stringsAsFactors = TRUE)
+insurance.all<-read.csv("insurance_data/train.csv", header=TRUE, comment.char="|", stringsAsFactors = TRUE)
 insurance.all<-insurance.all[,apply(apply(insurance.all,2,is.na), 2, sum)==0]  #removing columns with NA
 insurance.all.x<-insurance.all[,2:(ncol(insurance.all)-1)]  #without ID and the response columns
 cont_columns = c(4, 8, 9, 10, 11)
