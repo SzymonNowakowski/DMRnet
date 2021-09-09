@@ -330,26 +330,10 @@ for (model_choice in c( run_list )) {
 
 }
 
-write.csv(errors, "antigua_errors.csv")
-write.csv(effective_lengths, "antigua_effective_lengths.csv")
-write.csv(sizes, "antigua_model_sizes.csv")
-write.csv(computation_times, "antigua_computation_times.csv")
+write.csv(errors, "results/antigua_errors.csv")
+write.csv(sizes, "results/antigua_model_sizes.csv")
 
 
-pdf("antigua_computation_times.pdf",width=24,height=5)
-boxplot(computation_times)
-dev.off()
 
-pdf("antigua_errors.pdf",width=24,height=5)
-boxplot(errors)
-dev.off()
-
-pdf("antigua_model_sizes.pdf",width=21,height=5)
-boxplot(sizes)
-dev.off()
-
-pdf("antigua_effective_lengths.pdf",width=24,height=5)
-boxplot(effective_lengths)
-dev.off()
 
 

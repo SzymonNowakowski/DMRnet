@@ -367,26 +367,8 @@ for (model_choice in c( run_list )) {
 
 }
 
-write.csv(errors, paste(part_filename_and_number, "_errors.csv", sep=""))
-write.csv(effective_lengths, paste(part_filename_and_number, "_effective_lengths.csv", sep=""))
-write.csv(sizes, paste(part_filename_and_number, "_model_sizes.csv", sep=""))
-write.csv(computation_times, paste(part_filename_and_number, "_computation_times.csv", sep=""))
+write.csv(errors, paste("results/", part_filename_and_number, "_errors.csv", sep=""))
+write.csv(sizes, paste("results/", part_filename_and_number, "_model_sizes.csv", sep=""))
 
-
-pdf(paste(part_filename_and_number, "_computation_times.pdf", sep=""),width=24,height=5)
-boxplot(computation_times)
-dev.off()
-
-pdf(paste(part_filename_and_number, "_errors.pdf", sep=""),width=24,height=5)
-boxplot(errors)
-dev.off()
-
-pdf(paste(part_filename_and_number, "_model_sizes.pdf", sep=""),width=21,height=5)
-boxplot(sizes)
-dev.off()
-
-pdf(paste(part_filename_and_number, "_effective_lengths.pdf", sep=""),width=24,height=5)
-boxplot(effective_lengths)
-dev.off()
 
 
