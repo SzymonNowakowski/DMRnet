@@ -1,4 +1,4 @@
-DMR4lm_help <- function(X, y, clust.method = 'complete'){
+DMR4lm_help <- function(X, y, clust.method = 'complete', bb){
     n <- nrow(X)
     nn <- sapply(1:ncol(X), function(i) class(X[,i]))
     names(nn) <- colnames(X)
@@ -18,8 +18,14 @@ DMR4lm_help <- function(X, y, clust.method = 'complete'){
     n.cont <- length(cont)
     namCont <- names(nn)[cont]
 	  #QR decompostion of the model matrix
-    qX <- qr.Q(m$qr)
-    rX <- qr.R(m$qr)
+    indices_count <- m$qr$rank   #SzN TODO: this is new functionality,
+                                #to restrict the results to columns
+                                #within the matrix rank
+                                #when the original columns
+                                #are lineary dependant
+                                #(case not excluded even after grpreg was run for execution paths from DMRnet)
+    qX <- qr.Q(m$qr, complete=FALSE)#[, 1:indices_count]  #explicitly stating that we want partial results (https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/QR.Auxiliaries)
+    rX <- qr.R(m$qr)#[1:indices_count, 1:indices_count]  #only rank-by-rank matrix is taken further
     Ro <- solve(rX)
     z <- t(qX)%*%y
     sigma <- as.numeric((t(m$res)%*%m$res)/(n - p))

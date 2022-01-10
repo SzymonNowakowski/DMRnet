@@ -53,33 +53,39 @@ DMRnet4lm <- function(X, y, clust.method = "complete", o = 5, nlambda = 20, maxp
     RL <- mL$lambda
     dfy <- apply(mL$beta, 2, function(x) sum(x!=0))
     kt <- 1:length(RL)
-    if (length(which(dfy >= n)) > 0){
-       RL <- RL[-which(dfy >= n)]
-       kt <- kt[-which(dfy >= n)]
-       dfy <- dfy[-which(dfy >= n)]
+    lambdas_with_nonzero_beta_number_too_large <- which(dfy >= n)  #(1) removing predictor sets with more predictors than matrix rows
+    if (length(lambdas_with_nonzero_beta_number_too_large) > 0){
+      RL <- RL[-lambdas_with_nonzero_beta_number_too_large]  #removing them from lambdas
+      kt <- kt[-lambdas_with_nonzero_beta_number_too_large]  #and from lambda indices
+      dfy <- dfy[-lambdas_with_nonzero_beta_number_too_large]
     }
-    kk <- which(dfy == 0)
-    if(length(kk) > 0){
-       RL <- RL[-kk]
-       kt <- kt[-kk]
+    lambdas_with_no_betas <- which(dfy == 0)     #(2) removing predictor sets with 0 predictors
+    if(length(lambdas_with_no_betas) > 0){
+      RL <- RL[-lambdas_with_no_betas]  #removing them from lambdas
+      kt <- kt[-lambdas_with_no_betas]  #and from lambda indices
     }
-    bb <- as.matrix(abs(mL$beta[, kt]))
-    SS <- ifelse(bb > 0, 1, 0)
-    ii <- duplicated(t(SS))
+    bb <- as.matrix(abs(mL$beta[, kt]))  #bb is a matrix listing beta values (rows) respective to the net of lambda values (cols)
+    bb_predictor_sets <- ifelse(bb > 0, 1, 0)          #bb_predictor_sets is a matrix listing predictor sets (0 or 1 for each predictor)  (rows) respective to the net of lambda values (cols)
+    ii <- duplicated(t(bb_predictor_sets))    #detecting duplicated predictor sets
     prz <- rep(1:p.x, fl-1)
     fac <- apply(bb[-1,ii == FALSE, drop = FALSE], 2, function(x) tapply(x, factor(prz), function(z) sum(z^2)*sqrt(length(z))))
-    if(is.null(dim(fac))){
-                          fac <- t(as.matrix(fac))
-    }
+    #fac is a matrix with betas relating to variables (rows) respective to non-duplicated lambdas (colums)
+    #TODO: verify if(is.null(dim(fac))){
+    #                       fac <- t(as.matrix(fac))
+    # }
     B <- apply(fac, 2, function(x) stats::quantile(x[x!=0], seq(0, 1, length = (o + 1))[-(o + 1)]))
+    #B is a matrix of
+                  #   - o-based quantiles of non-zero Betas (without the last, 100% quantile) (rows)
+                  #   - lambdas (cols)
     B[is.na(B)] <- 0
     S <- sapply(1:o, function(j){
       out <- sapply(1:sum(ii == FALSE), function(i) ifelse(fac[, i] >= B[j,i], 1, 0))
     })
-    SS <- matrix(S, p.x, sum(ii == FALSE)*o)
-    SS <- t(unique(t(SS)))
-    if (p >= n) SS = SS[,-1]
-    mm <- lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[,i], X, y, fl, clust.method))
+    #S is a matrix selecting betas (#variables*#lambdas of them) (rows) respective to o-based partitions (cols)
+    SS <- matrix(S, p.x, sum(ii == FALSE)*o) #SS is a rewrite of S with o*#lambdas columns and #variable rows
+    SS <- t(unique(t(SS))) #removing duplicated (when multiplying by o-based partition) columns from SS
+    #TODO: verify if (p >= n) SS = SS[,-1]
+    mm <- lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[,i], i, X, y, fl, clust.method, bb))
     maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$rss)))
     rss <- sapply(1:length(mm), function(i) c(rep(Inf, maxl - length(mm[[i]]$rss)), mm[[i]]$rss))
     ind <- apply(rss, 1, which.min)
