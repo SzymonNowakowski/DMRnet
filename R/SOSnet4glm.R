@@ -1,4 +1,4 @@
-SOSnet4glm <- function(X, y, o = 5, nlambda = 20, lam = 10^(-7), interc = TRUE, maxp = ceiling(length(y)/4)){
+SOSnet4glm <- function(X, y, o = 5, nlambda = 100, lam = 10^(-7), interc = TRUE, maxp = ceiling(length(y)/4)){
           if (class(y) != "factor"){
              stop("Error: y should be a factor")
           }

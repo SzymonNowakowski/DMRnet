@@ -7,7 +7,7 @@ SOSnet4glm_help <- function(S, mL, X, y, lam = 10^(-7), interc = interc){
       lmin <- lam*length(y)*2
       lmax <- lmin*1000
       RL <- exp(seq(log(lmax), log(lmin), length.out = 20))
-      mm <- glmnet::glmnet(Z, y, lambda = RL, alpha = 0, intercept = interc, family = "binomial")
+      mm <- glmnet::glmnet(Z, y, lambda = RL, alpha = 0, intercept = interc, family = "binomial")  #SzN per explanation of PP, this is regularized with ridge penalty (alpha=0) to help with computations of singular cases, but not to sparsify the betas as lasso penalty could
       if (interc == FALSE){
          zb <- exp(Z%*%mm$beta[,20])
          pix <- zb/(zb + 1)

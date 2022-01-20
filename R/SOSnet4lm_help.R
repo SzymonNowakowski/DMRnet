@@ -1,11 +1,7 @@
-SOSnet4lm_help <- function(run_no, S, mL, X, y, interc = interc){
+SOSnet4lm_help <- function(S, mL, X, y, interc = interc){
 
     screenPred <- which(S == 1)
 
-    # cat(run_no, sum(S)+1, qr(cbind(1, X[, screenPred, drop = FALSE]))$rank,"\n")
-    # if(run_no == 15) {
-    #   cat("here")
-    # }
 
     if (interc == FALSE){
        QR <- qr(X[, screenPred, drop = FALSE])

@@ -85,7 +85,7 @@ DMRnet4lm <- function(X, y, clust.method = "complete", o = 5, nlambda = 20, maxp
     SS <- matrix(S, p.x, sum(ii == FALSE)*o) #SS is a rewrite of S with o*#lambdas columns and #variable rows
     SS <- t(unique(t(SS))) #removing duplicated (when multiplying by o-based partition) columns from SS
     #TODO: verify if (p >= n) SS = SS[,-1]
-    mm <- lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[,i], i, X, y, fl, clust.method, bb))
+    mm <- lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[,i], X, y, fl, clust.method, bb))
     maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$rss)))
     rss <- sapply(1:length(mm), function(i) c(rep(Inf, maxl - length(mm[[i]]$rss)), mm[[i]]$rss))
     ind <- apply(rss, 1, which.min)
