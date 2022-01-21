@@ -1,4 +1,5 @@
 DMR4lm <- function(X, y, clust.method){
+    epsilon <- (1e-7)
     n <- nrow(X)
     if(is.null(colnames(X))) colnames(X) <- paste("x", 1:ncol(X), sep = "")
     if(n != length(y)){
@@ -59,7 +60,7 @@ DMR4lm <- function(X, y, clust.method){
       #QR decompostion of the model matrix
     qX <- qr.Q(m$qr, complete=FALSE)   #matrix Q, eq. 3.1 of A.Prochenka PhD Thesis
                                       #explicitly stating that we want partial results (https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/QR.Auxiliaries)
-    rX <- qr.R(m$qr)   #matrix R, eq. 3.1 of A.Prochenka PhD Thesis
+    rX <- qr.R(m$qr) + diag(rep(epsilon, ncol(x.full))) #matrix R, eq. 3.1 of A.Prochenka PhD Thesis, regularized with a diagonal matrix
     Ro <- solve(rX)    #matrix R^-1, eq. 3.1 of A.Prochenka PhD Thesis
     #alternatively: z <- qr.qty(m$qr, y)[1:m$qr$rank]   #the rest of the columns are from the complete Q matrix (https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/qr)
     z <- t(qX)%*%y     #vector z, eq. 3.1 of A.Prochenka PhD Thesis

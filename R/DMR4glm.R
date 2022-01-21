@@ -37,7 +37,7 @@ DMR4glm <- function(X, y, clust.method, lam){
     lmin <- lam*length(y)*2
     lmax <- lmin*1000
     RL <- exp(seq(log(lmax), log(lmin), length.out = 20))
-    m <- glmnet::glmnet(x.full, y, lambda = RL, alpha = 0, family = "binomial")
+    m <- glmnet::glmnet(x.full, y, lambda = RL, alpha = 0, family = "binomial")  #SzN per explanation of PP, this is regularized with ridge penalty (alpha=0) to help with computations of singular cases, but not to sparsify the betas as lasso penalty could
     be <- c(m$a0[20], m$beta[-1,20])
     factor_columns <- which(nn == "factor")
     n.factors <- length(factor_columns)
