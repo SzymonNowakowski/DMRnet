@@ -10,7 +10,7 @@
 #'
 #' @param clust.method Clustering method used for partitioning levels of factors; see function \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html}{hclust} in package \pkg{stats} for details.
 #'
-#' @param lam Value of parameter lambda controling the amount of penalization in rigde regression. Used only for logistic regression in order to allow for parameter estimation in linearly separable setups. Used only for numerical reasons.
+#' @param lam Value of parameter lambda controlling the amount of penalization in rigde regression. Used only for logistic regression in order to allow for parameter estimation in linearly separable setups. Used only for numerical reasons.
 #'
 #' @details DMR algorithm is based on a traditional stepwise method.
 #' A nested family of models is built based on the values of squared Wald statistics:
@@ -26,12 +26,14 @@
 #'
 #' @return An object with S3 class "DMR", which  is  a  list  with  the  ingredients:
 #'
-#' \item{beta}{Matrix p times p of estimated paramters; each column corresponds to a model on the nested path having from p to 1 parameter (denoted as df).}
-#' \item{df}{Vector of degrees of freedom; from p to 1.}
+#' \item{beta}{Matrix p times p of estimated paramters; each column corresponds to a model on the nested path having from p to 1 parameter (denoted as df)}
+#' \item{df}{Vector of degrees of freedom; from p to 1}
 #' \item{rss/loglik}{Measure of fit for the nested models: rss (residual sum of squares) for family="gaussian" and loglik (loglikelihood) for family="binomial"}
-#' \item{n}{Number of observations.}
-#' \item{arguments}{List of the chosen arguments from the function call.}
-#' \item{interc}{If the intercept was fitted: for DMR always equal to TRUE.}
+#' \item{n}{Number of observations}
+#' \item{levels.listed}{Minimal set of levels of respective factors present in data}
+#' \item{lambda}{The net of lambda values used in the screening step, empty vector in case of DMR}
+#' \item{arguments}{List of the chosen arguments from the function call}
+#' \item{interc}{If the intercept was fitted: for DMR always equal to TRUE}
 #'
 #'
 #' @seealso \code{\link{print.DMR}} for printing, \code{\link{plot.DMR}} for plotting, \code{\link{coef.DMR}} for extracting coefficients and \code{\link{predict.DMR}} for prediction.

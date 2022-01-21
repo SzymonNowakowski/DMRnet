@@ -1,4 +1,4 @@
-SOSnet4lm_help <- function(S, mL, X, y, interc = interc){
+SOSnet4lm_help <- function(S, mL, X, y, interc){
 
     screenPred <- which(S == 1)
 

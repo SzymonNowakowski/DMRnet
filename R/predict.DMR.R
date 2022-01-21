@@ -35,12 +35,12 @@ predict.DMR <- function(object, newx, df = NULL, type = "link", ...){
          n.factors <- length(faki)
          if (n.factors > 0)   #DMRnet only
            for (i in 1:n.factors) {
-             newx[,faki[i]] <- factor(newx[,faki[i]])   #start by recalculationg the test set factors to minimal possible set
+             newx[,faki[i]] <- factor(newx[,faki[i]])   #start by recalculating the test set factors to minimal possible set
              predict_levels <- levels(newx[,faki[i]])
              if (!min(predict_levels %in% object$levels.listed[[i]])) {#if any factor is outside of the listed levels
                stop("Error: newx cointains factors not known in model calculations. Replace the unknown factors with the known ones and try again.")
              }
-             newx[,faki[i]]<-factor(newx[,faki[i]], levels=object$levels.listed[[i]])   #recalculate factors, attribute the original factor list
+             newx[,faki[i]]<-factor(newx[,faki[i]], levels=object$levels.listed[[i]])   #recalculate factors again, but attribute the original factor list from the train set
 
            }
 

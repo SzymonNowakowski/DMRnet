@@ -1,4 +1,4 @@
-DMR4lm_help <- function(X, y, clust.method = 'complete', bb){
+DMR4lm_help <- function(X, y, clust.method, bb){
     epsilon <- (1e-7)
     n <- nrow(X)
     nn <- sapply(1:ncol(X), function(i) class(X[,i]))
@@ -23,8 +23,8 @@ DMR4lm_help <- function(X, y, clust.method = 'complete', bb){
                                 #are lineary dependant
                                 #(case not excluded even after grpreg was run for execution paths from DMRnet)
     qX <- qr.Q(m$qr, complete=FALSE) #SzN: explicitly stating that we want partial results (https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/QR.Auxiliaries)
-    rX <- qr.R(m$qr)
-    Ro <- solve(rX+diag(rep(epsilon, ncol(rX))))   #SzN to solve the abovementioned matrix singularity we introduce the regularization of rX with a diagonal matrix
+    rX <- qr.R(m$qr) + diag(rep(epsilon, ncol(rX))) #SzN to solve the abovementioned matrix singularity we introduce the regularization of rX with a diagonal matrix
+    Ro <- solve(rX)
     z <- t(qX)%*%y
     sigma <- as.numeric((t(m$res)%*%m$res)/(n - p))
     #dissimilarity measures - matrices of squared t-statistics for each factor

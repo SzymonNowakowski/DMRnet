@@ -1,4 +1,4 @@
-SOSnet4lm <- function(X, y, o = 5, nlambda = 100, interc = TRUE, maxp = ceiling(length(y)/2)){
+SOSnet4lm <- function(X, y, o, nlambda, lambda, interc, maxp){
 #SOSnet algorithm pseudocode available from https://arxiv.org/pdf/1907.03025v1.pdf page 17
           n <- nrow(X)
           if(n != length(y)){
@@ -22,7 +22,15 @@ SOSnet4lm <- function(X, y, o = 5, nlambda = 100, interc = TRUE, maxp = ceiling(
           }
           p <- ncol(X)
           Xg <- apply(X, 2, function(x) sqrt(n/sum(x^2))*x)
-          mL <- glmnet::glmnet(Xg, y, alpha = 1, intercept = interc, nlambda = nlambda, family = "gaussian")
+
+          if (is.null(lambda)) {
+            user.lambda<-substitute()    #make user.lambda - paradoxically - not present in a call to glmnet
+          } else {
+            nlambda <- length(lambda)   #override this parameter
+            user.lambda <- lambda
+          }
+
+          mL <- glmnet::glmnet(Xg, y, alpha = 1, intercept = interc, family = "gaussian", nlambda = nlambda, lambda = user.lambda)
           RL <- mL$lambda
           dfy <- apply(mL$beta, 2, function(x) sum(x!=0))  #equal to s_k from SOSnet pseudocode
           kt <- 1:length(RL)    #indices of lambdas
@@ -86,7 +94,7 @@ SOSnet4lm <- function(X, y, o = 5, nlambda = 100, interc = TRUE, maxp = ceiling(
             mnk <- stats::lm.fit(as.matrix(rep(1, n)), y)
             be <- cbind(be, c(mnk$coef, rep(0, ncol(X))))
           }
-          fit <- list(beta = be, df = length(idx):1, rss = rss[cbind(idx, iid[idx])], n = n, arguments = list(family = "gaussian", nlambda = nlambda, interc = interc, maxp = maxp), interc = interc)
+          fit <- list(beta = be, df = length(idx):1, rss = rss[cbind(idx, iid[idx])], n = n, levels.listed = c(), lambda=mL$lambda, arguments = list(family = "gaussian", nlambda = nlambda, lambda = lambda, interc = interc, maxp = maxp), interc = interc)
           class(fit) = "DMR"
           return(fit)
 }

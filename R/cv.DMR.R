@@ -10,9 +10,11 @@
 #'
 #' @param clust.method Clustering method used for partitioning levels of factors; see function \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html}{hclust} in package \pkg{stats} for details.
 #'
-#' @param lam Value of parameter lambda controling the amount of penalization in rigde regression. Used only for logistic regression in order to allow for parameter estimation in linearly separable setups.
+#' @param lam Value of parameter lambda controlling the amount of penalization in rigde regression. Used only for logistic regression in order to allow for parameter estimation in linearly separable setups.
 #'
-#' @param nfolds Number of folds in cross-validation.
+#' @param nfolds Number of folds in cross-validation. The default value is 10.
+#'
+#' @param indexation.mode How the cross validation algorithm should index the models for internal quality comparisons; one of: "GIC" (the default), "error".
 #'
 #' @details cv.DMR algorithm does k-fold cross-validation for DMR. The df for the minimal estimated prediction error is returned.
 #'
@@ -41,61 +43,7 @@
 #'
 #' @export cv.DMR
 
-cv.DMR <- function(X, y, family = "gaussian", clust.method = 'complete', lam = 10^(-7), nfolds = 10){
-       X <- data.frame(X, check.names = TRUE, stringsAsFactors = TRUE)
-       if (family == "gaussian"){
-          n <- length(y)
-          foldid <- cvfolds(n, nfolds)
-          error <- c()
-          for (fold in 1:nfolds){
-              Xte <- X[foldid == fold, ,drop = FALSE]
-              yte <- y[foldid == fold]
-              Xtr <- X[foldid != fold, ,drop = FALSE]
-              ytr <- y[foldid != fold]
-              dmr <- DMR(Xtr, ytr, family = "gaussian", clust.method = clust.method)
-              pred <- predict.DMR(dmr, newx = as.data.frame(Xte))
-              error <- cbind(error, apply(pred, 2, function(z) sum((z - yte)^2)))
-          }
-          error <- rowSums(error)/n
-          dmr.fit <- DMR(X, y, family = "gaussian", clust.method = clust.method)
-          kt <- which(error == min(error))
-          df.min <- dmr$df[kt[length(kt)]]
-       } else{
-         if (family == "binomial"){
-          if (class(y) != "factor"){
-             stop("Error: y should be a factor")
-          }
-          lev <- levels(factor(y))
-          if (length(lev) != 2){
-             stop("Error: factor y should have 2 levels")
-          }
-          n1 <- table(y)[1]
-          n2 <- table(y)[2]
-          foldid1 <- cvfolds(n1, nfolds)
-          foldid2 <- cvfolds(n2, nfolds)
-          foldid <- c()
-          foldid[which(y == levels(factor(y))[1])] = foldid1
-          foldid[which(y == levels(factor(y))[2])] = foldid2
-          error <- c()
-          for (fold in 1:nfolds){
-              Xte <- X[foldid == fold, ,drop = FALSE]
-              yte <- y[foldid == fold]
-              Xtr <- X[foldid != fold, ,drop = FALSE]
-              ytr <- y[foldid != fold]
-              dmr <- DMR(Xtr, ytr, family = "binomial", clust.method = clust.method, lam = lam)
-              pred <- predict.DMR(dmr, newx = as.data.frame(Xte), type = "class")
-              error <- cbind(error, apply(pred, 2, function(z) sum(z != yte)))  # moze sie wysypac!!! jezeli roznej wielkosci dfy
-          }
-          error <- rowSums(error)/(n1 + n2)
-          dmr.fit <- DMR(X, y, family = "binomial", clust.method = clust.method, lam = lam)
-          kt <- which(error == min(error))
-          df.min <- dmr$df[kt[length(kt)]]
-         }
-         else{
-              stop("Error: wrong family, should be one of gaussian, binomial")
-         }
-       }
-       out <- list(df.min = df.min, dmr.fit = dmr.fit, cvm = error, foldid = foldid)
-       class(out) <- "cv.DMR"
-       return(out)
+cv.DMR <- function(X, y, family = "gaussian", clust.method = 'complete', lam = 10^(-7), nfolds = 10, indexation.mode = "GIC"){
+
+        return(cv_indexation.mode_distribute(X, y, nfolds, indexation.mode, DMR, family, clust.method, o, lam))
 }

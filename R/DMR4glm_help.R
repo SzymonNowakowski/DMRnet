@@ -1,4 +1,4 @@
-DMR4glm_help <- function(X, y, clust.method = 'complete', lam = 10^(-7)){
+DMR4glm_help <- function(X, y, clust.method, lam){
     n <- nrow(X)
     nn <- sapply(1:ncol(X), function(i) class(X[,i]))
     names(nn) <- colnames(X)

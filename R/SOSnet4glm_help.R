@@ -1,4 +1,4 @@
-SOSnet4glm_help <- function(S, mL, X, y, lam = 10^(-7), interc = interc){
+SOSnet4glm_help <- function(S, mL, X, y, lam, interc){
     screenPred <- which(S==1)
     s <- sum(S)
     p.x <- ncol(X)

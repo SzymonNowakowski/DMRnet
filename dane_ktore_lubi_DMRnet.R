@@ -1,5 +1,9 @@
 library(devtools)
 load_all()
-#load("data/insXtr.Rdata")
-#load("data/insytr.Rdata")
-dmr <- DMRnet(Xtr, ytr, family = "gaussian")
+data(insXtr)
+data(insytr)
+
+#dmrnet <- DMRnet(Xtr, ytr, family = "gaussian")
+#cv.dmrnet  <- cv.DMRnet(Xtr, ytr, family = "gaussian")
+dmr <- DMR(Xtr, ytr, family = "gaussian")
+#cv.dmr <- cv.DMR(Xtr, ytr, family = "gaussian")

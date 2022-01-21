@@ -1,4 +1,4 @@
-SOSnet4glm <- function(X, y, o = 5, nlambda = 100, lam = 10^(-7), interc = TRUE, maxp = ceiling(length(y)/4)){
+SOSnet4glm <- function(X, y, o, nlambda, lambda, lam, interc, maxp){
           if (class(y) != "factor"){
              stop("Error: y should be a factor")
           }
@@ -29,7 +29,15 @@ SOSnet4glm <- function(X, y, o = 5, nlambda = 100, lam = 10^(-7), interc = TRUE,
           }
           p <- ncol(X)
           Xg <- apply(X, 2, function(x) sqrt(n/sum(x^2))*x)
-          mL <- glmnet::glmnet(Xg, y, alpha = 1, intercept = interc, nlambda = nlambda, family = "binomial")
+
+          if (is.null(lambda)) {
+            user.lambda<-substitute()    #make user.lambda - paradoxically - not present in a call to glmnet
+          } else {
+            nlambda <- length(lambda)   #override this parameter
+            user.lambda <- lambda
+          }
+
+          mL <- glmnet::glmnet(Xg, y, alpha = 1, intercept = interc, family = "binomial", nlambda = nlambda, lambda = user.lambda)
           RL <- mL$lambda
           dfy <- apply(mL$beta, 2, function(x) sum(x!=0))
           kt <- 1:length(RL)
@@ -74,7 +82,7 @@ SOSnet4glm <- function(X, y, o = 5, nlambda = 100, lam = 10^(-7), interc = TRUE,
           loglik = sapply(idx, function(i) {
              return(loglik = unlist(mm[[iid[i]]]$loglikbe[1, i]))
           })
-          fit <- list(beta = be, df = length(idx):1, loglik = loglik, n = n, arguments = list(family = "binomial", o = o, nlambda = nlambda, lam = lam, interc = interc, maxp = maxp),  interc = interc)
+          fit <- list(beta = be, df = length(idx):1, loglik = loglik, n = n, levels.listed = c(), lambda=mL$lambda, arguments = list(family = "binomial", o = o, nlambda = nlambda, lambda = lambda, lam = lam, interc = interc, maxp = maxp),  interc = interc)
           class(fit) = "DMR"
           return(fit)
 }

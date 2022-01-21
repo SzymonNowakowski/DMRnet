@@ -1,4 +1,4 @@
-DMR4lm <- function(X, y, clust.method = 'complete'){
+DMR4lm <- function(X, y, clust.method){
     n <- nrow(X)
     if(is.null(colnames(X))) colnames(X) <- paste("x", 1:ncol(X), sep = "")
     if(n != length(y)){
@@ -34,10 +34,13 @@ DMR4lm <- function(X, y, clust.method = 'complete'){
     factor_columns <- which(nn == "factor")
     n.factors <- length(factor_columns)   #number of factors in X
     if (n.factors > 0) {
-       n.levels <- sapply(1:n.factors, function(i) length(levels(X[,factor_columns[i]])))
-       p.fac <- sum(n.levels - 1)   #sum of factor dimensions. Again, for a factor with k levels it is taking (k-1) as a summand
+      X[,factor_columns]<-lapply(1:n.factors, function(i) factor(X[,factor_columns[i]]))   #recalculate factors to minimal possible set
+      levels.listed<-lapply(1:n.factors, function(i) levels(X[,factor_columns[i]]))
+      n.levels <- sapply(1:n.factors, function(i) length(levels.listed[[i]]))
+      p.fac <- sum(n.levels - 1)   #sum of factor dimensions. Again, for a factor with k levels it is taking (k-1) as a summand
     } else{
        p.fac <- 0
+       levels.listed<-c()
     }
     cont <- which(nn == "numeric")
     n.cont <- length(cont)   #number of continuous columns in X
@@ -166,7 +169,7 @@ DMR4lm <- function(X, y, clust.method = 'complete'){
                   ind[ord] = (p - length(ord) + 1):p
                   b = b[ind,]
    }
-   fit <- list(beta = b, df = p:1, rss = rss, n = n, arguments = list(family = "binomial", clust.method = clust.method), interc = TRUE)
+   fit <- list(beta = b, df = p:1, rss = rss, n = n, levels.listed = levels.listed, lambda=c(), arguments = list(family = "binomial", clust.method = clust.method), interc = TRUE)
    class(fit) = "DMR"
    return(fit)
 }

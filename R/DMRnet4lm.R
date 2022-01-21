@@ -1,4 +1,4 @@
-DMRnet4lm <- function(X, y, clust.method = "complete", o = 5, nlambda = 20, maxp = ceiling(length(y)/2)){
+DMRnet4lm <- function(X, y, clust.method, o, nlambda, lambda, maxp){
     n <- nrow(X)
     if(n != length(y)){
               stop("Error: non-conforming data: nrow(X) not equal to length(y)")
@@ -22,15 +22,15 @@ DMRnet4lm <- function(X, y, clust.method = "complete", o = 5, nlambda = 20, maxp
     if(sum(nn != "numeric" & nn != "factor" ) > 0){
               stop("Error: wrong data type, columns should be one of types: integer, factor, numeric")
     }
-    faki <- which(nn == "factor")
-    n.factors <- length(faki)
+    factor_columns <- which(nn == "factor")
+    n.factors <- length(factor_columns)
     n.levels <- c()
     if (n.factors > 0){
-      X[,faki]<-lapply(1:n.factors, function(i) factor(X[,faki[i]]))   #recalculate factors
-      n.levels.listed<-lapply(1:n.factors, function(i) levels(X[,faki[i]]))
-      n.levels <- sapply(1:n.factors, function(i) length(n.levels.listed[[i]]))
+      X[,factor_columns]<-lapply(1:n.factors, function(i) factor(X[,factor_columns[i]]))   #recalculate factors to minimal possible set
+      levels.listed<-lapply(1:n.factors, function(i) levels(X[,factor_columns[i]]))
+      n.levels <- sapply(1:n.factors, function(i) length(levels.listed[[i]]))
     } else
-      n.levels.listed<-c()
+      levels.listed<-c()
     cont <- which(nn == "numeric")
     n.cont <- length(cont)
     ord <- c()
@@ -40,7 +40,7 @@ DMRnet4lm <- function(X, y, clust.method = "complete", o = 5, nlambda = 20, maxp
                      ord[j] <- sum(n.levels[1:sum(nn[1:cont[j]] == "factor")] - 1) + j + 1
                   }
               } else{
-                               ord <- 2:(n.cont + 1)
+                  ord <- 2:(n.cont + 1)
               }
     }
     X <- X[, order(nn), drop = FALSE]
@@ -49,7 +49,15 @@ DMRnet4lm <- function(X, y, clust.method = "complete", o = 5, nlambda = 20, maxp
     p <- ncol(x.full)
     fl <- c(n.levels, rep(2, n.cont))
     x.full <- apply(x.full, 2, function(x) sqrt(n/sum(x^2))*x)
-    mL <- grpreg::grpreg(x.full[,-1], y, group=rep(1:p.x, fl-1) , penalty = "grLasso", family ="gaussian", nlambda = nlambda)
+
+    if (is.null(lambda)) {
+      user.lambda<-substitute()    #make user.lambda - paradoxically - not present in a call to grpreg
+    } else {
+      nlambda <- length(lambda)   #override this parameter
+      user.lambda <- lambda
+    }
+
+    mL <- grpreg::grpreg(x.full[,-1], y, group=rep(1:p.x, fl-1) , penalty = "grLasso", family ="gaussian", nlambda = nlambda, lambda = user.lambda)
     RL <- mL$lambda
     dfy <- apply(mL$beta, 2, function(x) sum(x!=0))
     kt <- 1:length(RL)
@@ -104,7 +112,7 @@ DMRnet4lm <- function(X, y, clust.method = "complete", o = 5, nlambda = 20, maxp
                   ind1[ord] = (p - length(ord) + 1):p
                   be = be[ind1,]
    }
-   fit <- list(beta = be, df = length(idx):1, rss = rss[cbind(idx, ind[idx])], n = n, levels.listed = n.levels.listed, arguments = list(family = "gaussian", clust.method = clust.method, o = o, nlambda = nlambda, maxp = maxp), interc = TRUE)
+   fit <- list(beta = be, df = length(idx):1, rss = rss[cbind(idx, ind[idx])], n = n, levels.listed = levels.listed, lambda=mL$lambda, arguments = list(family = "gaussian", clust.method = clust.method, o = o, nlambda = nlambda, lambda = lambda, maxp = maxp), interc = TRUE)
    class(fit) = "DMR"
    return(fit)
 }

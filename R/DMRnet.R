@@ -10,11 +10,13 @@
 #'
 #' @param clust.method Clustering method used for partitioning levels of factors; see function \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html}{hclust} in package \pkg{stats} for details.
 #'
-#' @param o Parameter of the group lasso screening step, described in Details.
+#' @param o Parameter of the group lasso screening step, described in Details, the default value is 5.
 #'
-#' @param nlambda Parameter of the group lasso screening step, described in Details.
+#' @param nlambda Parameter of the group lasso screening step, described in Details, the default value is 100.
 #'
-#' @param lam Value of parameter lambda controling the amount of penalization in rigde regression. Used only for logistic regression in order to allow for parameter estimation in linearly separable setups. Used only for numerical reasons.
+#' @param lambda Explicitly provided net of lambda values for the group lasso screening step, described in Details. If provided, it overrides the value of nlambda parameter.
+#'
+#' @param lam Value of parameter lambda controlling the amount of penalization in rigde regression. Used only for logistic regression in order to allow for parameter estimation in linearly separable setups. Used only for numerical reasons.
 #'
 #' @param interc Should intercept(s) be fitted (default=TRUE) or set to zero (FALSE). If in X there are any categorical variables, interc=TRUE.
 #'
@@ -24,7 +26,7 @@
 #' It uses a screening step in order to decrease the problem to p<n and DMR subsequently.
 #' The screening is done according to the group lasso implemented in the \href{https://CRAN.R-project.org/package=grpreg}{grpreg} package.
 #'
-#' First, the group lasso for the problem is solved for nlambda values of lambda parameter.
+#' First, the group lasso for the problem is solved for nlambda values of lambda parameter, or for the net of lambda values (if lambda is explicitly provided).
 #' Next, for each value of lambda, the scaled nonzero second norms of the groups' coefficients are sorted in decreasing order.
 #' Finally, the first i over o fraction of the groups with the largest nonzero values are chosen for further analysis, i = 1,2,...,o-1.
 #' E.g., if o=5, first 1/5, first 2/5,..., 4/5 groups with the largest scaled nonzero second norm of coefficients are chosen.
@@ -33,12 +35,14 @@
 #'
 #' @return An object with S3 class "DMR", which  is  a  list  with  the  ingredients:
 #'
-#' \item{beta}{Matrix p times l of estimated paramters; each column corresponds to a model on the nested path having from l to 1 parameter (denoted as df).}
-#' \item{df}{Vector of degrees of freedom; from l to 1.}
+#' \item{beta}{Matrix p times l of estimated paramters; each column corresponds to a model on the nested path having from l to 1 parameter (denoted as df)}
+#' \item{df}{Vector of degrees of freedom; from l to 1}
 #' \item{rss/loglik}{Measure of fit for the nested models: rss (residual sum of squares) for family="gaussian" and loglik (loglikelihood) for family="binomial"}
-#' \item{n}{Number of observations.}
-#' \item{call}{The call that produced this object.}
-#' \item{interc}{If the intercept was fitted: value of parameter interc.}
+#' \item{n}{Number of observations}
+#' \item{levels.listed}{Minimal set of levels of respective factors present in data}
+#' \item{lambda}{The net of lambda values used in the screening step}
+#' \item{arguments}{List of the chosen arguments from the function call}
+#' \item{interc}{If the intercept was fitted: value of parameter interc}
 #'
 #' @seealso \code{\link{print.DMR}} for printing, \code{\link{plot.DMR}} for plotting, \code{\link{coef.DMR}} for extracting coefficients and \code{\link{predict.DMR}} for prediction.
 #'
@@ -71,23 +75,23 @@
 #'
 #' @export DMRnet
 
-DMRnet <- function(X, y, family = "gaussian", clust.method = "complete", o = 5, nlambda = 20, lam = 10^(-7), interc = TRUE, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))){
+DMRnet <- function(X, y, family = "gaussian", clust.method = "complete", o = 5, nlambda = 100, lambda = NULL, lam = 10^(-7), interc = TRUE, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))){
     X <- data.frame(X, check.names = TRUE, stringsAsFactors = TRUE)
     typeofcols <- sapply(1:ncol(X),function(i) class(X[,i]))
     if(sum(unlist(typeofcols) == "ordered") > 0) stop("Error: there is an ordered factor in the data frame, change it to factor")
     sumnonfac <- sum(typeofcols == "factor")
     if (family == "gaussian"){
        if(sumnonfac == 0){
-                       return(SOSnet4lm(X, y, o = o, nlambda = nlambda, interc = interc, maxp = maxp))
+                       return(SOSnet4lm(X, y, o = o, nlambda = nlambda, lambda = lambda, interc = interc, maxp = maxp))
        } else{
-                       return(DMRnet4lm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, maxp = maxp))
+                       return(DMRnet4lm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lambda = lambda, maxp = maxp))
        }
     } else{
        if (family == "binomial"){
           if(sumnonfac == 0){
-                       return(SOSnet4glm(X, y, o = o, nlambda = nlambda, lam = lam, interc = interc, maxp = maxp))
+                       return(SOSnet4glm(X, y, o = o, nlambda = nlambda, lambda = lambda, lam = lam, interc = interc, maxp = maxp))
           } else{
-                       return(DMRnet4glm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp))
+                       return(DMRnet4glm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lambda = lambda, lam = lam, maxp = maxp))
           }
        }
        else stop("Error: wrong family, should be one of gaussian, binomial")
