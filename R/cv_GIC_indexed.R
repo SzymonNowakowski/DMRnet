@@ -1,5 +1,5 @@
 cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
-
+        family = list(...)$family
         if (family == "gaussian"){
                 n <- length(y)
                 real_n <- 0 #recount  of test instances

@@ -45,5 +45,5 @@
 
 cv.DMR <- function(X, y, family = "gaussian", clust.method = 'complete', lam = 10^(-7), nfolds = 10, indexation.mode = "GIC"){
 
-        return(cv_indexation.mode_distribute(X, y, nfolds, indexation.mode, DMR, family, clust.method, o, lam))
+        return(cv_indexation.mode_distribute(X, y, nfolds, indexation.mode, DMR, family=family, clust.method=clust.method, lam=lam))   #this way of calling (i.e. var=var) passes the variable names into the ellipsis, too
 }
