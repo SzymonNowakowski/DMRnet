@@ -1,4 +1,4 @@
-DMRnet4glm <- function(X, y, clust.method, o, nlambda, lambda, lam, maxp) {
+DMRnet4glm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda) {
     if (class(y) != "factor"){
        stop("Error: y should be a factor")
     }
@@ -114,7 +114,7 @@ DMRnet4glm <- function(X, y, clust.method, o, nlambda, lambda, lam, maxp) {
                   ind1[ord] = (p - length(ord) + 1):p
                   be = be[ind1,]
    }
-   fit <- list(beta = be, df = length(idx):1, loglik = loglik[cbind(idx, ind[idx])], n = n, levels.listed = levels.listed, lambda=mL$lambda, arguments = list(family = "binomial", clust.method = clust.method, o = o, nlambda = nlambda, lambda = lambda, lam = lam, maxp = maxp), interc = TRUE)
+   fit <- list(beta = be, df = length(idx):1, loglik = loglik[cbind(idx, ind[idx])], n = n, levels.listed = levels.listed, lambda=mL$lambda, arguments = list(family = "binomial", clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda), interc = TRUE)
    class(fit) = "DMR"
    return(fit)
 }

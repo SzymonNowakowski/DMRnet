@@ -1,4 +1,4 @@
-SOSnet4glm <- function(X, y, o, nlambda, lambda, lam, interc, maxp){
+SOSnet4glm <- function(X, y, o, nlambda, lam, interc, maxp, lambda){
           if (class(y) != "factor"){
              stop("Error: y should be a factor")
           }
@@ -82,7 +82,7 @@ SOSnet4glm <- function(X, y, o, nlambda, lambda, lam, interc, maxp){
           loglik = sapply(idx, function(i) {
              return(loglik = unlist(mm[[iid[i]]]$loglikbe[1, i]))
           })
-          fit <- list(beta = be, df = length(idx):1, loglik = loglik, n = n, levels.listed = c(), lambda=mL$lambda, arguments = list(family = "binomial", o = o, nlambda = nlambda, lambda = lambda, lam = lam, interc = interc, maxp = maxp),  interc = interc)
+          fit <- list(beta = be, df = length(idx):1, loglik = loglik, n = n, levels.listed = c(), lambda=mL$lambda, arguments = list(family = "binomial", o = o, nlambda = nlambda, lam = lam, interc = interc, maxp = maxp, lambda = lambda),  interc = interc)
           class(fit) = "DMR"
           return(fit)
 }

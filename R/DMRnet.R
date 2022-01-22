@@ -14,13 +14,13 @@
 #'
 #' @param nlambda Parameter of the group lasso screening step, described in Details, the default value is 100.
 #'
-#' @param lambda Explicitly provided net of lambda values for the group lasso screening step, described in Details. If provided, it overrides the value of nlambda parameter.
-#'
-#' @param lam Value of parameter lambda controlling the amount of penalization in rigde regression used for logistic regression in order to allow for parameter estimation in linearly separable setups or the amount of matrix regularization in case of linear regression. Used only for numerical reasons. The defult is 1e-7.
+#' @param lam Value of parameter lambda controlling the amount of penalization in rigde regression used for logistic regression in order to allow for parameter estimation in linearly separable setups or the amount of matrix regularization in case of linear regression. Used only for numerical reasons. The default is 1e-7.
 #'
 #' @param interc Should intercept(s) be fitted (default=TRUE) or set to zero (FALSE). If in X there are any categorical variables, interc=TRUE.
 #'
 #' @param maxp Maximal number of parameters of the model, smaller values result in quicker computation
+#'
+#' @param lambda Explicitly provided net of lambda values for the group lasso screening step, described in Details. If provided, it overrides the value of nlambda parameter.
 #'
 #' @details DMRnet algorithm is a generalization of \code{\link{DMR}} to high-dimensional data.
 #' It uses a screening step in order to decrease the problem to p<n and DMR subsequently.
@@ -75,23 +75,23 @@
 #'
 #' @export DMRnet
 
-DMRnet <- function(X, y, family = "gaussian", clust.method = "complete", o = 5, nlambda = 100, lambda = NULL, lam = 10^(-7), interc = TRUE, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4))){
+DMRnet <- function(X, y, family = "gaussian", clust.method = "complete", o = 5, nlambda = 100, lam = 10^(-7), interc = TRUE, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4)), lambda = NULL){
     X <- data.frame(X, check.names = TRUE, stringsAsFactors = TRUE)
     typeofcols <- sapply(1:ncol(X),function(i) class(X[,i]))
     if(sum(unlist(typeofcols) == "ordered") > 0) stop("Error: there is an ordered factor in the data frame, change it to factor")
     sumnonfac <- sum(typeofcols == "factor")
     if (family == "gaussian"){
        if(sumnonfac == 0){
-                       return(SOSnet4lm(X, y, o = o, nlambda = nlambda, lambda = lambda, interc = interc, maxp = maxp))
+                       return(SOSnet4lm(X, y, o = o, nlambda = nlambda, interc = interc, maxp = maxp, lambda = lambda))
        } else{
-                       return(DMRnet4lm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lambda = lambda, lam = lam, maxp = maxp))
+                       return(DMRnet4lm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
        }
     } else{
        if (family == "binomial"){
           if(sumnonfac == 0){
-                       return(SOSnet4glm(X, y, o = o, nlambda = nlambda, lambda = lambda, lam = lam, interc = interc, maxp = maxp))
+                       return(SOSnet4glm(X, y, o = o, nlambda = nlambda, lam = lam, interc = interc, maxp = maxp, lambda = lambda))
           } else{
-                       return(DMRnet4glm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lambda = lambda, lam = lam, maxp = maxp))
+                       return(DMRnet4glm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
           }
        }
        else stop("Error: wrong family, should be one of gaussian, binomial")

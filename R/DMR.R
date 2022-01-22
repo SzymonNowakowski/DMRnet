@@ -12,6 +12,8 @@
 #'
 #' @param lam Value of parameter lambda controlling the amount of penalization in rigde regression used for logistic regression in order to allow for parameter estimation in linearly separable setups or the amount of matrix regularization in case of linear regression. Used only for numerical reasons. The defult is 1e-7.
 #'
+#' @param lambda The net of lambda values. It is optional and serves only for consistency with DMRnet. It is not used in DMR.
+#'
 #' @details DMR algorithm is based on a traditional stepwise method.
 #' A nested family of models is built based on the values of squared Wald statistics:
 #'
@@ -68,7 +70,7 @@
 #'
 #' @export DMR
 
-DMR <- function(X, y, family = "gaussian", clust.method = 'complete', lam = 10^(-7)){
+DMR <- function(X, y, family = "gaussian", clust.method = 'complete', lam = 10^(-7), lambda = NULL){
     X <- data.frame(X, check.names = TRUE, stringsAsFactors = TRUE)
     typeofcols <- sapply(1:ncol(X),function(i) class(X[,i]))
     if(sum(unlist(typeofcols) == "ordered") > 0) stop("Error: there is an ordered factor in the data frame, change it to factor")

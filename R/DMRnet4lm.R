@@ -1,4 +1,4 @@
-DMRnet4lm <- function(X, y, clust.method, o, nlambda, lambda, lam, maxp){
+DMRnet4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
     n <- nrow(X)
     if(n != length(y)){
               stop("Error: non-conforming data: nrow(X) not equal to length(y)")
@@ -112,7 +112,7 @@ DMRnet4lm <- function(X, y, clust.method, o, nlambda, lambda, lam, maxp){
                   ind1[ord] = (p - length(ord) + 1):p
                   be = be[ind1,]
    }
-   fit <- list(beta = be, df = length(idx):1, rss = rss[cbind(idx, ind[idx])], n = n, levels.listed = levels.listed, lambda=mL$lambda, arguments = list(family = "gaussian", clust.method = clust.method, o = o, nlambda = nlambda, lambda = lambda, maxp = maxp), interc = TRUE)
+   fit <- list(beta = be, df = length(idx):1, rss = rss[cbind(idx, ind[idx])], n = n, levels.listed = levels.listed, lambda=mL$lambda, arguments = list(family = "gaussian", clust.method = clust.method, o = o, nlambda = nlambda, maxp = maxp, lambda = lambda), interc = TRUE)
    class(fit) = "DMR"
    return(fit)
 }
