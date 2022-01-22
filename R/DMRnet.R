@@ -16,7 +16,7 @@
 #'
 #' @param lambda Explicitly provided net of lambda values for the group lasso screening step, described in Details. If provided, it overrides the value of nlambda parameter.
 #'
-#' @param lam Value of parameter lambda controlling the amount of penalization in rigde regression. Used only for logistic regression in order to allow for parameter estimation in linearly separable setups. Used only for numerical reasons.
+#' @param lam Value of parameter lambda controlling the amount of penalization in rigde regression used for logistic regression in order to allow for parameter estimation in linearly separable setups or the amount of matrix regularization in case of linear regression. Used only for numerical reasons. The defult is 1e-7.
 #'
 #' @param interc Should intercept(s) be fitted (default=TRUE) or set to zero (FALSE). If in X there are any categorical variables, interc=TRUE.
 #'
@@ -84,7 +84,7 @@ DMRnet <- function(X, y, family = "gaussian", clust.method = "complete", o = 5, 
        if(sumnonfac == 0){
                        return(SOSnet4lm(X, y, o = o, nlambda = nlambda, lambda = lambda, interc = interc, maxp = maxp))
        } else{
-                       return(DMRnet4lm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lambda = lambda, maxp = maxp))
+                       return(DMRnet4lm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lambda = lambda, lam = lam, maxp = maxp))
        }
     } else{
        if (family == "binomial"){

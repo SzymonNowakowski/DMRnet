@@ -10,7 +10,7 @@
 #'
 #' @param clust.method Clustering method used for partitioning levels of factors; see function \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html}{hclust} in package \pkg{stats} for details.
 #'
-#' @param lam Value of parameter lambda controlling the amount of penalization in rigde regression. Used only for logistic regression in order to allow for parameter estimation in linearly separable setups. Used only for numerical reasons.
+#' @param lam Value of parameter lambda controlling the amount of penalization in rigde regression used for logistic regression in order to allow for parameter estimation in linearly separable setups or the amount of matrix regularization in case of linear regression. Used only for numerical reasons. The defult is 1e-7.
 #'
 #' @details DMR algorithm is based on a traditional stepwise method.
 #' A nested family of models is built based on the values of squared Wald statistics:
@@ -73,7 +73,7 @@ DMR <- function(X, y, family = "gaussian", clust.method = 'complete', lam = 10^(
     typeofcols <- sapply(1:ncol(X),function(i) class(X[,i]))
     if(sum(unlist(typeofcols) == "ordered") > 0) stop("Error: there is an ordered factor in the data frame, change it to factor")
     if (family == "gaussian"){
-       return(DMR4lm(X, y, clust.method = clust.method))
+       return(DMR4lm(X, y, clust.method = clust.method, lam = lam))
     } else{
        if (family == "binomial"){
           return(DMR4glm(X, y, clust.method = clust.method, lam = lam))
