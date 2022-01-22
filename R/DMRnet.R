@@ -14,7 +14,7 @@
 #'
 #' @param nlambda Parameter of the group lasso screening step, described in Details, the default value is 100.
 #'
-#' @param lam Value of parameter lambda controlling the amount of penalization in rigde regression used for logistic regression in order to allow for parameter estimation in linearly separable setups or the amount of matrix regularization in case of linear regression. Used only for numerical reasons. The default is 1e-7.
+#' @param lam The amount of penalization in rigde regression (used for logistic regression in order to allow for parameter estimation in linearly separable setups) or the amount of matrix regularization in case of linear regression. Used only for numerical reasons. The default is 1e-7.
 #'
 #' @param interc Should intercept(s) be fitted (default=TRUE) or set to zero (FALSE). If in X there are any categorical variables, interc=TRUE.
 #'
