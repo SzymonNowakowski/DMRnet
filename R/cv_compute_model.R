@@ -11,7 +11,7 @@ cv_compute_model<-function(model_function, Xtr, ytr, Xte, yte, real_n, lambda.fu
     stop("Unable to perform cross validation. No columns in training set have any variablity in one of the folds")
   }
 
-  model <- model_function(Xtr, ytr, lambda = lambda.full, ...)
+  model <- model_function(Xtr, ytr, ..., lambda = lambda.full)
 
   ###SzN remove from test the data with factors not present in training
   nn <- sapply(1:ncol(Xte), function(i) class(Xte[,i]))

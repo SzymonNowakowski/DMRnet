@@ -1,5 +1,7 @@
 cv_error_indexed <- function(X, y, nfolds, model_function, ...) {
+
         family = list(...)$family
+
         if (family == "gaussian"){
                 n <- length(y)
                 foldid <- cvfolds(n, nfolds)
@@ -14,7 +16,7 @@ cv_error_indexed <- function(X, y, nfolds, model_function, ...) {
                         Xtr <- X[foldid != fold, ,drop = FALSE]
                         ytr <- y[foldid != fold]
 
-                        compute_model <- cv_compute_model(model_function, Xtr, ytr, Xte, yte, real_n, lambda.full, ...)
+                        compute_model <- cv_compute_model(model_function, Xtr, ytr, Xte, yte, real_n, lambda.full = lambda.full, ...)   #three letter abbreviations (lambda.full vs lam) make this function call confused, so explicit passing of named parameter i.e. lambda.full=lambda.full is required
                         model<-compute_model$model
                         Xtr<-compute_model$Xtr
                         ytr<-compute_model$ytr
@@ -58,7 +60,7 @@ cv_error_indexed <- function(X, y, nfolds, model_function, ...) {
                                 Xtr <- X[foldid != fold, , drop = FALSE]
                                 ytr <- y[foldid != fold]
 
-                                compute_model <- cv_compute_model(model_function, Xtr, ytr, Xte, yte, real_n, lambda.full, ...)
+                                compute_model <- cv_compute_model(model_function, Xtr, ytr, Xte, yte, real_n, lambda.full = lambda.full, ...)   #three letter abbreviations (lambda.full vs lam) make this function call confused, so explicit passing of named parameter i.e. lambda.full=lambda.full is required
                                 model<-compute_model$model
                                 Xtr<-compute_model$Xtr
                                 ytr<-compute_model$ytr
