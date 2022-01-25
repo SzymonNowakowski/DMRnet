@@ -25,13 +25,9 @@ DMR4lm <- function(X, y, clust.method, lam){
     if(sum(nn != "numeric" & nn != "factor" ) > 0) {
       stop("Error: wrong data type, columns should be one of types: integer, factor, numeric")
     }
-    x.full <- stats::model.matrix(y~., data = data.frame(y=y, X[,order(nn), drop = FALSE], check.names = TRUE))
-      #important: x.full (and its successors, like Ro later) is ordered: first intercept, then factors (and their levels), then numeric column
-    p <- ncol(x.full)   # sum over all dimensions of X, e.g. for a factor with k levels it is taking (k-1) as a summand
-    if (p >= n) {
-       stop("Error: p >= n, DMR works only for p < n, use DMRnet instead")
-    }
-    m <- stats::lm.fit(x.full, y)
+    X <- X[, order(nn), drop = FALSE]
+    nn <- sort(nn)
+
     factor_columns <- which(nn == "factor")
     n.factors <- length(factor_columns)   #number of factors in X
     if (n.factors > 0) {
@@ -56,6 +52,17 @@ DMR4lm <- function(X, y, clust.method, lam){
                   ord <- 2:(n.cont + 1)   #For each continuous column, it is its index plus one (the intercept)
               }
     }
+
+    x.full <- stats::model.matrix(y~., data = data.frame(y=y, X, check.names = TRUE))
+
+    #x.full <- stats::model.matrix(y~., data = data.frame(y=y, X[,order(nn), drop = FALSE], check.names = TRUE))
+    #important: x.full (and its successors, like Ro later) is ordered: first intercept, then factors (and their levels), then numeric column
+    p <- ncol(x.full)   # sum over all dimensions of X, e.g. for a factor with k levels it is taking (k-1) as a summand
+    if (p >= n) {
+      stop("Error: p >= n, DMR works only for p < n, use DMRnet instead")
+    }
+    m <- stats::lm.fit(x.full, y)
+
 
       #QR decompostion of the model matrix
     qX <- qr.Q(m$qr, complete=FALSE)   #matrix Q, eq. 3.1 of A.Prochenka PhD Thesis
@@ -82,14 +89,18 @@ DMR4lm <- function(X, y, clust.method, lam){
             names(out)<- rep(x, length(out))
             out
        })
+       heig_listed<-heig
        heig <- unlist(heig)
+       heig_unlisted<-heig
     } else {
         heig <- c()
         models <- list()
     }
+
     len <- length(heig)
     heig <- c(0,heig)
     names(heig)[1] = "full"
+    heig_full<-heig
     if ((p.fac + 1) < p){
         if((p.fac + 2) == p){
           heig.add <- ((Ro[(p.fac + 2):p,]%*%z)^2)/(sigma_sq*sum(Ro[(p.fac + 2):p,]^2))
@@ -99,7 +110,9 @@ DMR4lm <- function(X, y, clust.method, lam){
         names(heig.add) <- colnames(x.full)[(p.fac + 2):p]
         heig <- c(heig, heig.add)
     }
+    heig_unsorted<-heig
     heig <- sort(heig)
+
     len <- length(heig)
     #fitting models on the path
     Z1 <- Z2 <- c()
@@ -124,6 +137,8 @@ DMR4lm <- function(X, y, clust.method, lam){
      form <- names.cont
      if (len > 2){
        for (i in 2:(len - 1)){
+         cat(i,"\n")
+
          kt <- names(heig)[i]
          if(length(intersect(kt, names.cont)) > 0){
                           form <- form[-which(form == kt)]
@@ -131,6 +146,9 @@ DMR4lm <- function(X, y, clust.method, lam){
 
          } else {
            kt <- as.numeric(kt)
+           if (sum(sp[[kt]][sp[[kt]] != 1]) == 0) {
+             xxx<-2
+           }
            dod <- min(sp[[kt]][sp[[kt]] != 1])
            sp[[kt]] <- stats::cutree(models[[kt]], h = heig[i])
            if(length(sp[[kt]][sp[[kt]] != 1]) > 0){

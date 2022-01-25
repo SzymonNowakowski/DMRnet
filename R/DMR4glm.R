@@ -29,16 +29,10 @@ DMR4glm <- function(X, y, clust.method, lam){
     if(sum(nn != "numeric" & nn != "factor" ) > 0){
               stop("Error: wrong data type, columns should be one of types: integer, factor, numeric")
     }
-    x.full <- stats::model.matrix(y~., data = data.frame(y=y, X[,order(nn), drop = FALSE], check.names = TRUE))
-    p <- ncol(x.full)
-    if (p > n){
-       stop("Error: p > n, DMR works only for p < n, use DMRnet instead")
-    }
-    lmin <- lam*length(y)*2
-    lmax <- lmin*1000
-    RL <- exp(seq(log(lmax), log(lmin), length.out = 20))
-    m <- glmnet::glmnet(x.full, y, lambda = RL, alpha = 0, family = "binomial")  #SzN per explanation of PP, this is regularized with ridge penalty (alpha=0) to help with computations of singular cases, but not to sparsify the betas as lasso penalty could
-    be <- c(m$a0[20], m$beta[-1,20])
+
+    X <- X[, order(nn), drop = FALSE]
+    nn <- sort(nn)
+
     factor_columns <- which(nn == "factor")
     n.factors <- length(factor_columns)
     if (n.factors > 0) {
@@ -63,6 +57,21 @@ DMR4glm <- function(X, y, clust.method, lam){
                                ord <- 2:(n.cont + 1)
               }
     }
+
+
+    x.full <- stats::model.matrix(y~., data = data.frame(y=y, X, check.names = TRUE))
+
+    #x.full <- stats::model.matrix(y~., data = data.frame(y=y, X[,order(nn), drop = FALSE], check.names = TRUE))
+    p <- ncol(x.full)
+    if (p > n){
+        stop("Error: p > n, DMR works only for p < n, use DMRnet instead")
+    }
+    lmin <- lam*length(y)*2
+    lmax <- lmin*1000
+    RL <- exp(seq(log(lmax), log(lmin), length.out = 20))
+    m <- glmnet::glmnet(x.full, y, lambda = RL, alpha = 0, family = "binomial")  #SzN per explanation of PP, this is regularized with ridge penalty (alpha=0) to help with computations of singular cases, but not to sparsify the betas as lasso penalty could
+    be <- c(m$a0[20], m$beta[-1,20])
+
     zb <- exp(x.full%*%be)
     pix <- zb/(zb + 1)
     w <- as.numeric(pix*(1-pix))
