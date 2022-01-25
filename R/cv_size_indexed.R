@@ -1,10 +1,11 @@
-cv_error_indexed <- function(X, y, nfolds, model_function, ...) {
+cv_size_indexed <- function(X, y, nfolds, model_function, ...) {
 
         family = list(...)$family
 
         if (family == "gaussian"){
                 n <- length(y)
-                foldid <- cvfolds(n, nfolds)
+                real_n <- 0 #recount  of test instances
+                foldid <- sample(rep(1:nfolds,length.out=n))   #PP replaces cvfolds by a simpler sample(rep()) function
                 error <- list()
 
                 model.full <- model_function(X, y, ...)
@@ -27,12 +28,7 @@ cv_error_indexed <- function(X, y, nfolds, model_function, ...) {
                         pred <- predict.DMR(model, newx = as.data.frame(Xte))
                         error[[fold]] <- apply(pred, 2, function(z) sum((z - yte)^2))
                 }
-                foldmin <- min(sapply(error, length))
-                error <- sapply(1:length(error), function(i) error[[i]][(length(error[[i]]) - foldmin + 1) : length(error[[i]])])
-                error <- rowSums(error)/real_n
 
-                kt <- which(error == min(error))
-                df.min <- model$df[kt[length(kt)]]
         } else{
                 if (family == "binomial"){
                         if (class(y) != "factor"){
@@ -44,8 +40,10 @@ cv_error_indexed <- function(X, y, nfolds, model_function, ...) {
                         }
                         n1 <- table(y)[1]
                         n2 <- table(y)[2]
-                        foldid1 <- cvfolds(n1, nfolds)
-                        foldid2 <- cvfolds(n2, nfolds)
+                        real_n <- 0 #recount  of test instances
+
+                        foldid1 <- sample(rep(1:nfolds,length.out=n1))  #PP replaces cvfolds by a simpler sample(rep()) function
+                        foldid2 <- sample(rep(1:nfolds,length.out=n2))  #PP replaces cvfolds by a simpler sample(rep()) function
                         foldid <- c()
                         foldid[which(y == levels(factor(y))[1])] = foldid1
                         foldid[which(y == levels(factor(y))[2])] = foldid2
@@ -71,17 +69,23 @@ cv_error_indexed <- function(X, y, nfolds, model_function, ...) {
                                 pred <- predict.DMR(model, newx = as.data.frame(Xte), type = "class")
                                 error[[fold]] <- apply(pred, 2, function(z) sum(z != yte))
                         }
-                        foldmin <- min(sapply(error, length))
-                        error <- sapply(1:length(error), function(i) error[[i]][(length(error[[i]]) - foldmin + 1) : length(error[[i]])])
-                        error <- rowSums(error)/real_n
 
-                        kt <- which(error == min(error))
-                        df.min <- model$df[kt[length(kt)]]
                 }
                 else{
-                        stop("Error: wrong family, should be one of gaussian, binomial")
+                        stop("Error: wrong family, should be one of: gaussian, binomial")
                 }
         }
-        out <- list(df.min = df.min, dmr.fit = model.full, cvm = error, foldid = foldid)
+        foldmin <- min(sapply(error, length))
+        error <- sapply(1:length(error), function(i) error[[i]][(length(error[[i]]) - foldmin + 1) : length(error[[i]])])
+        error <- rowSums(error)/real_n
+
+        kt <- which(error == min(na.omit(error)))
+        df.min <- model$df[kt[length(kt)]]
+
+        df.1se = NULL
+        kt <- which(error <= min(na.omit(error)) + sd(na.omit(error)))
+        df.1se <- model$df[kt[length(kt)]]
+
+        out <- list(df.min = df.min, df.1se = df.1se, dmr.fit = model.full, cvm = error, foldid = foldid)
         return(out)
 }

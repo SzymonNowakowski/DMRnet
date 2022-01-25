@@ -28,14 +28,14 @@
 #'
 #' @return An object with S3 class "DMR", which  is  a  list  with  the  ingredients:
 #'
-#' \item{beta}{Matrix p times p of estimated paramters; each column corresponds to a model on the nested path having from p to 1 parameter (denoted as df)}
-#' \item{df}{Vector of degrees of freedom; from p to 1}
-#' \item{rss/loglik}{Measure of fit for the nested models: rss (residual sum of squares) for family="gaussian" and loglik (loglikelihood) for family="binomial"}
-#' \item{n}{Number of observations}
-#' \item{levels.listed}{Minimal set of levels of respective factors present in data}
-#' \item{lambda}{The net of lambda values used in the screening step, empty vector in case of DMR}
-#' \item{arguments}{List of the chosen arguments from the function call}
-#' \item{interc}{If the intercept was fitted: for DMR always equal to TRUE}
+#' \item{beta}{Matrix p times p of estimated paramters; each column corresponds to a model on the nested path having from p to 1 parameter (denoted as df).}
+#' \item{df}{Vector of degrees of freedom; from p to 1.}
+#' \item{rss/loglik}{Measure of fit for the nested models: rss (residual sum of squares) for family="gaussian" and loglik (loglikelihood) for family="binomial".}
+#' \item{n}{Number of observations.}
+#' \item{levels.listed}{Minimal set of levels of respective factors present in data.}
+#' \item{lambda}{The net of lambda values used in the screening step, empty vector in case of DMR.}
+#' \item{arguments}{List of the chosen arguments from the function call.}
+#' \item{interc}{If the intercept was fitted: for DMR always equal to TRUE.}
 #'
 #'
 #' @seealso \code{\link{print.DMR}} for printing, \code{\link{plot.DMR}} for plotting, \code{\link{coef.DMR}} for extracting coefficients and \code{\link{predict.DMR}} for prediction.
@@ -80,6 +80,6 @@ DMR <- function(X, y, family = "gaussian", clust.method = 'complete', lam = 10^(
        if (family == "binomial"){
           return(DMR4glm(X, y, clust.method = clust.method, lam = lam))
        }
-       else stop("Error: wrong family, should be one of gaussian, binomial")
+       else stop("Error: wrong family, should be one of: gaussian, binomial")
     }
 }

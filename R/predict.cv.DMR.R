@@ -6,6 +6,8 @@
 #'
 #' @param newx Data frame of new values for X at which predictions are to be made.
 #'
+#' @param size Value of the model size parameter at which predictions are required. The default is size="df.min" value indicating the model minimizing the cross validation error. Alternatively size="df.1se" can be used, indicating the smallest model falling under the upper curve of a prediction error plus one standard deviation.
+#'
 #' @param ... Further arguments passed to or from other methods.
 #'
 #' @param type One of: link, response, class. For "gaussian" for all values of type it gives the fitted values. For "binomial" type "link" gives the linear predictors, for type "response" it gives the fitted probabilities and for type "class" it produces  the  class  label  corresponding  to  the  maximum  probability.
@@ -28,7 +30,16 @@
 #' ypr <- predict(cv, newx = Xte)
 #'
 #' @export
-predict.cv.DMR <- function(object, newx, type = "link", ...){
-               out <- predict.DMR(object$dmr.fit, newx = as.data.frame(newx), df = object$df.min, type = type)
-               return(out)
+predict.cv.DMR <- function(object, newx, type = "link", size="df.min", ...){
+  if (size=="df.1se" & !is.null(object$df.1se)) {
+    out <- predict.DMR(object$dmr.fit, newx = as.data.frame(newx), df = object$df.min, type = type)
+  } else if (size=="df.1se") {   #object$df.1se is null
+    stop("Error: required the smallest model falling under the upper curve of a prediction error plus one standard deviation, but it is not set. Use size=`df.min` instead, for the model minimizing the cross validation error.")
+  } else if (size=="df.min") {
+    out <- predict.DMR(object$dmr.fit, newx = as.data.frame(newx), df = object$df.min, type = type)
+  } else{
+    stop("Error: wrong size, should be one of: df.min, df.1se")
+  }
+
+  return(out)
 }

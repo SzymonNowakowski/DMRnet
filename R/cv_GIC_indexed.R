@@ -96,7 +96,7 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                         lambda.full<- model.full$lambda
 
                         for (fold in 1:nfolds) {
-                                cat("fold:", fold, "\n")
+
                                 Xte <- X[foldid == fold, , drop = FALSE]
                                 yte <- y[foldid == fold]
                                 Xtr <- X[foldid != fold, , drop = FALSE]
@@ -153,10 +153,10 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
 
                 }
                 else{
-                        stop("Error: wrong family, should be one of gaussian, binomial")
+                        stop("Error: wrong family, should be one of: gaussian, binomial")
                 }
         }
         #PP: out <- list(df.min = df.min, dmr.fit = dmr.fit, cvm = error, foldid = foldid)
-        out <- list(df.min = df.min, dmr.fit = model.full, cvm = errGIC, foldid = foldid)
+        out <- list(df.min = df.min, df.1se = NULL, dmr.fit = model.full, cvm = errGIC, foldid = foldid)
         return(out)
 }

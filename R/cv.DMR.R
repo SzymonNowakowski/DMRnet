@@ -14,13 +14,14 @@
 #'
 #' @param nfolds Number of folds in cross-validation. The default value is 10.
 #'
-#' @param indexation.mode How the cross validation algorithm should index the models for internal quality comparisons; one of: "GIC" (the default), "error".
+#' @param indexation.mode How the cross validation algorithm should index the models for internal quality comparisons; one of: "GIC" (the default) for GIC indexed cross validation, "size", for model-size indexed cross validation.
 #'
 #' @details cv.DMR algorithm does k-fold cross-validation for DMR. The df for the minimal estimated prediction error is returned.
 #'
 #' @return An object with S3 class "cv.DMR" is  returned,  which  is  a  list  with  the  ingredients  of  the  cross-validation fit.
 #' \describe{
-#'   \item{df.min}{df (number of parameters) for the model with minimal cross-validated error.}
+#'   \item{df.min}{df (number of parameters) of the model with minimal cross-validated error.}
+#'   \item{df.1se}{df (number of parameters) of the smallest model falling under the upper curve of a prediction error plus one standard deviation. Only for the indexation.mode equal to "size", otherwise it is set to NULL.}
 #'   \item{dmr.fit}{Fitted DMR object for the full data.}
 #'   \item{cvm}{The mean cross-validated error for the entire sequence of models.}
 #'   \item{foldid}{The fold assignments used.}
@@ -45,5 +46,5 @@
 
 cv.DMR <- function(X, y, family = "gaussian", clust.method = 'complete', lam = 10^(-7), nfolds = 10, indexation.mode = "GIC"){
 
-        return(cv_indexation.mode_distribute(X, y, nfolds, indexation.mode, DMR, family=family, clust.method=clust.method, lam=lam))   #this way of calling (i.e. var=var) passes the variable names into the ellipsis, too
+        return(cv_indexation.mode_distribute(X, y, nfolds, indexation.mode, DMR, family=family, clust.method=clust.method, lam=lam))   #this way of calling (i.e. var=var) passes the variable names into the ellipsis, otherwise no variable names would be present in the list(...)
 }
