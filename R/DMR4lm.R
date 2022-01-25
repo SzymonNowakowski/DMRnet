@@ -89,9 +89,9 @@ DMR4lm <- function(X, y, clust.method, lam){
             names(out)<- rep(x, length(out))
             out
        })
-       heig_listed<-heig
+
        heig <- unlist(heig)
-       heig_unlisted<-heig
+
     } else {
         heig <- c()
         models <- list()
@@ -100,7 +100,7 @@ DMR4lm <- function(X, y, clust.method, lam){
     len <- length(heig)
     heig <- c(0,heig)
     names(heig)[1] = "full"
-    heig_full<-heig
+
     if ((p.fac + 1) < p){
         if((p.fac + 2) == p){
           heig.add <- ((Ro[(p.fac + 2):p,]%*%z)^2)/(sigma_sq*sum(Ro[(p.fac + 2):p,]^2))
@@ -110,7 +110,7 @@ DMR4lm <- function(X, y, clust.method, lam){
         names(heig.add) <- colnames(x.full)[(p.fac + 2):p]
         heig <- c(heig, heig.add)
     }
-    heig_unsorted<-heig
+
     heig <- sort(heig)
 
     len <- length(heig)
@@ -137,8 +137,6 @@ DMR4lm <- function(X, y, clust.method, lam){
      form <- names.cont
      if (len > 2){
        for (i in 2:(len - 1)){
-         cat(i,"\n")
-
          kt <- names(heig)[i]
          if(length(intersect(kt, names.cont)) > 0){
                           form <- form[-which(form == kt)]
@@ -146,9 +144,6 @@ DMR4lm <- function(X, y, clust.method, lam){
 
          } else {
            kt <- as.numeric(kt)
-           if (sum(sp[[kt]][sp[[kt]] != 1]) == 0) {
-             xxx<-2
-           }
            dod <- min(sp[[kt]][sp[[kt]] != 1])
            sp[[kt]] <- stats::cutree(models[[kt]], h = heig[i])
            if(length(sp[[kt]][sp[[kt]] != 1]) > 0){
