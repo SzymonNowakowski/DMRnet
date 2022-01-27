@@ -96,17 +96,8 @@ for (beta_choice in 1:6) {
 
           ##### 2. Fitting methods
 
-          ## DMRnet
-          if (alg == "DMRnet") {
-            MOD <- cv.DMRnet(XX, y, nlambda=100, nfolds=10)
-            md0 <- MOD$df.min
-          }
-
-          ## GLAMER
-          if (alg == "glamer") {
-            MOD <- cv.DMRnet(XX, y, nlambda=100, nfolds=10, algorithm="glamer")
-            md0 <- MOD$df.min
-          }
+          MOD <- cv.DMRnet(XX, y, nlambda=100, nfolds=10, algorithm = alg)
+          md0 <- MOD$df.min
 
           ##### 3. Prediction error estimation
           ERR <- replicate(100,{
@@ -119,12 +110,12 @@ for (beta_choice in 1:6) {
             c( signal2_test = mean((mu_test - mean(mu_test))^2),
                mse = mean((mu_test - yy)^2) )
           })
-          c(signal2 = signal2, sigma = sigma, apply(ERR,1,mean), md=md, md0=md0)
+          c(signal2 = signal2, sigma = sigma, apply(ERR,1,mean), md0=md0)
 
         }))
 
 
-        write.csv(OUT, file=paste(filename,"csv",sep="."))
+        #write.csv(OUT, file=paste(filename,"csv",sep="."))
 
 
 
