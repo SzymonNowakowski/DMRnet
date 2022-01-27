@@ -1,4 +1,4 @@
-cv_size_indexed <- function(X, y, nfolds, model_function, ...) {
+cv_MD_indexed <- function(X, y, nfolds, model_function, ...) {
 
         family = list(...)$family
 

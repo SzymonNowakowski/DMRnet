@@ -22,7 +22,7 @@
 #'
 #' @param nfolds Number of folds in cross-validation. The default value is 10.
 #'
-#' @param indexation.mode How the cross validation algorithm should index the models for internal quality comparisons; one of: "GIC" (the default) for GIC indexed cross validation, "size", for model-size indexed cross validation.
+#' @param indexation.mode How the cross validation algorithm should index the models for internal quality comparisons; one of: "GIC" (the default) for GIC-indexed cross validation, "dimension", for model dimension-indexed cross validation.
 #'
 #' @param algorithm The algorithm to be used to merge levels; one of: "DMRnet" (the default), "glamer".
 #'
