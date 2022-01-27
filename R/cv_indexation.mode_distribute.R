@@ -2,8 +2,8 @@ cv_indexation.mode_distribute <- function(X, y, nfolds, indexation.mode, model_f
 
        X <- data.frame(X, check.names = TRUE, stringsAsFactors = TRUE)
 
-       if (indexation.mode == "size") {
-               out <- cv_size_indexed(X, y, nfolds, model_function, ...)
+       if (indexation.mode == "dimension") {
+               out <- cv_MD_indexed(X, y, nfolds, model_function, ...)
        } else {
                if (indexation.mode == "GIC") {
                        out <- cv_GIC_indexed(X, y, nfolds, model_function, ...)

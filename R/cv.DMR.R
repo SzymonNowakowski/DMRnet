@@ -14,7 +14,7 @@
 #'
 #' @param nfolds Number of folds in cross-validation. The default value is 10.
 #'
-#' @param indexation.mode How the cross validation algorithm should index the models for internal quality comparisons; one of: "GIC" (the default) for GIC indexed cross validation, "size", for model-size indexed cross validation.
+#' @param indexation.mode How the cross validation algorithm should index the models for internal quality comparisons; one of: "GIC" (the default) for GIC-indexed cross validation, "dimension", for model dimension-indexed cross validation.
 #'
 #' @details cv.DMR algorithm does k-fold cross-validation for DMR. The df for the minimal estimated prediction error is returned.
 #'
