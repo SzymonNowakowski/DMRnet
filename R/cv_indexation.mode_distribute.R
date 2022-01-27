@@ -8,7 +8,7 @@ cv_indexation.mode_distribute <- function(X, y, nfolds, indexation.mode, model_f
                if (indexation.mode == "GIC") {
                        out <- cv_GIC_indexed(X, y, nfolds, model_function, ...)
                } else {
-                       stop("Error: wrong indexation.mode, should be one of: GIC, size")
+                       stop("Error: wrong indexation.mode, should be one of: GIC, dimension")
                }
        }
 
