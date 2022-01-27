@@ -85,7 +85,7 @@ for (model_choice in c( run_list )) {
       if (run==1) {
         cat("GLAMER with cv+sd\n")
       }
-      model.70percent<-cv.DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, family="gaussian", indexation.mode = "size", algorithm="glamer")
+      model.70percent<-cv.DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, family="gaussian", indexation.mode = "dimension", algorithm="glamer")
 
     } else
       stop("Uknown method")
@@ -100,7 +100,7 @@ for (model_choice in c( run_list )) {
       prediction<- predict(model.70percent, newx=antigua.test.70percent.x, type="class")
     } else  if (model_choice=="cv+sd.GLAMER") {
       #cat(model_choice, "pred\n")
-      prediction<- predict(model.70percent, newx=antigua.test.70percent.x, type="class", size="df.1se")
+      prediction<- predict(model.70percent, newx=antigua.test.70percent.x, type="class", md="df.1se")
     } else
       stop("Uknown method")
 

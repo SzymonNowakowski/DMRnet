@@ -69,7 +69,7 @@ for (model_choice in c("cv+sd.GLAMER",  "gic.GLAMER","cvg.DMRnet", "gic.DMRnet")
       if (run==1) {
         cat("GLAMER with cv+sd\n")
       }
-      model.70percent<-cv.DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, family="binomial", indexation.mode = "size", algorithm="glamer")
+      model.70percent<-cv.DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, family="binomial", indexation.mode = "dimension", algorithm="glamer")
 
     } else
       stop("Uknown method")
@@ -84,7 +84,7 @@ for (model_choice in c("cv+sd.GLAMER",  "gic.GLAMER","cvg.DMRnet", "gic.DMRnet")
       prediction<- predict(model.70percent, newx=promoter.test.70percent.x, type="class")
     } else  if (model_choice=="cv+sd.GLAMER") {
       #cat(model_choice, "pred\n")
-      prediction<- predict(model.70percent, newx=promoter.test.70percent.x, type="class", size="df.1se")
+      prediction<- predict(model.70percent, newx=promoter.test.70percent.x, type="class", md="df.1se")
     } else
       stop("Uknown method")
 
@@ -116,6 +116,5 @@ for (model_choice in c("cv+sd.GLAMER",  "gic.GLAMER","cvg.DMRnet", "gic.DMRnet")
   vioplot(list(dfs, promoter.df[[index]]), xlab = model_choice, ylab="model size", main="promoter")
 }
 
-#write.csv(errors, "results/promoter_errors.csv")
-#write.csv(sizes, "results/promoter_model_sizes.csv")
+
 
