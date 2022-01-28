@@ -13,9 +13,9 @@ cv_MD_indexed <- function(X, y, nfolds, model_function, ...) {
 
                 for (fold in 1:nfolds){
                         Xte <- X[foldid == fold, ,drop = FALSE]
-                        yte <- y[foldid == fold]
+                        yte <- y[foldid == fold, drop = FALSE]
                         Xtr <- X[foldid != fold, ,drop = FALSE]
-                        ytr <- y[foldid != fold]
+                        ytr <- y[foldid != fold, drop = FALSE]
 
                         compute_model <- cv_compute_model(model_function, Xtr, ytr, Xte, yte, real_n, lambda.full = lambda.full, ...)   #three letter abbreviations (lambda.full vs lam) make this function call confused, so explicit passing of named parameter i.e. lambda.full=lambda.full is required
                         model<-compute_model$model
@@ -54,9 +54,9 @@ cv_MD_indexed <- function(X, y, nfolds, model_function, ...) {
 
                         for (fold in 1:nfolds){
                                 Xte <- X[foldid == fold, , drop = FALSE]
-                                yte <- y[foldid == fold]
+                                yte <- y[foldid == fold, drop = FALSE]
                                 Xtr <- X[foldid != fold, , drop = FALSE]
-                                ytr <- y[foldid != fold]
+                                ytr <- y[foldid != fold, drop = FALSE]
 
                                 compute_model <- cv_compute_model(model_function, Xtr, ytr, Xte, yte, real_n, lambda.full = lambda.full, ...)   #three letter abbreviations (lambda.full vs lam) make this function call confused, so explicit passing of named parameter i.e. lambda.full=lambda.full is required
                                 model<-compute_model$model

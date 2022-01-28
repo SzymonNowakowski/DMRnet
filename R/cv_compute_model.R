@@ -4,8 +4,8 @@ cv_compute_model<-function(model_function, Xtr, ytr, Xte, yte, real_n, lambda.fu
   ssd <- apply(Xtr, 2, function(x) length(unique(x)))
   singular<-which(ssd == 1)
   if (length(singular)>0) {
-    Xte <- Xte[,-singular]
-    Xtr <- Xtr[,-singular]
+    Xte <- Xte[,-singular, drop=FALSE]
+    Xtr <- Xtr[,-singular, drop=FALSE]
   }
   if (ncol(Xtr) == 0) {
     stop("Unable to perform cross validation. No columns in training set have any variablity in one of the folds")
@@ -22,8 +22,8 @@ cv_compute_model<-function(model_function, Xtr, ytr, Xte, yte, real_n, lambda.fu
 
       train.levels <- model$levels.listed[[i]]
 
-      yte<-yte[which(Xte[,factor_columns[i]] %in% train.levels)]  #leaving only the test rows with levels compatible with training data
-      Xte<-Xte[which(Xte[,factor_columns[i]] %in% train.levels),]
+      yte<-yte[which(Xte[,factor_columns[i]] %in% train.levels), drop=FALSE]  #leaving only the test rows with levels compatible with training data
+      Xte<-Xte[which(Xte[,factor_columns[i]] %in% train.levels), , drop=FALSE]
 
     }
   real_n <- real_n + length(yte)
