@@ -57,7 +57,9 @@ DMRnet4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
       user.lambda <- lambda
     }
 
-    mL <- grpreg::grpreg(x.full[,-1], y, group=rep(1:p.x, fl-1) , penalty = "grLasso", family ="gaussian", nlambda = nlambda, lambda = user.lambda)
+    #to keep the x.full as a matrix after the intercept column is removed in case of a single 2-level factor column in X, drop=FALSE must be provided in grpreg call below in x.full[,-1, drop=FALSE]
+    #otherwise x.full[,-1] would be reduced to a vector and grpreg would crash
+    mL <- grpreg::grpreg(x.full[,-1, drop=FALSE], y, group=rep(1:p.x, fl-1) , penalty = "grLasso", family ="gaussian", nlambda = nlambda, lambda = user.lambda)
     RL <- mL$lambda
     dfy <- apply(mL$beta, 2, function(x) sum(x!=0))
     kt <- 1:length(RL)
@@ -78,9 +80,9 @@ DMRnet4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
     prz <- rep(1:p.x, fl-1)
     fac <- apply(bb[-1,ii == FALSE, drop = FALSE], 2, function(x) tapply(x, factor(prz), function(z) sum(z^2)*sqrt(length(z))))
     #fac is a matrix with betas relating to variables (rows) respective to non-duplicated lambdas (colums)
-    #TODO: verify if(is.null(dim(fac))){
-    #                       fac <- t(as.matrix(fac))
-    # }
+    if(is.null(dim(fac))){  #in case of a single 2-level factor matrix in X, there is only one beta and fac would be reduced to a vector. This line here helps to convert it back to a matrix
+       fac <- t(as.matrix(fac))
+    }
     B <- apply(fac, 2, function(x) stats::quantile(x[x!=0], seq(0, 1, length = (o + 1))[-(o + 1)]))
     #B is a matrix of
                   #   - o-based quantiles of non-zero Betas (without the last, 100% quantile) (rows)
