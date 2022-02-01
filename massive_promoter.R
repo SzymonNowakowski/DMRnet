@@ -5,6 +5,7 @@ library(devtools)
 library(vioplot)
 load_all()
 
+set.seed(strtoi(substr(digest("promoter", "md5", serialize = FALSE),1,7),16))   #making all that I can to reproduce previous results of version 0.2.0+glamer from summer 2021 (part of preparation for AAAI'22)
 
 data("promoter")
 promoter.errors<-read.csv("promoter_data/promoter_errors.csv")
