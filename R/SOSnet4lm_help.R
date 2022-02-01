@@ -17,8 +17,9 @@ SOSnet4lm_help <- function(S, mL, X, y, interc){
               # a solution is to try this, and if it fails, recompute QR but restricted to pivoted columns within rank
       qr.Q(QR, complete=FALSE)[, 1:indices_count],  #explicitly stating that we want partial results (https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/QR.Auxiliaries)
       error=function(cond) {
-        message("Numerical instability in QR decomposition detected. Will try to handle this. Original error:")
-        message(cond)
+        #message("Numerical instability in QR decomposition detected. Will try to handle this. Original error:\n")
+        #message(cond)
+        #message("\n")
         if (interc == FALSE){  #recompute QR but restricted to pivoted columns within rank
           QR <- qr(X[, screenPred[QR$pivot[1:QR$rank]], drop = FALSE])
         } else{
