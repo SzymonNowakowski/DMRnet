@@ -11,7 +11,7 @@ Xtruncated_normalized<- apply(Xtruncated, 2, function(x) sqrt(n/sum(x^2))*x)
 #############the root cause of problems with this dataset is the inner workings of glmnet, as illustrated by the following examples
 #mod<-glmnet::glmnet(Xtruncated, ytruncated, alpha = 1, intercept = TRUE, nlambda = 20, family = "gaussian")   #alpha=1 is pure Lasso
 #mod$beta
-# the fifth is empty
+# the fifth beta is empty - as should be
 
 #mod_normalized<-glmnet::glmnet(Xtruncated_normalized, ytruncated, alpha = 1, intercept = TRUE, nlambda = 20, family = "gaussian")    #alpha=1 is pure Lasso
 #mod_normalized$beta
@@ -52,7 +52,7 @@ for (i in 1:10) {
   size<-1000
   subset <- sample(c(1:25000), size = size)
   ssd <- apply(X.tr[subset,], 2, stats::sd)
-  colsubset <- sample(c(1:length(ssd>0)), size = size)
+  colsubset <- sample(c(1:length(which(ssd>0))), size = size)
   cat("cv dmr, family gaussian, limited matrix", size,"x", size, "\n")
   dmr<-cv.DMRnet(X.tr[subset,which(ssd>0)[colsubset]], y.tr[subset])
 
@@ -77,7 +77,7 @@ for (i in 1:10) {
   size<-1000
   subset <- sample(c(1:25000), size = size)
   ssd <- apply(X.tr[subset,], 2, stats::sd)
-  colsubset <- sample(c(1:length(ssd>0)), size = size)
+  colsubset <- sample(c(1:length(which(ssd>0))), size = size)
   cat("cv dmr, family binomial, limited matrix", size,"x", size, "\n")
   dmr<-cv.DMR(X.tr[subset,which(ssd>0)[colsubset]], y.tr[subset], family="binomial")
 
