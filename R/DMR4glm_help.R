@@ -34,6 +34,9 @@ DMR4glm_help <- function(X, y, clust.method, lam){
           i1 <- ifelse(i == 1, 2, sum(n.levels[1:(i - 1)] - 1) + 2)
           i2 <- sum(n.levels[1:i] - 1) + 1
           out <- w_stats(be[i1:i2], Var[i1:i2, i1:i2], ind1 = i1, ind2 = i2)
+
+          out[ out<0 ] <- lam    #this fix is for DMRnet, it replaces negative values with a very small positive number. The reason negative values are out there is numerical instability when Kan is very close to 0 and Var is not symmetric, then w_stats produces negative numbers
+
           rownames(out) <- colnames(out) <- levels(X[,faki[i]])
           return(out)
        })
