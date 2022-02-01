@@ -31,7 +31,7 @@ SOSnet4glm <- function(X, y, o, nlambda, lam, interc, maxp, lambda){
           Xg <- apply(X, 2, function(x) sqrt(n/sum(x^2))*x)
 
           if (is.null(lambda)) {
-            user.lambda<-substitute()    #make user.lambda - paradoxically - not present in a call to glmnet
+            user.lambda<-NULL    #make user.lambda NULL in a call to glmnet
           } else {
             nlambda <- length(lambda)   #override this parameter
             user.lambda <- lambda
