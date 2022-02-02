@@ -54,7 +54,7 @@ for (i in 1:10) {
   ssd <- apply(X.tr[subset,], 2, stats::sd)
   colsubset <- sample(c(1:length(which(ssd>0))), size = size)
   cat("cv dmr, family gaussian, limited matrix", size,"x", size, "\n")
-  dmr<-cv.DMRnet(X.tr[subset,which(ssd>0)[colsubset]], y.tr[subset])
+  dmr<-cv.DMR(X.tr[subset,which(ssd>0)[colsubset]], y.tr[subset])
 
   pred<-predict(dmr, X.te[,which(ssd>0)[colsubset]])
 }
@@ -68,7 +68,7 @@ for (i in 1:10) {
   subset <- sample(c(1:25000), size = size)
   ssd <- apply(X.tr[subset,], 2, stats::sd)
   cat("cv dmrnet, family binomial, limited matrix", size,"x", length(ssd>0), "\n")
-  dmrnet<-cv.DMR(X.tr[subset,which(ssd>0)], y.tr[subset], family="binomial")
+  dmrnet<-cv.DMRnet(X.tr[subset,which(ssd>0)], y.tr[subset], family="binomial")
   pred<-predict(dmrnet, X.te[,which(ssd>0)])
 }
 

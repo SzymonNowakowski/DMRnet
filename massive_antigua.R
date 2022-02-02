@@ -6,9 +6,9 @@ load_all()
 
 set.seed(strtoi(substr(digest("antigua", "md5", serialize = FALSE),1,7),16))   #making all that I can to reproduce previous results of version 0.2.0+glamer from summer 2021 (part of preparation for AAAI'22)
 
-run_list = c("cv+sd.GLAMER","gic.GLAMER",  "cvg.DMRnet", "gic.DMRnet")
-antigua.errors<-read.csv("antigua_data/antigua_errors.csv")
-antigua.df<-read.csv("antigua_data/antigua_model_sizes.csv")
+run_list <- c("cv+sd.GLAMER","gic.GLAMER",  "cvg.DMRnet", "gic.DMRnet")
+antigua.expected.errors<-read.csv("data_antigua/antigua_errors.csv")
+antigua.expected.df<-read.csv("data_antigua/antigua_model_sizes.csv")
 
 
 library(DAAG)
@@ -30,26 +30,26 @@ for (model_choice in c( run_list )) {
 
   while (run<=runs) {
 
-    ################ original response 8 levels!
+    ################ original response
     antigua.all.y<-antigua[,ncol(antigua)] +0.0
-    antigua.all.y.no_error<-antigua.all.y
+
 
    # cat("generating train/test sets\n")
 
-    sample.70percent <- sample(1:nrow(antigua.all.x), 0.7*nrow(antigua.all.x))
+    sample.10percent <- sample(1:nrow(antigua.all.x), 0.7*nrow(antigua.all.x))
     antigua.train.70percent.x <- antigua.all.x[sample.70percent,]
     antigua.train.70percent.y <- antigua.all.y[sample.70percent]
     antigua.test.70percent.x <- antigua.all.x[-sample.70percent,]
     antigua.test.70percent.y <- antigua.all.y[-sample.70percent]
-    antigua.test.70percent.y.no_error <- antigua.all.y.no_error[-sample.70percent]
+
 
 
 
 
     #HANDLING THE SINGULAR CASE
 
-    #removing columns with only one level:
-    singular_factors<-which(sapply(sapply(antigua.train.70percent.x, levels), length)==1)   #for continous columns length is 0
+    #removing columns with only one value:
+    singular_factors<-which( apply(antigua.train.70percent.x, 2, function(x) length(unique(x))) == 1)
     if (length(singular_factors)>0) {
       antigua.test.70percent.x <- antigua.test.70percent.x[,-singular_factors]
       antigua.train.70percent.x <- antigua.train.70percent.x[,-singular_factors]
@@ -63,66 +63,60 @@ for (model_choice in c( run_list )) {
       if (run==1) {
         cat("DMRnet with GIC only\n")
       }
-      model.70percent <- DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, family="gaussian")
+      model <- DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, family="gaussian")
 
-      gic <- gic.DMR(model.70percent, c = 2)
+      gic <- gic.DMR(model, c = 2)
 
     } else  if (model_choice=="cvg.DMRnet") {
       index=4
       if (run==1) {
         cat(model_choice, "with cvg\n")
       }
-      model.70percent <- cv.DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, family="gaussian", indexation.mode = "GIC")
+      model <- cv.DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, family="gaussian", indexation.mode = "GIC")
 
     } else if (model_choice=="gic.GLAMER") {
       index=3
       if (run==1) {
         cat("GLAMER method\n")
       }
-      model.70percent <- DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, algorithm="glamer", family="gaussian", )
+      model <- DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, algorithm="glamer", family="gaussian", )
 
-      gic <- gic.DMR(model.70percent, c = 2)   #we are using existing gic calculation which is compatible with GLAMER models
+      gic <- gic.DMR(model, c = 2)   #we are using existing gic calculation which is compatible with GLAMER models
 
     }  else  if (model_choice=="cv+sd.GLAMER") {
       index=2
       if (run==1) {
         cat("GLAMER with cv+sd\n")
       }
-      model.70percent<-cv.DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, family="gaussian", indexation.mode = "dimension", algorithm="glamer")
+      model<-cv.DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, family="gaussian", indexation.mode = "dimension", algorithm="glamer")
 
     } else
       stop("Uknown method")
 
     if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
       #cat(model_choice, "pred\n")
-      prediction<- predict(model.70percent, newx=antigua.test.70percent.x, df = gic$df.min, type="class")
+      prediction<- predict(model, newx=antigua.test.70percent.x, df = gic$df.min, type="class")
       prediction1<- predict(gic, newx=antigua.test.70percent.x, type="class")
+      df<-gic$df.min
       cat("diff: ", sum(prediction1-prediction), "\n")
     } else  if (model_choice=="cvg.DMRnet") {
       #cat(model_choice, "pred\n")
-      prediction<- predict(model.70percent, newx=antigua.test.70percent.x, type="class")
+      prediction<- predict(model, newx=antigua.test.70percent.x, type="class")
+      df<-model$df.min
     } else  if (model_choice=="cv+sd.GLAMER") {
       #cat(model_choice, "pred\n")
-      prediction<- predict(model.70percent, newx=antigua.test.70percent.x, type="class", md="df.1se")
+      prediction<- predict(model, newx=antigua.test.70percent.x, type="class", md="df.1se")
+      df<-model$df.1se
     } else
       stop("Uknown method")
 
 
 
-
-
     prediction[is.na(prediction)] <- 0
-    MSPE<-mean((prediction[!is.na(prediction)] - antigua.test.70percent.y.no_error[!is.na(prediction)])^2)
+    MSPE<-mean((prediction[!is.na(prediction)] - antigua.test.70percent.y[!is.na(prediction)])^2)
 
-    if (model_choice == "gic.DMRnet" | model_choice == "gic.GLAMER")
-      df<-gic$df.min
-    if (model_choice == "cvg.DMRnet" )
-      df<-model.70percent$df.min
-    if (model_choice == "cv+sd.GLAMER" )
-      df<-model.70percent$df.1se
-
-    cat(run, "error = ", MSPE, "->", ecdf(antigua.errors[[index]])(MSPE), "\n")
-    cat(run, "df = ", df, "->", ecdf(antigua.df[[index]])(df), "\n")
+    cat(run, "error = ", MSPE, "->", ecdf(antigua.expected.errors[[index]])(MSPE), "\n")
+    cat(run, "df = ", df, "->", ecdf(antigua.expected.df[[index]])(df), "\n")
 
     mes[run]<-MSPE
     dfs[run]<-df
@@ -131,6 +125,6 @@ for (model_choice in c( run_list )) {
   }
 
 
-  vioplot(list(mes, antigua.errors[[index]]), xlab = model_choice, ylab="error", main="antigua")
-  vioplot(list(dfs, antigua.df[[index]]), xlab = model_choice, ylab="model size", main="antigua")
+  vioplot(list(actual=mes, expected=antigua.expected.errors[[index]]), xlab = model_choice, ylab="error", main="antigua")
+  vioplot(list(actual=dfs, expected=antigua.expected.df[[index]]), xlab = model_choice, ylab="model size", main="antigua")
 }

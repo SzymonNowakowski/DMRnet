@@ -1,5 +1,6 @@
 library(devtools)
 library(vioplot)
+library(digest)
 load_all()
 
 ##### Model matrix (data.frame) generation
@@ -25,11 +26,6 @@ generModel = function(n, p, rho){
 
 #####    M o d e l    p a r a m e t e r s
 beta0 <- rep(0, 23)
-
-# Low 1 and 3
-#betaLow1 <- c(rep(-3, 10), rep(0, 4), rep(3, 10))
-betaLow1 <- c(rep(0, 10-1), rep(3, 4), rep(6, 10))
-betaLow <- c(-4.5, rep(betaLow1, 3), rep(beta0, 7) )
 
 # High 1 and 2
 #betaHigh1.a <- c(rep(-2, 8),  rep(0, 8), rep(2, 8))
@@ -80,10 +76,18 @@ for (beta_choice in 1:6) {
 
   for (rho in c(0, 0.5)) {
     for (snr in 1.5^(-1:5)) {
-      for (alg in c("DMRnet", "glamer")) {
-        cat("alg:", alg, "\n")
+      theme <- theme <- paste(denot, snr, rho)
+      seed <- strtoi(substr(digest(theme, "md5", serialize = FALSE),1,7),16)
+      set.seed(seed)
+
+      for (alg in c("cvg.glamer", "cv_sd.glamer", "cvg.DMRnet")) {
+        cat("alg:", alg, "in", theme, "\n")
 
         filename <- paste(denot, "snr", as.character(round(snr,3)), "rho", as.character(rho), alg, sep="_")
+
+        expected_results<-read.table(paste("data_simulations/",paste(filename, "csv", sep="."), sep=""), header=TRUE, sep=",")
+        rownames(expected_results)<-expected_results$X
+        expected_results<-expected_results[-1]
 
         OUT <- simplify2array( lapply(1:200, function(i){
           ##### 1. Model generation
@@ -96,8 +100,8 @@ for (beta_choice in 1:6) {
 
           ##### 2. Fitting methods
 
-          MOD <- cv.DMRnet(XX, y, nlambda=100, nfolds=10, algorithm = alg)
-          md0 <- MOD$df.min
+          MOD <- cv.DMRnet(XX, y, nlambda=100, nfolds=10, algorithm = substr(alg, nchar(alg)-5, nchar(alg)), indexation.mode = (if(substr(alg,1,3)=="cvg") "GIC" else "dimension" ))
+          md0 <- if(substr(alg,1,3)=="cvg") MOD$df.min else MOD$df.1se
 
           ##### 3. Prediction error estimation
           ERR <- replicate(100,{
@@ -117,7 +121,8 @@ for (beta_choice in 1:6) {
 
         #write.csv(OUT, file=paste(filename,"csv",sep="."))
 
-
+        vioplot(list(actual=OUT$mse, expected=expected_results["mse",]), xlab = alg, ylab="error", main=theme)
+        vioplot(list(actual=OUT$md0, expected=expected_results["md0",]), xlab = alg, ylab="model size", main=theme)
 
       }
     }
