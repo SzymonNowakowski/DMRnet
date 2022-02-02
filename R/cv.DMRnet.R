@@ -56,7 +56,7 @@
 
 cv.DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 5, nlambda = 20, lam = 10^(-7), interc = TRUE, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4)), nfolds = 10, indexation.mode = "GIC", algorithm="DMRnet"){
 
-       return(cv_indexation.mode_distribute(X, y, nfolds, indexation.mode, DMRnet, family=family, clust.method=clust.method, o=o, nlambda=nlambda, lam=lam, interc=interc, maxp=maxp))
+       return(cv_indexation.mode_distribute(X, y, nfolds, indexation.mode, DMRnet, family=family, clust.method=clust.method, o=o, nlambda=nlambda, lam=lam, interc=interc, maxp=maxp), algorithm=algorithm)
         #this way of calling (i.e. var=var) passes the variable names into the ellipsis, otherwise no variable names would be present in the list(...)
 }
 
