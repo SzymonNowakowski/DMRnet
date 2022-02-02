@@ -1,4 +1,4 @@
-glamer_4lm <- function(X, y, cut_points = NULL, clust.method = "complete", lambda = NULL, nlambda = 100, maxp = ceiling(length(y)/2)){
+glamer_4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda, cut_points = NULL){
 
   n <- nrow(X)
   if(n != length(y)){

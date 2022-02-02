@@ -82,7 +82,6 @@ cv_MD_indexed <- function(X, y, nfolds, model_function, ...) {
         kt <- which(error == min(na.omit(error)))
         df.min <- model$df[kt[length(kt)]]
 
-        df.1se = NULL
         kt <- which(error <= min(na.omit(error)) + sd(na.omit(error)))
         df.1se <- model$df[kt[length(kt)]]
 
