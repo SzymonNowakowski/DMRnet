@@ -32,11 +32,11 @@ for (model_choice in c("cv+sd.GLAMER",  "gic.GLAMER","cvg.DMRnet", "gic.DMRnet")
 
 
     #removing columns with only one value, this would cause errors in DMRnet by design
-    singular_factors<-which( apply(promoter.train.70percent.x, 2, function(x) length(unique(x))) == 1)
-    if (length(singular_factors)>0) {
-      promoter.test.70percent.x <- promoter.test.70percent.x[,-singular_factors]
-      promoter.train.70percent.x <- promoter.train.70percent.x[,-singular_factors]
-      cat("removed", length(singular_factors), "columns due to singular values\n")
+    singular_columns<-which( apply(promoter.train.70percent.x, 2, function(x) length(unique(x))) == 1)
+    if (length(singular_columns)>0) {
+      promoter.test.70percent.x <- promoter.test.70percent.x[,-singular_columns]
+      promoter.train.70percent.x <- promoter.train.70percent.x[,-singular_columns]
+      cat("removed", length(singular_columns), "columns due to singular values\n")
     }
 
 
@@ -95,7 +95,7 @@ for (model_choice in c("cv+sd.GLAMER",  "gic.GLAMER","cvg.DMRnet", "gic.DMRnet")
 
 
 
-    prediction[is.na(prediction)] <- 0
+    #prediction[is.na(prediction)] <- 0
     misclassification_error<-mean(prediction[!is.na(prediction)] != promoter.test.70percent.y[!is.na(prediction)])
 
     cat(run, "error = ", misclassification_error, "->", ecdf(promoter.expected.errors[[index]])(misclassification_error), "\n")

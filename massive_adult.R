@@ -81,12 +81,12 @@ for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet"
 
 
     #removing columns with only one level:
-    singular_factors<-which( apply(adult.train.1percent.x, 2, function(x) length(unique(x))) == 1)
+    singular_columns<-which( apply(adult.train.1percent.x, 2, function(x) length(unique(x))) == 1)
 
-    if (length(singular_factors)>0) {
-      adult.test.1percent.x <- adult.test.1percent.x[,-singular_factors]
-      adult.train.1percent.x <- adult.train.1percent.x[,-singular_factors]
-      cat("removed", length(singular_factors), "columns due to singular values\n")
+    if (length(singular_columns)>0) {
+      adult.test.1percent.x <- adult.test.1percent.x[,-singular_columns]
+      adult.train.1percent.x <- adult.train.1percent.x[,-singular_columns]
+      cat("removed", length(singular_columns), "columns due to singular values\n")
     }
 
 
@@ -145,7 +145,7 @@ for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet"
       stop("Uknown method")
 
 
-    prediction[is.na(prediction)] <- 0
+    #prediction[is.na(prediction)] <- 0
     misclassification_error<-mean(prediction[!is.na(prediction)] != adult.test.1percent.y[!is.na(prediction)])
 
 

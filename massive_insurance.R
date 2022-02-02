@@ -61,11 +61,11 @@ for (mega_run in 1:20) {
         #HANDLING THE SINGULAR CASE
 
         #removing columns with only one value:
-        singular_factors<-which( apply(insurance.train.10percent.x, 2, function(x) length(unique(x))) == 1)
-        if (length(singular_factors)>0) {
-          insurance.test.10percent.x <- insurance.test.10percent.x[,-singular_factors]
-          insurance.train.10percent.x <- insurance.train.10percent.x[,-singular_factors]
-          cat("removed", length(singular_factors), "columns due to singular values\n")
+        singular_columns<-which( apply(insurance.train.10percent.x, 2, function(x) length(unique(x))) == 1)
+        if (length(singular_columns)>0) {
+          insurance.test.10percent.x <- insurance.test.10percent.x[,-singular_columns]
+          insurance.train.10percent.x <- insurance.train.10percent.x[,-singular_columns]
+          cat("removed", length(singular_columns), "columns due to singular values\n")
         }
 
 
@@ -126,7 +126,7 @@ for (mega_run in 1:20) {
 
 
 
-        prediction[is.na(prediction)] <- 0
+        #prediction[is.na(prediction)] <- 0
         MSPE<-mean((prediction[!is.na(prediction)] - insurance.test.10percent.y[!is.na(prediction)])^2)
 
 

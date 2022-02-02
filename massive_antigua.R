@@ -48,11 +48,11 @@ for (model_choice in c( run_list )) {
     #HANDLING THE SINGULAR CASE
 
     #removing columns with only one value:
-    singular_factors<-which( apply(antigua.train.70percent.x, 2, function(x) length(unique(x))) == 1)
-    if (length(singular_factors)>0) {
-      antigua.test.70percent.x <- antigua.test.70percent.x[,-singular_factors]
-      antigua.train.70percent.x <- antigua.train.70percent.x[,-singular_factors]
-      cat("removed", length(singular_factors), "columns due to singular values\n")
+    singular_columns<-which( apply(antigua.train.70percent.x, 2, function(x) length(unique(x))) == 1)
+    if (length(singular_columns)>0) {
+      antigua.test.70percent.x <- antigua.test.70percent.x[,-singular_columns]
+      antigua.train.70percent.x <- antigua.train.70percent.x[,-singular_columns]
+      cat("removed", length(singular_columns), "columns due to singular values\n")
     }
 
 
@@ -111,7 +111,7 @@ for (model_choice in c( run_list )) {
 
 
 
-    prediction[is.na(prediction)] <- 0
+   # prediction[is.na(prediction)] <- 0
     MSPE<-mean((prediction[!is.na(prediction)] - antigua.test.70percent.y[!is.na(prediction)])^2)
 
     cat(run, "error = ", MSPE, "->", ecdf(antigua.expected.errors[[index]])(MSPE), "\n")
