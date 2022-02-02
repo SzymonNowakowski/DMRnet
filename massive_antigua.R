@@ -36,7 +36,7 @@ for (model_choice in c( run_list )) {
 
    # cat("generating train/test sets\n")
 
-    sample.10percent <- sample(1:nrow(antigua.all.x), 0.7*nrow(antigua.all.x))
+    sample.70percent <- sample(1:nrow(antigua.all.x), 0.7*nrow(antigua.all.x))
     antigua.train.70percent.x <- antigua.all.x[sample.70percent,]
     antigua.train.70percent.y <- antigua.all.y[sample.70percent]
     antigua.test.70percent.x <- antigua.all.x[-sample.70percent,]
