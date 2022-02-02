@@ -18,11 +18,10 @@ insurance.all<-read.csv("data_insurance/train.csv", header=TRUE, comment.char="|
 insurance.all<-insurance.all[,apply(apply(insurance.all,2,is.na), 2, sum)==0]  #removing columns with NA
 insurance.all.x<-insurance.all[,2:(ncol(insurance.all)-1)]  #without ID and the response columns
 cont_columns = c(4, 8, 9, 10, 11)
-number_of_levels<-rep(0, ncol(insurance.all.x))
+
 for (i in 1:ncol(insurance.all.x))
   if (!(i %in% cont_columns)) {
     insurance.all.x[,i] <- factor(insurance.all.x[,i])  #int->factors
-    number_of_levels[i] <- length(levels(insurance.all.x[,i]))
   }
 
 cat("insurance data loaded\n")
@@ -66,7 +65,7 @@ for (mega_run in 1:20) {
         if (length(singular_factors)>0) {
           insurance.test.10percent.x <- insurance.test.10percent.x[,-singular_factors]
           insurance.train.10percent.x <- insurance.train.10percent.x[,-singular_factors]
-          cat("removed", length(singular_factors), "columns due to singular factors\n")
+          cat("removed", length(singular_factors), "columns due to singular values\n")
         }
 
 

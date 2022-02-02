@@ -36,7 +36,7 @@ for (model_choice in c("cv+sd.GLAMER",  "gic.GLAMER","cvg.DMRnet", "gic.DMRnet")
     if (length(singular_factors)>0) {
       promoter.test.70percent.x <- promoter.test.70percent.x[,-singular_factors]
       promoter.train.70percent.x <- promoter.train.70percent.x[,-singular_factors]
-      cat("removed", length(singular_factors), "columns due to singular factors\n")
+      cat("removed", length(singular_factors), "columns due to singular values\n")
     }
 
 

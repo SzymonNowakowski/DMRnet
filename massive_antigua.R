@@ -16,7 +16,6 @@ data(antigua)
 antigua[antigua[,6] == -9999,6] = NA
 antigua <- na.omit(antigua)
 antigua.all.x <- antigua[, -c(1,7)]
-cont_columns<-c(3,5)
 
 cat("antigua data loaded\n")
 
@@ -53,7 +52,7 @@ for (model_choice in c( run_list )) {
     if (length(singular_factors)>0) {
       antigua.test.70percent.x <- antigua.test.70percent.x[,-singular_factors]
       antigua.train.70percent.x <- antigua.train.70percent.x[,-singular_factors]
-      cat("removed", length(singular_factors), "columns due to singular factors\n")
+      cat("removed", length(singular_factors), "columns due to singular values\n")
     }
 
 
