@@ -75,6 +75,32 @@
 #' coef(m2, df = g$df.min)
 #' ypr <- predict(m2, newx = Xte, df = g$df.min)
 #'
+#' ## GLAMER for linear regression
+#' data(miete)
+#' ytr <- miete[1:1500,1]
+#' Xtr <- miete[1:1500,-1]
+#' Xte <- miete[1501:2053,-1]
+#' m1 <- DMRnet(Xtr, ytr, algorithm="glamer")
+#' print(m1)
+#' plot(m1)
+#' g <- gic.DMR(m1, c = 2.5)
+#' plot(g)
+#' coef(m1, df = g$df.min)
+#' ypr <- predict(m1, newx = Xte, df = g$df.min)
+#'
+#' ## GLAMER for logistic regression
+#' data(promoter)
+#' ytr <- factor(promoter[1:80,1])
+#' Xtr <- promoter[1:80,-1]
+#' Xte <- promoter[81:106,-1]
+#' m2 <- DMRnet(Xtr, ytr, family = "binomial", algorithm="glamer")
+#' print(m2)
+#' plot(m2)
+#' g <- gic.DMR(m2, c = 2)
+#' plot(g)
+#' coef(m2, df = g$df.min)
+#' ypr <- predict(m2, newx = Xte, df = g$df.min)
+#'
 #' @export DMRnet
 
 DMRnet <- function(X, y, family = "gaussian", clust.method = "complete", o = 5, nlambda = 100, lam = 10^(-7), interc = TRUE, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4)), lambda = NULL, algorithm="DMRnet"){
@@ -84,16 +110,25 @@ DMRnet <- function(X, y, family = "gaussian", clust.method = "complete", o = 5, 
     sumnonfac <- sum(typeofcols == "factor")
     if (family == "gaussian"){
        if(sumnonfac == 0){
-                       return(SOSnet4lm(X, y, o = o, nlambda = nlambda, interc = interc, maxp = maxp, lambda = lambda))
+           return(SOSnet4lm(X, y, o = o, nlambda = nlambda, interc = interc, maxp = maxp, lambda = lambda))
        } else{
-                       return(DMRnet4lm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
+                if (algorithm == "DMRnet") {
+                    return(DMRnet4lm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
+                } else if (algorithm == "glamer") {
+                    return(glamer_4lm(X, y, clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
+                } else stop("Error: wrong algorithm, should be one of: DMRnet, glamer")
        }
     } else{
        if (family == "binomial"){
           if(sumnonfac == 0){
-                       return(SOSnet4glm(X, y, o = o, nlambda = nlambda, lam = lam, interc = interc, maxp = maxp, lambda = lambda))
+              return(SOSnet4glm(X, y, o = o, nlambda = nlambda, lam = lam, interc = interc, maxp = maxp, lambda = lambda))
           } else{
-                       return(DMRnet4glm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
+              if (algorithm == "DMRnet") {
+                  return(DMRnet4glm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
+              } else if (algorithm == "glamer") {
+                  return(glamer_4glm(X, y, clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
+              } else stop("Error: wrong algorithm, should be one of: DMRnet, glamer")
+
           }
        }
        else stop("Error: wrong family, should be one of: gaussian, binomial")

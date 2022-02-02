@@ -107,8 +107,15 @@ DMRnet4glm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda) {
     } else{
        idx <- 1:length(ind)
     }
-    be <- sapply(idx, function(i) {b_matrix<-mm[[ind[i]]]$b; if (is.null(dim(b_matrix))) b_matrix<-matrix(b_matrix); part2beta_glm_help(b = b_matrix[,i - sum(loglik[, ind[i]] == -Inf)], S = SS[,ind[i]], fl=fl)})
-    #SzN:fixing the above line in accordance with crashes in adult dataset in GLAF
+    be <- sapply(idx, function(i) {
+      #SzN:fixing this in accordance with crashes in adult dataset in GLAMER
+
+      b_matrix<-mm[[ind[i]]]$b;
+      if (is.null(dim(b_matrix))) {
+        b_matrix<-matrix(b_matrix);  #TODO: verify if this shouldn't be b_matrix<-t(as.matrix(b_matrix))   as with other VERTICAL matrices that degenerated to HORIZONTAL vectors
+      }
+      part2beta_glm_help(b = b_matrix[,i - sum(loglik[, ind[i]] == -Inf)], S = SS[,ind[i]], fl=fl)
+    })
     rownames(be) <- colnames(x.full)
     if(length(ord) > 0){
                   ind1 <- c(1:p)
