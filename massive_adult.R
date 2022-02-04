@@ -64,6 +64,10 @@ cat("adult data loaded\n")
 
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-200
+
+postscript("adult_result.pdf", horizontal=TRUE,onefile=FALSE)
+par(mfrow=c(2,4))
+
 for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet")) {
   mes<-dfs<-rep(0,runs)
   run<-1
@@ -95,7 +99,7 @@ for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet"
       if (run==1) {
         cat("DMRnet with GIC only\n")
       }
-      model <- DMRnet(adult.train.1percent.x, adult.train.1percent.y, family="binomial")
+      model <- DMRnet(adult.train.1percent.x, adult.train.1percent.y, family="binomial", unknown.factor.levels="NA")
 
       gic <- gic.DMR(model, c = 2)
 
@@ -104,14 +108,14 @@ for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet"
       if (run==1) {
         cat(model_choice, "with cvg\n")
       }
-      model <- cv.DMRnet(adult.train.1percent.x, adult.train.1percent.y, family="binomial", indexation.mode = "GIC")
+      model <- cv.DMRnet(adult.train.1percent.x, adult.train.1percent.y, family="binomial", indexation.mode = "GIC", unknown.factor.levels="NA")
 
     } else if (model_choice=="gic.GLAMER") {
       index=3
       if (run==1) {
         cat("GLAMER method\n")
       }
-      model <- DMRnet(adult.train.1percent.x, adult.train.1percent.y, algorithm="glamer", family="binomial", )
+      model <- DMRnet(adult.train.1percent.x, adult.train.1percent.y, algorithm="glamer", family="binomial", unknown.factor.levels="NA")
 
       gic <- gic.DMR(model, c = 2)   #we are using existing gic calculation which is compatible with GLAMER models
 
@@ -120,7 +124,7 @@ for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet"
       if (run==1) {
         cat("GLAMER with cv+sd\n")
       }
-      model<-cv.DMRnet(adult.train.1percent.x, adult.train.1percent.y, family="binomial", indexation.mode = "dimension", algorithm="glamer")
+      model<-cv.DMRnet(adult.train.1percent.x, adult.train.1percent.y, family="binomial", indexation.mode = "dimension", algorithm="glamer", unknown.factor.levels="NA")  #the very first test case of cv+sd.GLAMER fails because of unknown factor levels, if not set to "NA"
 
     } else
       stop("Uknown method")
@@ -162,3 +166,5 @@ for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet"
   vioplot(list(actual=mes, expected=adult.expected.errors[[index]]), xlab = model_choice, ylab="error", main="adult")
   vioplot(list(actual=dfs, expected=adult.expected.df[[index]]), xlab = model_choice, ylab="model size", main="adult")
 }
+
+graphics.off()

@@ -21,6 +21,8 @@ cat("antigua data loaded\n")
 
 runs<-200
 
+postscript("antigua_result.pdf", horizontal=TRUE,onefile=FALSE)
+par(mfrow=c(2,4))
 
 for (model_choice in c( run_list )) {
 
@@ -78,7 +80,7 @@ for (model_choice in c( run_list )) {
       if (run==1) {
         cat("GLAMER method\n")
       }
-      model <- DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, algorithm="glamer", family="gaussian", )
+      model <- DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, algorithm="glamer", family="gaussian")
 
       gic <- gic.DMR(model, c = 2)   #we are using existing gic calculation which is compatible with GLAMER models
 
@@ -127,3 +129,5 @@ for (model_choice in c( run_list )) {
   vioplot(list(actual=mes, expected=antigua.expected.errors[[index]]), xlab = model_choice, ylab="error", main="antigua")
   vioplot(list(actual=dfs, expected=antigua.expected.df[[index]]), xlab = model_choice, ylab="model size", main="antigua")
 }
+
+graphics.off()

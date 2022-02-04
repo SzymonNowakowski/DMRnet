@@ -75,7 +75,7 @@ for (mega_run in 1:20) {
           if (run==1) {
             cat("DMRnet with GIC only\n")
           }
-          model <- DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian")
+          model <- DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", unknown.factor.levels="NA")
 
           gic <- gic.DMR(model, c = 2)
 
@@ -84,14 +84,14 @@ for (mega_run in 1:20) {
           if (run==1) {
             cat(model_choice, "with cvg\n")
           }
-          model <- cv.DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", indexation.mode = "GIC")
+          model <- cv.DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", indexation.mode = "GIC", unknown.factor.levels="NA")
 
         } else if (model_choice=="gic.GLAMER") {
           index=3
           if (run==1) {
             cat("GLAMER method\n")
           }
-          model <- DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, algorithm="glamer", family="gaussian", )
+          model <- DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, algorithm="glamer", family="gaussian", unknown.factor.levels="NA")
 
           gic <- gic.DMR(model, c = 2)   #we are using existing gic calculation which is compatible with GLAMER models
 
@@ -100,7 +100,7 @@ for (mega_run in 1:20) {
           if (run==1) {
             cat("GLAMER with cv+sd\n")
           }
-          model<-cv.DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", indexation.mode = "dimension", algorithm="glamer")
+          model<-cv.DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", indexation.mode = "dimension", algorithm="glamer", unknown.factor.levels="NA")  #the very first test case of cv+sd.GLAMER fails because of unknown factor levels, if not set to "NA"
 
         } else
           stop("Uknown method")
@@ -142,6 +142,8 @@ for (mega_run in 1:20) {
   }#part
 }#mega_run
 
+postscript("insurance_result.pdf", horizontal=TRUE,onefile=FALSE)
+par(mfrow=c(2,4))
 
 for (model_index in 1:4) {
   model_choice <- c("cv+sd.GLAMER","gic.GLAMER",  "cvg.DMRnet", "gic.DMRnet") [model_index]
@@ -151,3 +153,4 @@ for (model_index in 1:4) {
 }
 
 
+graphics.off()
