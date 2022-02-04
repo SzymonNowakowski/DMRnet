@@ -126,8 +126,8 @@ for (model_choice in c( run_list )) {
   }
 
 
-  vioplot(list(actual=mes, expected=antigua.expected.errors[[index]]), xlab = model_choice, ylab="error", main="antigua")
-  vioplot(list(actual=dfs, expected=antigua.expected.df[[index]]), xlab = model_choice, ylab="model size", main="antigua")
+  vioplot(list(actual=mes, expected=antigua.expected.errors[[index]]), xlab = "error" , ylab="error", main=model_choice)
+  vioplot(list(actual=dfs, expected=antigua.expected.df[[index]]), xlab = "model dimension", ylab="MD", main=model_choice)
 }
 
 graphics.off()

@@ -99,7 +99,7 @@ for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet"
       if (run==1) {
         cat("DMRnet with GIC only\n")
       }
-      model <- DMRnet(adult.train.1percent.x, adult.train.1percent.y, family="binomial", unknown.factor.levels="NA")
+      model <- DMRnet(adult.train.1percent.x, adult.train.1percent.y, family="binomial")
 
       gic <- gic.DMR(model, c = 2)
 
@@ -108,14 +108,14 @@ for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet"
       if (run==1) {
         cat(model_choice, "with cvg\n")
       }
-      model <- cv.DMRnet(adult.train.1percent.x, adult.train.1percent.y, family="binomial", indexation.mode = "GIC", unknown.factor.levels="NA")
+      model <- cv.DMRnet(adult.train.1percent.x, adult.train.1percent.y, family="binomial", indexation.mode = "GIC")
 
     } else if (model_choice=="gic.GLAMER") {
       index=3
       if (run==1) {
         cat("GLAMER method\n")
       }
-      model <- DMRnet(adult.train.1percent.x, adult.train.1percent.y, algorithm="glamer", family="binomial", unknown.factor.levels="NA")
+      model <- DMRnet(adult.train.1percent.x, adult.train.1percent.y, algorithm="glamer", family="binomial")
 
       gic <- gic.DMR(model, c = 2)   #we are using existing gic calculation which is compatible with GLAMER models
 
@@ -124,7 +124,7 @@ for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet"
       if (run==1) {
         cat("GLAMER with cv+sd\n")
       }
-      model<-cv.DMRnet(adult.train.1percent.x, adult.train.1percent.y, family="binomial", indexation.mode = "dimension", algorithm="glamer", unknown.factor.levels="NA")  #the very first test case of cv+sd.GLAMER fails because of unknown factor levels, if not set to "NA"
+      model<-cv.DMRnet(adult.train.1percent.x, adult.train.1percent.y, family="binomial", indexation.mode = "dimension", algorithm="glamer")
 
     } else
       stop("Uknown method")
@@ -133,17 +133,17 @@ for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet"
 
     if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
       #cat(model_choice, "pred\n")
-      prediction<- predict(model, newx=adult.test.1percent.x, df = gic$df.min, type="class")
-      prediction1<- predict(gic, newx=adult.test.1percent.x, type="class")
+      prediction<- predict(model, newx=adult.test.1percent.x, df = gic$df.min, type="class", unknown.factor.levels="NA")
+      prediction1<- predict(gic, newx=adult.test.1percent.x, type="class", unknown.factor.levels="NA")
       df<-gic$df.min
-      cat("diff: ", sum(prediction1-prediction), "\n")
+      cat("diff: ", sum(prediction1[!is.na(prediction1)]-prediction[!is.na(prediction)]), "\n")
     } else  if (model_choice=="cvg.DMRnet") {
       #cat(model_choice, "pred\n")
-      prediction<- predict(model, newx=adult.test.1percent.x, type="class")
+      prediction<- predict(model, newx=adult.test.1percent.x, type="class", unknown.factor.levels="NA")
       df<-model$df.min
     } else  if (model_choice=="cv+sd.GLAMER") {
       #cat(model_choice, "pred\n")
-      prediction<- predict(model, newx=adult.test.1percent.x, type="class", md="df.1se")
+      prediction<- predict(model, newx=adult.test.1percent.x, type="class", md="df.1se", unknown.factor.levels="NA")  #the very first test case of cv+sd.GLAMER fails because of unknown factor levels, if not set to "NA"
       df<-model$df.1se
     } else
       stop("Uknown method")
@@ -163,8 +163,8 @@ for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet"
   }
 
 
-  vioplot(list(actual=mes, expected=adult.expected.errors[[index]]), xlab = model_choice, ylab="error", main="adult")
-  vioplot(list(actual=dfs, expected=adult.expected.df[[index]]), xlab = model_choice, ylab="model size", main="adult")
+  vioplot(list(actual=mes, expected=adult.expected.errors[[index]]), xlab = "error" , ylab="error", main=model_choice)
+  vioplot(list(actual=dfs, expected=adult.expected.df[[index]]), xlab = "model dimension", ylab="MD", main=model_choice)
 }
 
 graphics.off()

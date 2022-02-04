@@ -75,7 +75,7 @@ for (mega_run in 1:20) {
           if (run==1) {
             cat("DMRnet with GIC only\n")
           }
-          model <- DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", unknown.factor.levels="NA")
+          model <- DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian")
 
           gic <- gic.DMR(model, c = 2)
 
@@ -84,14 +84,14 @@ for (mega_run in 1:20) {
           if (run==1) {
             cat(model_choice, "with cvg\n")
           }
-          model <- cv.DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", indexation.mode = "GIC", unknown.factor.levels="NA")
+          model <- cv.DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", indexation.mode = "GIC")
 
         } else if (model_choice=="gic.GLAMER") {
           index=3
           if (run==1) {
             cat("GLAMER method\n")
           }
-          model <- DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, algorithm="glamer", family="gaussian", unknown.factor.levels="NA")
+          model <- DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, algorithm="glamer", family="gaussian")
 
           gic <- gic.DMR(model, c = 2)   #we are using existing gic calculation which is compatible with GLAMER models
 
@@ -100,24 +100,24 @@ for (mega_run in 1:20) {
           if (run==1) {
             cat("GLAMER with cv+sd\n")
           }
-          model<-cv.DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", indexation.mode = "dimension", algorithm="glamer", unknown.factor.levels="NA")  #the very first test case of cv+sd.GLAMER fails because of unknown factor levels, if not set to "NA"
+          model<-cv.DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", indexation.mode = "dimension", algorithm="glamer")
 
         } else
           stop("Uknown method")
 
         if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
           #cat(model_choice, "pred\n")
-          prediction<- predict(model, newx=insurance.test.10percent.x, df = gic$df.min, type="class")
-          prediction1<- predict(gic, newx=insurance.test.10percent.x, type="class")
+          prediction<- predict(model, newx=insurance.test.10percent.x, df = gic$df.min, type="class", unknown.factor.levels="NA")
+          prediction1<- predict(gic, newx=insurance.test.10percent.x, type="class", unknown.factor.levels="NA")
           df<-gic$df.min
-          cat("diff: ", sum(prediction1-prediction), "\n")
+          cat("diff: ", sum(prediction1[!is.na(prediction1)]-prediction[!is.na(prediction)]), "\n")
         } else  if (model_choice=="cvg.DMRnet") {
           #cat(model_choice, "pred\n")
-          prediction<- predict(model, newx=insurance.test.10percent.x, type="class")
+          prediction<- predict(model, newx=insurance.test.10percent.x, type="class", unknown.factor.levels="NA")
           df<-model$df.min
         } else  if (model_choice=="cv+sd.GLAMER") {
           #cat(model_choice, "pred\n")
-          prediction<- predict(model, newx=insurance.test.10percent.x, type="class", md="df.1se")
+          prediction<- predict(model, newx=insurance.test.10percent.x, type="class", md="df.1se", unknown.factor.levels="NA")  #the very first test case of cv+sd.GLAMER fails because of unknown factor levels, if not set to "NA"
           df<-model$df.1se
         } else
           stop("Uknown method")
@@ -148,8 +148,8 @@ par(mfrow=c(2,4))
 for (model_index in 1:4) {
   model_choice <- c("cv+sd.GLAMER","gic.GLAMER",  "cvg.DMRnet", "gic.DMRnet") [model_index]
   index <- model_index + 1 # a number of the corresponding expected result in a result filename
-  vioplot(list(actual=results_mes[,model_index], expected=insurance.expected.errors[[index]]), xlab = model_choice, ylab="error", main="insurance")
-  vioplot(list(actual=results_dfs[,model_index], expected=insurance.expected.df[[index]]), xlab = model_choice, ylab="model size", main="insurance")
+  vioplot(list(actual=results_mes[,model_index], expected=insurance.expected.errors[[index]]), xlab = "error" , ylab="error", main=model_choice)
+  vioplot(list(actual=results_dfs[,model_index], expected=insurance.expected.df[[index]]), xlab = "model dimension", ylab="MD", main=model_choice)
 }
 
 

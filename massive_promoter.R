@@ -111,8 +111,8 @@ for (model_choice in c("cv+sd.GLAMER",  "gic.GLAMER","cvg.DMRnet", "gic.DMRnet")
   }
 
 
-  vioplot(list(actual=mes, expected=promoter.expected.errors[[index]]), xlab = model_choice, ylab="error", main="promoter")
-  vioplot(list(actual=dfs, expected=promoter.expected.df[[index]]), xlab = model_choice, ylab="model size", main="promoter")
+  vioplot(list(actual=mes, expected=promoter.expected.errors[[index]]), xlab = "error" , ylab="error", main=model_choice)
+  vioplot(list(actual=dfs, expected=promoter.expected.df[[index]]), xlab = "model dimension", ylab="MD", main=model_choice)
 }
 
 graphics.off()
