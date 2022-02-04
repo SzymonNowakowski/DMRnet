@@ -91,12 +91,12 @@ predict.DMR <- function(object, newx, df = NULL, type = "link", unknown.factor.l
 
          #### finally, add NA values in place of removed rows
          if (n.factors>0 & unknown.factor.levels == "NA") {
-           if (max(problematic_rows)) {    # there actually was at least problematic_row
+           if (max(problematic_rows)) {    # there actually was at least one problematic_row
              res_out<-rep(NA, length(problematic_rows))
              out_index <- 1
              for (row in 1:length(problematic_rows)) {
                if (!problematic_rows[row]) {
-                 res_out <-out[out_index]
+                 res_out[row] <-out[out_index]
                  out_index<-out_index+1
                }
              }
