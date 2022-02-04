@@ -85,16 +85,18 @@ cv.DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 
 # 2. B does not contain a level(s) present in A
 #    (sample case: we did sample to Xtr the single Dutch national from the Insurance data set, and he is not present in Xte,
 #    because there is only one instance of Dutch national in the whole Insurance data set).
-#    As a result predict(...) would throw an error, because expanded matrix dimensions would be conflicting.
+#    As a result predict(...) would throw an error, because expanded model-matrix dimensions would be conflicting.
 #    The solution is simple here, too: in constructing a model make a note about true A set (it is stored in levels.listed variable in a model)
-#    and then in predict(...) assign the levels of Xte to be equal to A. Only then expand the matrix.
+#    and then in predict(...) assign the levels of Xte to be equal to A. Only then create the model-matrix.
 #    SOLVED
 # 3. B contains a factor level(s) not present in A, AND we are doing CV, so we have access to Xtr
-#    The solution is to remove the rows with levels that are going to cause problems later in predict(...) from Xtr before the model gets constructed
+#    The solution is to remove the rows with levels that are going to cause problems later in predict(...) from Xte before the prediction
+#    The other solution would be to predict using unknown.factor.levels="NA" flag and then eliminate the NAs from comparisons (this one is not used at present)
 #    SOLVED
 # 4. B contains a factor level(s) not present in A, AND we are NOT doing CV, so we have no access to Xtr.
 #    This case is problematic because this situation gets identified too late - we are already in predict(...).
 #    At this point, only the model created by DMRnet function and passed to predict(...) is known.
 #    We cannot perform inference and we cannot perform any imputation for the problematic data point, either (we don't know Xtr and have no access to it).
-#    All that remains is to throw an error.
+#    All that remains is to throw an error (unknown.factor.levels="error", the default) OR
+#                            eliminate the problematic rows, predict, and then replenish the result with NAs in place of problematic values (unknown.factor.levels="NA").
 #    PROBLEMATIC

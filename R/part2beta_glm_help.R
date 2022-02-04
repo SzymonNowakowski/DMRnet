@@ -1,4 +1,4 @@
-part2beta_glamer_glm_help <- function(b, S, fl, valid = TRUE) {
+part2beta_glm_help <- function(b, S, fl, valid = TRUE) {
   if (!valid) {
     return(rep(0, sum(fl-1)+1))
   }

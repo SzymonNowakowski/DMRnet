@@ -8,7 +8,9 @@
 #'
 #' @param df Number of parameters in the model for which predictions are required. Default is the entire sequence of models for df=1 to df=p.
 #'
-#' @param type One of: link, response, class. For "gaussian" for all values of type it gives the fitted values. For "binomial" type "link" gives the linear predictors, for type "response" it gives the fitted probabilities and for type "class" it produces  the  class  label  corresponding  to  the  maximum  probability.
+#' @param type One of: "link", "response", "class". For "gaussian" for all values of type it gives the fitted values. For "binomial" type "link" gives the linear predictors, for type "response" it gives the fitted probabilities and for type "class" it produces  the  class  label  corresponding  to  the  maximum  probability.
+#'
+#' @param unknown.factor.levels The way of handling factor levels not seen while training the model. One of "error" (the default - throwing an error) or "NA" (returning NA in place of a legitimate value for problematic rows)
 #'
 #' @param ... Further arguments passed to or from other methods.
 #'
@@ -24,25 +26,38 @@
 #' m <- DMR(Xtr, ytr)
 #' ypr <- predict(m, newx = Xte, df = 11)
 #' @export
-predict.DMR <- function(object, newx, df = NULL, type = "link", ...){
-         if(is.null(ncol(newx))){
-                                 stop("Error: newx should be a data frame")
-         }
+predict.DMR <- function(object, newx, df = NULL, type = "link", unknown.factor.levels="error", ...){
+         if(is.null(ncol(newx))) stop("Error: newx should be a data frame")
 
   #  attributing to each column of factors in newx the correct factor list from the original model
          nn <- sapply(1:ncol(newx), function(i) class(newx[,i]))
-         faki <- which(nn == "factor")
-         n.factors <- length(faki)
+         factor_columns <- which(nn == "factor")
+         n.factors <- length(factor_columns)
          if (n.factors > 0)   #DMRnet only
-           for (i in 1:n.factors) {
-             newx[,faki[i]] <- factor(newx[,faki[i]])   #start by recalculating the test set factors to minimal possible set
-             predict_levels <- levels(newx[,faki[i]])
-             if (!min(predict_levels %in% object$levels.listed[[i]])) {#if any factor is outside of the listed levels
-               stop("Error: newx cointains factors not known in model calculations. Replace the unknown factors with the known ones and try again.")
-             }
-             newx[,faki[i]]<-factor(newx[,faki[i]], levels=object$levels.listed[[i]])   #recalculate factors again, but attribute the original factor list from the train set
+           if (unknown.factor.levels == "error") {
+             for (i in 1:n.factors) {
+               newx[,factor_columns[i]] <- factor(newx[,factor_columns[i]])   #start by recalculating the test set factors to minimal possible set
+               predict_levels <- levels(newx[,factor_columns[i]])
+               if (!min(predict_levels %in% object$levels.listed[[i]])) {#if any factor is outside of the listed levels
+                 stop('Error: newx cointains factor levels not known in model training. Replace the unknown factor levels with the known ones and try again or try calling with unknown.factor.levels set to "NA".')
+               }
+               newx[,factor_columns[i]]<-factor(newx[,factor_columns[i]], levels=object$levels.listed[[i]])   #recalculate factors again, but attribute the original factor list from the train set
 
-           }
+             }
+           } else if (unknown.factor.levels == "NA") {
+             ####first, identify all rows that cause problems in relation to any of the factors
+             problematic_rows <- rep(FALSE, nrow(newx))  #start off with all rows set to non-problematic
+             for (i in 1:n.factors) {
+               train.levels <- object$levels.listed[[i]]
+               problematic_rows <- problematic_rows | !(Xte[,factor_columns[i]] %in% train.levels)   #factor by factor, update the array of problematic rows
+             }
+             ####then, remove the problematic rows entirely
+             newx<-newx[which(!problematic_rows), , drop=FALSE]
+             #### now recalculate factors again, but attribute the original factor list from the train set
+             for (i in 1:n.factors) {
+               newx[,factor_columns[i]]<-factor(newx[,factor_columns[i]], levels=object$levels.listed[[i]])
+             }
+           } else stop("Error: wrong unknown.factor.levels: should be one of error, NA")
 
          dd <- data.frame(newx)
          if (object$interc == TRUE){
@@ -71,6 +86,22 @@ predict.DMR <- function(object, newx, df = NULL, type = "link", ...){
                  }
          } else{
                 if (type != "link") stop("Error: wrong type: should be one of link, response, class")
+         }
+
+
+         #### finally, add NA values in place of removed rows
+         if (n.factors>0 & unknown.factor.levels == "NA") {
+           if (max(problematic_rows)) {    # there actually was at least problematic_row
+             res_out<-rep(NA, length(problematic_rows))
+             out_index <- 1
+             for (row in 1:length(problematic_rows)) {
+               if (!problematic_rows[row]) {
+                 res_out <-out[out_index]
+                 out_index<-out_index+1
+               }
+             }
+             out<-res_out
+           }
          }
          return(out)
 }
