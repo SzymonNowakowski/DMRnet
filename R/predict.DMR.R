@@ -49,7 +49,7 @@ predict.DMR <- function(object, newx, df = NULL, type = "link", unknown.factor.l
              problematic_rows <- rep(FALSE, nrow(newx))  #start off with all rows set to non-problematic
              for (i in 1:n.factors) {
                train.levels <- object$levels.listed[[i]]
-               problematic_rows <- problematic_rows | !(Xte[,factor_columns[i]] %in% train.levels)   #factor by factor, update the array of problematic rows
+               problematic_rows <- problematic_rows | !(newx[,factor_columns[i]] %in% train.levels)   #factor by factor, update the array of problematic rows
              }
              ####then, remove the problematic rows entirely
              newx<-newx[which(!problematic_rows), , drop=FALSE]
