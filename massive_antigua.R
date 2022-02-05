@@ -50,11 +50,11 @@ for (model_choice in c( run_list )) {
     #HANDLING THE SINGULAR CASE
 
     #removing columns with only one value:
-    singular_columns<-which( apply(antigua.train.70percent.x, 2, function(x) length(unique(x))) == 1)
-    if (length(singular_columns)>0) {
-      antigua.test.70percent.x <- antigua.test.70percent.x[,-singular_columns]
-      antigua.train.70percent.x <- antigua.train.70percent.x[,-singular_columns]
-      cat("removed", length(singular_columns), "columns due to singular values\n")
+    constant_columns<-which( apply(antigua.train.70percent.x, 2, function(x) length(unique(x))) == 1)
+    if (length(constant_columns)>0) {
+      antigua.test.70percent.x <- antigua.test.70percent.x[,-constant_columns]
+      antigua.train.70percent.x <- antigua.train.70percent.x[,-constant_columns]
+      cat("removed", length(constant_columns), "columns due to constant values\n")
     }
 
 
@@ -126,8 +126,8 @@ for (model_choice in c( run_list )) {
   }
 
 
-  vioplot(list(actual=mes, expected=antigua.expected.errors[[index]]), xlab = "error" , ylab="error", main=model_choice)
-  vioplot(list(actual=dfs, expected=antigua.expected.df[[index]]), xlab = "model dimension", ylab="MD", main=model_choice)
+  vioplot(list(actual=mes, expected=antigua.expected.errors[[index]]), ylab="Error", main=model_choice)
+  vioplot(list(actual=dfs, expected=antigua.expected.df[[index]]), ylab="Model Dimension", main=model_choice)
 }
 
 graphics.off()

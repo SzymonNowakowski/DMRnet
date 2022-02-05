@@ -61,11 +61,11 @@ for (mega_run in 1:20) {
         #HANDLING THE SINGULAR CASE
 
         #removing columns with only one value:
-        singular_columns<-which( apply(insurance.train.10percent.x, 2, function(x) length(unique(x))) == 1)
-        if (length(singular_columns)>0) {
-          insurance.test.10percent.x <- insurance.test.10percent.x[,-singular_columns]
-          insurance.train.10percent.x <- insurance.train.10percent.x[,-singular_columns]
-          cat("removed", length(singular_columns), "columns due to singular values\n")
+        constant_columns<-which( apply(insurance.train.10percent.x, 2, function(x) length(unique(x))) == 1)
+        if (length(constant_columns)>0) {
+          insurance.test.10percent.x <- insurance.test.10percent.x[,-constant_columns]
+          insurance.train.10percent.x <- insurance.train.10percent.x[,-constant_columns]
+          cat("removed", length(constant_columns), "columns due to constant values\n")
         }
 
 
@@ -148,8 +148,8 @@ par(mfrow=c(2,4))
 for (model_index in 1:4) {
   model_choice <- c("cv+sd.GLAMER","gic.GLAMER",  "cvg.DMRnet", "gic.DMRnet") [model_index]
   index <- model_index + 1 # a number of the corresponding expected result in a result filename
-  vioplot(list(actual=results_mes[,model_index], expected=insurance.expected.errors[[index]]), xlab = "error" , ylab="error", main=model_choice)
-  vioplot(list(actual=results_dfs[,model_index], expected=insurance.expected.df[[index]]), xlab = "model dimension", ylab="MD", main=model_choice)
+  vioplot(list(actual=results_mes[,model_index], expected=insurance.expected.errors[[index]]), ylab="Error", main=model_choice)
+  vioplot(list(actual=results_dfs[,model_index], expected=insurance.expected.df[[index]]), ylab="Model Dimension", main=model_choice)
 }
 
 

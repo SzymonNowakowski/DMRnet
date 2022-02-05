@@ -84,13 +84,13 @@ for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet"
 
 
 
-    #removing columns with only one level:
-    singular_columns<-which( apply(adult.train.1percent.x, 2, function(x) length(unique(x))) == 1)
+    #removing columns with only one value:
+    constant_columns<-which( apply(adult.train.1percent.x, 2, function(x) length(unique(x))) == 1)
 
-    if (length(singular_columns)>0) {
-      adult.test.1percent.x <- adult.test.1percent.x[,-singular_columns]
-      adult.train.1percent.x <- adult.train.1percent.x[,-singular_columns]
-      cat("removed", length(singular_columns), "columns due to singular values\n")
+    if (length(constant_columns)>0) {
+      adult.test.1percent.x <- adult.test.1percent.x[,-constant_columns]
+      adult.train.1percent.x <- adult.train.1percent.x[,-constant_columns]
+      cat("removed", length(constant_columns), "columns due to constant values\n")
     }
 
 
@@ -163,8 +163,8 @@ for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet"
   }
 
 
-  vioplot(list(actual=mes, expected=adult.expected.errors[[index]]), xlab = "error" , ylab="error", main=model_choice)
-  vioplot(list(actual=dfs, expected=adult.expected.df[[index]]), xlab = "model dimension", ylab="MD", main=model_choice)
+  vioplot(list(actual=mes, expected=adult.expected.errors[[index]]), ylab="Error", main=model_choice)
+  vioplot(list(actual=dfs, expected=adult.expected.df[[index]]), ylab="Model Dimension", main=model_choice)
 }
 
 graphics.off()
