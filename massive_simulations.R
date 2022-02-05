@@ -19,7 +19,8 @@ generModel = function(n, p, rho){
 
 
 
-
+pdf(file="high_dimensional_simmulation_result.pdf", width=2400 / 25.4, height=2100 / 25.4, onefile=FALSE)   #units: inches, calculated from mm (2400x2100 in mm^2)
+par(mfrow=c(21,24))
 
 
 
@@ -121,10 +122,13 @@ for (beta_choice in 1:6) {
 
         #write.csv(OUT, file=paste(filename,"csv",sep="."))
 
-        vioplot(list(actual=OUT$mse, expected=expected_results["mse",]), xlab = alg, ylab="error", main=theme)
-        vioplot(list(actual=OUT$md0, expected=expected_results["md0",]), xlab = alg, ylab="model size", main=theme)
+        vioplot(list(actual=OUT$mse, expected=expected_results["mse",]), xlab = alg, ylab="Error", main=theme)
+        vioplot(list(actual=OUT$md0, expected=expected_results["md0",]), xlab = alg, ylab="Model Dimension", main=theme)
 
       }
     }
   }
 }
+
+
+graphics.off()

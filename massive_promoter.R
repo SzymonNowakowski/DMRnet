@@ -16,7 +16,7 @@ cat("promoter data loaded\n")
 
 runs<-200
 
-postscript("promoter_result.pdf", horizontal=TRUE,onefile=FALSE)
+pdf("promoter_result.pdf", horizontal=TRUE, onefile=FALSE)
 par(mfrow=c(2,4))
 
 for (model_choice in c("cv+sd.GLAMER",  "gic.GLAMER","cvg.DMRnet", "gic.DMRnet")) {
