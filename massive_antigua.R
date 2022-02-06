@@ -21,7 +21,7 @@ cat("antigua data loaded\n")
 
 runs<-200
 
-postscript("antigua_result.pdf", horizontal=TRUE,onefile=FALSE)
+postscript("result_antigua.pdf", horizontal=TRUE,onefile=FALSE)
 par(mfrow=c(2,4))
 
 for (model_choice in c( run_list )) {

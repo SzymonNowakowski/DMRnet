@@ -142,7 +142,7 @@ for (mega_run in 1:20) {
   }#part
 }#mega_run
 
-postscript("insurance_result.pdf", horizontal=TRUE,onefile=FALSE)
+postscript("result_insurance.pdf", horizontal=TRUE,onefile=FALSE)
 par(mfrow=c(2,4))
 
 for (model_index in 1:4) {
