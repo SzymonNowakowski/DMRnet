@@ -73,7 +73,7 @@ for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet"
   run<-1
 
   while (run<=runs) {
-    cat("generating train/test sets\n")
+    #cat("generating train/test sets\n")
     sample.1percent <- sample(1:nrow(adult.all), 0.01*nrow(adult.all))
     adult.train.1percent.x <- adult.all[sample.1percent,c(1,2,4,6:10,13:14)] #I exclude education_num and fnlwgt and capital_gain & capital_loss
     adult.train.1percent.y <- adult.all[sample.1percent,15]

@@ -46,7 +46,7 @@ for (mega_run in 1:20) {
         ################ original response 8 levels!
         insurance.all.y<-insurance.all[,ncol(insurance.all)] +0.0
 
-        cat("generating train/test sets\n")
+       #cat("generating train/test sets\n")
 
         sample.10percent <- sample(1:nrow(insurance.all.x), 0.1*nrow(insurance.all.x))
         insurance.train.10percent.x <- insurance.all.x[sample.10percent,]

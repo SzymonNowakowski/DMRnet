@@ -91,6 +91,7 @@ for (beta_choice in 1:6) {
         expected_results<-expected_results[-1]
 
         OUT <- simplify2array( lapply(1:200, function(i){
+          cat(i,"\n")
           ##### 1. Model generation
           XX <- generModel(n, p, rho)
           X <- model.matrix(~., data=XX)
@@ -122,8 +123,10 @@ for (beta_choice in 1:6) {
 
         #write.csv(OUT, file=paste(filename,"csv",sep="."))
 
-        vioplot(list(actual=OUT$mse, expected=expected_results["mse",]), xlab = alg, ylab="Error", main=theme)
-        vioplot(list(actual=OUT$md0, expected=expected_results["md0",]), xlab = alg, ylab="Model Dimension", main=theme)
+        main_desc <- paste(denot, paste("snr", as.character(round(snr,3)), sep="="), paste("rho", as.character(rho), sep="="), sep=" ")
+
+        vioplot(list(actual=OUT$mse, expected=expected_results["mse",]), xlab = alg, ylab="Error", main=main_desc)
+        vioplot(list(actual=OUT$md0, expected=expected_results["md0",]), xlab = alg, ylab="Model Dimension", main=main_desc)
 
       }
     }
