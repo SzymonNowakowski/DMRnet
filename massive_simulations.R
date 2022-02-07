@@ -125,8 +125,8 @@ for (beta_choice in 1:6) {
 
         main_desc <- paste(denot, paste("snr", as.character(round(snr,3)), sep="="), paste("rho", as.character(rho), sep="="), sep=" ")
 
-        vioplot(list(actual=OUT$mse, expected=expected_results["mse",]), xlab = alg, ylab="Error", main=main_desc)
-        vioplot(list(actual=OUT$md0, expected=expected_results["md0",]), xlab = alg, ylab="Model Dimension", main=main_desc)
+        vioplot(list(actual=OUT[4], expected=as.numeric(expected_results["mse",])), xlab = alg, ylab="Error", main=main_desc)
+        vioplot(list(actual=OUT[5], expected=as.numeric(expected_results["md0",])), xlab = alg, ylab="Model Dimension", main=main_desc)
 
       }
     }
