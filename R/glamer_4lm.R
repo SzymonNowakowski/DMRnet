@@ -112,7 +112,7 @@ glamer_4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
   }
 
   #smallest models are last
-  shift<- function(i) {sum[rss[, i]==Inf]}
+  shift<- function(i) {sum(rss[, i]==Inf)}
   model_group <- function(i) {ind[i]}
   model_index_within_group<- function(i) {i-shift(model_group(i))}
 

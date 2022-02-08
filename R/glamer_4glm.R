@@ -123,7 +123,7 @@ glamer_4glm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
     idx <- 1:length(ind)
   }
 
-  shift<- function(i) {sum[loglik[, i]==-Inf]}
+  shift<- function(i) {sum(loglik[, i]==-Inf)}
   model_group <- function(i) {ind[i]}
   model_index_within_group<- function(i) {i-shift(model_group(i))}
 
