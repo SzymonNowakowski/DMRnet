@@ -1,7 +1,4 @@
-part2beta_glm_help <- function(b, S, fl, valid = TRUE) {
-  if (!valid) {
-    return(rep(0, sum(fl-1)+1))
-  }
+part2beta_glm_help <- function(b, S, fl) {
 
   if (sum(S == 0) > 0){
     b1 <- b[1]

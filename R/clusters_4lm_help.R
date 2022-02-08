@@ -1,4 +1,4 @@
-clusters_4lm_help <- function(S, betas_with_intercept, X, y, cut_points, clust.method){
+clusters_4lm_help <- function(S, betas_with_intercept, X, y, clust.method, lam){
 
   X <- X[, S==1, drop = FALSE]
   betas_with_intercept <- betas_with_intercept[betas_with_intercept>0]
@@ -52,13 +52,13 @@ clusters_4lm_help <- function(S, betas_with_intercept, X, y, cut_points, clust.m
   len <- length(heig)
   heig <- c(0,heig)
   names(heig)[1] = "full"
-  if ((p.fac + 1) < p){
+  if ((p.fac + 1) < p){    #continous columns handling
     # if((p.fac + 2) == p){
     #   heig.add <- ((Ro[(p.fac + 2):p,]%*%z)^2)/(sigma*sum(Ro[(p.fac + 2):p,]^2))
     # } else {
     #   heig.add <- ((Ro[(p.fac + 2):p,]%*%z)^2)/(sigma*(apply(Ro[(p.fac + 2):p, ], 1, function(y) t(y)%*%y)))
     # }
-    heig.add <- betas_with_intercept[(p.fac + 2):p]^2
+    heig.add <- betas_with_intercept[(p.fac + 2):p]^2   #heights for continuous columns are just the betas squared
     names(heig.add) <- colnames(x.full)[(p.fac + 2):p]
     heig <- c(heig, heig.add)
   }
@@ -80,20 +80,10 @@ clusters_4lm_help <- function(S, betas_with_intercept, X, y, cut_points, clust.m
   A <- c()
   form <- namCont
 
-  cut_point_model_reference <- rep(NA, length(cut_points)) #initiated as pointing to the no-model
-  #or numeric(0) if the cut_points==NULL
-  ###only cut points == 0 should reference to the 1st model
-  cut_point_model_reference[cut_points==0] <- 1
-
   if (len >= 2){
     for (i in 2:(len)){
       a <- rep(0,p)
       kt <- names(heig)[i]
-
-      if (length(cut_points) > 0) {
-        ###all cut points located between this heig[i] and the previous heig[i-1] should back-reference to the model we create in this step
-        cut_point_model_reference[cut_points > heig[i-1] & cut_points <= heig[i]] <- i
-      }
 
       if(length(intersect(kt, namCont)) > 0){
         jj <- which(form == kt)
@@ -136,9 +126,15 @@ clusters_4lm_help <- function(S, betas_with_intercept, X, y, cut_points, clust.m
     }
   }
   A[1,] <- rep(0, p-1)
-  m <- stats::lm.fit(x.full, y)  #moved here from top
-  rX <- qr.R(m$qr)               #moved here from top
-  qX <- qr.Q(m$qr)               #moved here from top
+  m <- stats::lm.fit(x.full, y)  #it is in top of the related DMRnet function, in GLAMER moved here close to the end
+  #######################REGULARIZING THE RESULT########################################
+                                  #SzN there were cases (e.g. in Insurance dataset)
+                                  #when the original columns
+                                  #are lineary dependant
+                                  #(case not excluded even after grpreg was run for execution paths from DMRnet)
+  qX <- qr.Q(m$qr, complete=FALSE) #SzN: explicitly stating that we want partial results (https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/QR.Auxiliaries)
+  rX <- qr.R(m$qr) + diag(rep(lam, ncol(qX))) #SzN to solve the abovementioned matrix singularity we introduce the regularization of rX with a diagonal matrix
+
   z <- t(qX)%*%y                 #moved here from top
   S <- forwardsolve(t(rX), A)
   QRs <- qr(S)
@@ -149,5 +145,5 @@ clusters_4lm_help <- function(S, betas_with_intercept, X, y, cut_points, clust.m
   r22 <- Tr%*%wyn
   RSS <- (sum(y^2) - sum(z^2))
   RSS2 <- c(RSS, as.vector(RSS + r22))
-  return(list(b = b, rss = RSS2, heights = heig, cut_point_model_reference = cut_point_model_reference))
+  return(list(b = b, rss = RSS2))
 }

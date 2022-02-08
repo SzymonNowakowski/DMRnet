@@ -1,4 +1,4 @@
-clusters_4glm_help <- function(S, betas_with_intercept, X, y, cut_points, clust.method, lam){
+clusters_4glm_help <- function(S, betas_with_intercept, X, y, clust.method, lam){
 
   X <- X[, S==1, drop = FALSE]
   betas_with_intercept <- betas_with_intercept[betas_with_intercept>0]
@@ -56,8 +56,8 @@ clusters_4glm_help <- function(S, betas_with_intercept, X, y, cut_points, clust.
   len <- length(heig)
   heig <- c(0,heig)
   names(heig)[1] = "full"
-  if ((p.fac + 1) < p){  # heights for continous vars are just the betas
-    heig.add <- betas_with_intercept[(p.fac + 2):p]^2
+  if ((p.fac + 1) < p){
+    heig.add <- betas_with_intercept[(p.fac + 2):p]^2   # heights for continuous columns are just the betas squared
     names(heig.add) <- colnames(x.full)[(p.fac + 2):p]
     heig <- c(heig, heig.add)
   }
@@ -85,29 +85,19 @@ clusters_4glm_help <- function(S, betas_with_intercept, X, y, cut_points, clust.
   lmax <- lmin*1000
   RL <- exp(seq(log(lmax), log(lmin), length.out = 20))
 
-  m <- glmnet::glmnet(ZZ, y, lambda = RL, alpha = 0, family = "binomial")
+  m <- glmnet::glmnet(ZZ, y, lambda = RL, alpha = 0, family = "binomial")  #SzN per explanation of PP, this is regularized with ridge penalty (alpha=0) to help with computations of singular cases, but not to sparsify the betas as lasso penalty could
   b <- c(m$a0[20], m$beta[-1,20])
   names(b) <- colnames(ZZ)
-  zb = exp(ZZ%*%betas_with_intercept)  #originally be!!!!!!!!!!
+  zb = exp(ZZ%*%betas_with_intercept)  #in DMRnet this line was zb = exp(ZZ%*%be)
   pix = zb/(zb + 1)
   loglik = sum(log(pix)[y == 1]) + sum(log(1-pix)[y == 0]) - lam*sum(m$beta@x^2)
   form <- namCont
-
-  cut_point_model_reference <- rep(NA, length(cut_points)) #initiated as pointing to the no-model
-  #or numeric(0) if the cut_points==NULL
-  ###only cut points == 0 should reference to the 1st model
-  cut_point_model_reference[cut_points==0] <- 1
 
   if (len > 2){
     for (i in 2:(len-1)){
       kt <- names(heig)[i]
 
-      if (length(cut_points) > 0) {
-        ###all cut points located between this heig[i] and the previous heig[i-1] should back-reference to the model we create in this step
-        cut_point_model_reference[cut_points > heig[i-1] & cut_points <= heig[i]] <- i
-      }
-
-      if(length(intersect(kt, namCont)) > 0){
+          if(length(intersect(kt, namCont)) > 0){
         form <- form[-which(form == kt)]
         Z2 <- Z2[, form, drop = FALSE]
 
@@ -146,17 +136,12 @@ clusters_4glm_help <- function(S, betas_with_intercept, X, y, cut_points, clust.
       b=cbind(b, c(m$a0[20], be[bb]))
     }
   }
-  m <- stats::glm.fit(as.matrix(rep(1, length(y))), y, family = stats::binomial())
 
-  if (length(cut_points) > 0) {
-    ###all cut points gigher than the previous heig[len-1] should back-reference to the len-th model
-    ### THIS IS DIFFERENT THAN in gaussian family
-    cut_point_model_reference[cut_points > heig[len-1]] <- len
-  }
+  m <- stats::glm.fit(as.matrix(rep(1, length(y))), y, family = stats::binomial())
 
   b = cbind(b, c(m$coef, rep(0, length(heig) - 1)))
   zb = exp(m$coef*rep(1, length(y)))
   pix = zb/(zb + 1)
   loglik = c(loglik, sum(log(pix)[y == 1]) + sum(log(1-pix)[y == 0]))
-  return(list(b = b, loglik = loglik, heights = heig, cut_point_model_reference = cut_point_model_reference))
+  return(list(b = b, loglik = loglik))
 }
