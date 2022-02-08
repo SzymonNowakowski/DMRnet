@@ -101,6 +101,10 @@ glamer_4glm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
   SS <- sapply(1:sum(ii == FALSE), function(i) ifelse(fac[, i] > 0, 1, 0))
   #nrow = #predictors
   #ncol = #active lambdas
+  if(is.null(dim(SS))){   #for a single variable (a single 2-level factor) SS is a vector
+    SS <- t(as.matrix(SS))  #change it into a matrix
+  }
+
   #if (p >= n) SS <- SS[,-1]   #in original DMRnet code, this line serves to eliminate the first FULL model if p >=n, because it would cause problems in DMR later. However, this is not the case here in GLAMER
                                 #because the SS matrix is built in a different way and doesn't include the full model as the first column.
 
@@ -119,7 +123,9 @@ glamer_4glm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
     idx <- 1:length(ind)
   }
 
+  shift<- function(i) {sum[loglik[, i]==-Inf]}
   model_group <- function(i) {ind[i]}
+  model_index_within_group<- function(i) {i-shift(model_group(i))}
 
   be <- sapply(idx, function(i) {
     b_matrix<-mm[[model_group(i)]]$b;
