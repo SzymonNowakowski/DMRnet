@@ -112,7 +112,10 @@ DMRnet4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
 
       b_matrix<-mm[[ind[i]]]$b;
       if (is.null(dim(b_matrix))) {
-        b_matrix<-matrix(b_matrix);  #TODO: verify if this shouldn't be b_matrix<-t(as.matrix(b_matrix))   as with other VERTICAL matrices that degenerated to HORIZONTAL vectors
+        b_matrix<-matrix(b_matrix);  #note this shouldn't be b_matrix<-t(as.matrix(b_matrix)) :   with other matrices that degenerated to HORIZONTAL vectors we want to have HORIZONTAL matrices
+        #in this case, however, we want a VERTICAL matrix
+        #in b_matrix[,model_index_within_group(i)] we take columns of b_matrix if b_matrix is a legitimate matrix
+        #when it is degenerate (a vector), we want that taking the full first column (as model_index_within_group(i) == 1 in those cases) takes this whole vector
       }
       part2beta_help(b = b_matrix[,i - sum(rss[, ind[i]] == Inf)], S = SS[,ind[i]], X = X, y = y, fl=fl)
     })
