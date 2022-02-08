@@ -79,7 +79,7 @@ DMRnet4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
     ii <- duplicated(t(bb_predictor_sets))    #detecting duplicated predictor sets
     prz <- rep(1:p.x, fl-1)
     fac <- apply(bb[-1,ii == FALSE, drop = FALSE], 2, function(x) tapply(x, factor(prz), function(z) sum(z^2)*sqrt(length(z))))
-    #fac is a matrix with betas relating to variables (rows) respective to non-duplicated lambdas (colums)
+    #fac is a matrix with normalized betas relating to variables (rows) respective to non-duplicated lambdas (colums)
     if(is.null(dim(fac))){  #in case of a single 2-level factor matrix in X, there is only one beta and fac would be reduced to a vector. This line here helps to convert it back to a matrix
       #by the way, a symmetric situation is not possible as grpreg does NOT accept a single lambda value nor nlambda=1, nlambda must be at least two
        fac <- t(as.matrix(fac))
@@ -90,7 +90,8 @@ DMRnet4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
                   #   - lambdas (cols)
     B[is.na(B)] <- 0
     S <- sapply(1:o, function(j){
-      out <- sapply(1:sum(ii == FALSE), function(i) ifelse(fac[, i] >= B[j,i], 1, 0))
+      out <- sapply(1:sum(ii == FALSE), function(i) ifelse(fac[, i] >= B[j,i], 1, 0))    #the smallest lambda is the-only-intercept lambda. All other betas are 0. In this way, the o-based quantiles are all-zero and this: 0==fac[, i]>=B[j,i]==0 is TRUE, so a column with value 1 in all rows is returned
+                                  #this is a bit tricky, but this line (and condition `>=` above) indeed determines the first column of SS to be a column with value 1 in all rows (the full model)
     })
     #S is a matrix selecting betas (#variables*#lambdas of them) (rows) respective to o-based partitions (cols)
     SS <- matrix(S, p.x, sum(ii == FALSE)*o) #SS is a rewrite of S with o*#lambdas columns and #variable rows

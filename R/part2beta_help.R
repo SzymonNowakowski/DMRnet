@@ -1,7 +1,4 @@
-part2beta_help <- function(b, S, X, y, fl, valid = TRUE) {
-  if (!valid) {    #TODO: this valid parameter seems to be related with the cross-points cv, may be removed together with all other related functionality
-    return(rep(0, sum(fl-1)+1))
-  }
+part2beta_help <- function(b, S, X, y, fl) {
 
   Z <- data.frame(y)
   if (sum(S == 0) > 0){

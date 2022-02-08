@@ -79,7 +79,7 @@ DMR4glm_help <- function(X, y, clust.method, lam){
      Z <- cbind(Z1,Z2)
      dane <- data.frame(y=y, Z, check.names = T)
      ZZ <- stats::model.matrix(y~., data = dane)
-     m <- glmnet::glmnet(ZZ, y, lambda = RL, alpha = 0, family = "binomial")
+     m <- glmnet::glmnet(ZZ, y, lambda = RL, alpha = 0, family = "binomial") #SzN per explanation of PP, this is regularized with ridge penalty (alpha=0) to help with computations of singular cases, but not to sparsify the betas as lasso penalty could
      b <- c(m$a0[20], m$beta[-1,20])
      names(b) <- colnames(ZZ)
      zb = exp(ZZ%*%be)

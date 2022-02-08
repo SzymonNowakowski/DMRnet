@@ -92,7 +92,8 @@ DMRnet4glm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda) {
     B <- apply(fac, 2, function(x) stats::quantile(x[x!=0], seq(0, 1, length = (o + 1))[-(o + 1)]))
     B[is.na(B)] <- 0
     S <- sapply(1:o, function(j){
-      out <- sapply(1:sum(ii == FALSE), function(i) ifelse(fac[, i] >= B[j,i], 1, 0))
+      out <- sapply(1:sum(ii == FALSE), function(i) ifelse(fac[, i] >= B[j,i], 1, 0))#the smallest lambda is the-only-intercept lambda. All other betas are 0. In this way, the o-based quantiles are all-zero and this: 0==fac[, i]>=B[j,i]==0 is TRUE, so a column with value 1 in all rows is returned
+      #this is a bit tricky, but this line (and condition `>=` above) indeed determines the first column of SS to be a column with value 1 in all rows (the full model)
     })
     SS <- matrix(S, p.x, sum(ii == FALSE)*o)
     SS <- t(unique(t(SS)))
