@@ -142,7 +142,7 @@ glamer_4glm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
     ind1[ord] = (p - length(ord) + 1):p
     be = be[ind1,]
   }
-  fit <- list(beta = be, df = length(idx):1, loglik = loglik, n = n, levels.listed = levels.listed, lambda = mL$lambda, arguments = list(family = "binomial", clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp), interc = TRUE)
+  fit <- list(beta = be, df = length(idx):1, loglik = loglik[cbind(idx, ind[idx])], n = n, levels.listed = levels.listed, lambda = mL$lambda, arguments = list(family = "binomial", clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp), interc = TRUE)
   class(fit) = "DMR"
   return(fit)
 }
