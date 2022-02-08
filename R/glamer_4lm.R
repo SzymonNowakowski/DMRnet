@@ -132,7 +132,7 @@ glamer_4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
     be = be[ind1,]
   }
 
-  fit <- list(beta = be, df = length(idx):1, rss = rss, n = n, levels.listed = levels.listed, lambda = mL$lambda, arguments = list(family = "gaussian", clust.method = clust.method, nlambda = nlambda, maxp = maxp), interc = TRUE)
+  fit <- list(beta = be, df = length(idx):1, rss = rss[cbind(idx, ind[idx])], n = n, levels.listed = levels.listed, lambda = mL$lambda, arguments = list(family = "gaussian", clust.method = clust.method, nlambda = nlambda, maxp = maxp), interc = TRUE)
 
   class(fit) = "DMR"
   return(fit)
