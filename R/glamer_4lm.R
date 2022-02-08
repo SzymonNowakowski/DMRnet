@@ -52,13 +52,13 @@ glamer_4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
   x.full <- apply(x.full, 2, function(x) sqrt(n/sum(x^2))*x)
 
   if (is.null(lambda)) {
-    user.lambdas<-substitute()    #make user.lambdas - paradoxically - not present in a call to grpreg
+    user.lambda<-substitute()    #make user.lambda - paradoxically - not present in a call to grpreg
   } else {
     nlambda <- length(lambda)   #override this parameter
-    user.lambdas <- lambda
+    user.lambda <- lambda
   }
 
-  #mL <- grpreg::grpreg(x.full[,-1], y, group=rep(1:p.x, fl-1) , penalty = "grLasso", family ="gaussian", nlambda = nlambda, lambda = user.lambdas)
+  #mL <- grpreg::grpreg(x.full[,-1], y, group=rep(1:p.x, fl-1) , penalty = "grLasso", family ="gaussian", nlambda = nlambda, lambda = user.lambda)
   #to keep the x.full as a matrix after the intercept column is removed in case of a single 2-level factor column in X, drop=FALSE must be provided in grpreg call below in x.full[,-1, drop=FALSE]
   #otherwise x.full[,-1] would be reduced to a vector and grpreg would crash
   mL <- grpreg::grpreg(x.full[,-1, drop=FALSE], y, group=rep(1:p.x, fl-1) , penalty = "grLasso", family ="gaussian", nlambda = nlambda, lambda = user.lambda)
