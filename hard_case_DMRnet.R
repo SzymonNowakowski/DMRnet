@@ -3,11 +3,17 @@ load_all()
 data(insXtr)
 data(insytr)
 
+print("glamer single 2-level factor column:")
+glamer <- DMRnet(Xtr[1], ytr, family = "gaussian", algorithm="glamer")
+
 print("dmrnet single 2-level factor column:")
 dmrnet <- DMRnet(Xtr[1], ytr, family = "gaussian")     #fails in 0.2.0 - Error in grpreg: Error: X must be a matrix or able to be coerced to a matrix
                                                        #fixed by PR#5 in 0.3.0
 print("dmr single 2-level factor column:")
 dmr <- DMR(Xtr[1], ytr, family = "gaussian")           #passes in 0.2.0
+
+print("glamer:")
+glamer <- DMRnet(Xtr, ytr, family = "gaussian", algorithm = "glamer")
 
 print("dmrnet:")
 dmrnet <- DMRnet(Xtr, ytr, family = "gaussian")        #fails in 0.2.0 - Error in solve.default(rX) :
@@ -31,12 +37,18 @@ cv.dmr <- cv.DMR(Xtr, ytr, family = "gaussian")        #fails in 0.2.0 probably 
 
 ytr<-factor(ytr>mean(ytr))
 
+print("binomial glamer single 2-level factor column:")
+b_glamer <- DMRnet(Xtr[1], ytr, family = "binomial", algorithm="glamer")
+
 
 print("binomial dmrnet single 2-level factor column:")
 b_dmrnet <- DMRnet(Xtr[1], ytr, family = "binomial")     #fails in 0.2.0 - Error in grpreg: Error: X must be a matrix or able to be coerced to a matrix
                                                          #fixed by PR#5
 print("binomial dmr single 2-level factor column:")
 b_dmr <- DMR(Xtr[1], ytr, family = "binomial")           #passes in 0.2.0
+
+print("binomial glamer:")
+b_glamer <- DMRnet(Xtr, ytr, family = "binomial", algorithm="glamer")
 
 print("binomial dmrnet:")
 b_dmrnet <- DMRnet(Xtr, ytr, family = "binomial")        #fails in 0.2.0 - Error in stats::cutree(models[[kt]], h = heig[i]) :
