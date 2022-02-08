@@ -97,7 +97,7 @@ DMRnet4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
     SS <- matrix(S, p.x, sum(ii == FALSE)*o) #SS is a rewrite of S with o*#lambdas columns and #variable rows
     SS <- t(unique(t(SS))) #removing duplicated (when multiplying by o-based partition) columns from SS
     if (p >= n) SS = SS[,-1]    #this removes the full model in the high-dimensional scenario of p>=n. In the high-dimensional scenario, the full model is too large to be further analysed
-    mm <- lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[,i], X, y, fl, clust.method, bb, lam))
+    mm <- lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[,i], X, y, fl, clust.method, lam))
     maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$rss)))
     rss <- sapply(1:length(mm), function(i) c(rep(Inf, maxl - length(mm[[i]]$rss)), mm[[i]]$rss))
     ind <- apply(rss, 1, which.min)

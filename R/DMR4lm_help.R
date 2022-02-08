@@ -1,4 +1,4 @@
-DMR4lm_help <- function(X, y, clust.method, bb, lam){
+DMR4lm_help <- function(X, y, clust.method, lam){
 
     n <- nrow(X)
     nn <- sapply(1:ncol(X), function(i) class(X[,i]))

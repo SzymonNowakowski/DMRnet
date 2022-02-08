@@ -1,4 +1,4 @@
-glamer_4glm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
+glamer_4glm <- function(X, y, clust.method, nlambda, lam, maxp, lambda){
   if (class(y) != "factor"){
     stop("Error: y should be a factor")
   }
