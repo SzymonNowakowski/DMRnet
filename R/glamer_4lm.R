@@ -88,7 +88,7 @@ glamer_4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
 
   SS <- sapply(1:sum(ii == FALSE), function(i) ifelse(fac[, i] > 0, 1, 0))
   if(is.null(dim(SS))){   #for a single variable (a single 2-level factor) SS is a vector
-    SS <- t(as.matrix(SS))  #change it into a matrix
+    SS <- t(as.matrix(SS))  #change it into a HORIZONTAL matrix
   }
 
   #if (p >= n) SS = SS[,-1]  #in original DMRnet code, this line serves to eliminate the first FULL model if p >=n, because it would cause problems in DMR later. However, this is not the case here in GLAMER
@@ -119,7 +119,10 @@ glamer_4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
   be <- sapply(idx, function(i) {
     b_matrix<-mm[[model_group(i)]]$b;
     if (is.null(dim(b_matrix))) {
-      b_matrix<-matrix(b_matrix);    #TODO: verify if this shouldn't be b_matrix<-t(as.matrix(b_matrix))   as with other VERTICAL matrices that degenerated to HORIZONTAL vectors
+      b_matrix<-matrix(b_matrix);    #note this shouldn't be b_matrix<-t(as.matrix(b_matrix)) :   with other matrices that degenerated to HORIZONTAL vectors we want to have HORIZONTAL matrices
+      #in this case, however, we want a VERTICAL matrix
+      #in b_matrix[,model_index_within_group(i)] we take columns of b_matrix if b_matrix is a legitimate matrix
+      #when it is degenerate (a vector), we want that taking the full first column (as model_index_within_group(i) == 1 in those cases) takes this whole vector
     }
     part2beta_help(b = b_matrix[, model_index_within_group(i)], S = SS[, model_group(i)], X = X, y = y, fl=fl)
   })
