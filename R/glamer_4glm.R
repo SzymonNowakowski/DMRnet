@@ -101,7 +101,7 @@ glamer_4glm <- function(X, y, clust.method, nlambda, lam, maxp, lambda){
   SS <- sapply(1:sum(ii == FALSE), function(i) ifelse(fac[, i] > 0, 1, 0))
   #nrow = #predictors
   #ncol = #active lambdas
-  if(is.null(dim(SS))){   #for a single variable (a single 2-level factor) SS is a vector
+  if(is.null(dim(SS))){   #for a single variable (a single k-level factor) SS is a vector
     SS <- t(as.matrix(SS))  #change it into a matrix with one row - HORIZONTAL matrix is the effect
   }
 
