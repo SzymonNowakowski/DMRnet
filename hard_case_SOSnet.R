@@ -83,3 +83,5 @@ for (i in 1:10) {
 
   pred<-predict(dmr, X.te[,which(ssd>0)[colsubset]])
 }
+
+cat("completed\n")
