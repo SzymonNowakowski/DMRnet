@@ -19,7 +19,7 @@ generModel = function(n, p, rho){
 
 
 
-pdf(file="result_high_dimensional_simmulation.pdf", width=2400 / 25.4, height=2100 / 25.4, onefile=FALSE)   #units: inches, calculated from mm (2400x2100 in mm^2)
+pdf(file="result_high_dimensional_simulation.pdf", width=2400 / 25.4, height=2100 / 25.4, onefile=FALSE)   #units: inches, calculated from mm (2400x2100 in mm^2)
 par(mfrow=c(21,24))
 
 
