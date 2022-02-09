@@ -1,4 +1,4 @@
-glamer_4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
+glamer_4lm <- function(X, y, clust.method, nlambda, lam, maxp, lambda){
 
   n <- nrow(X)
   if(n != length(y)){
@@ -76,18 +76,20 @@ glamer_4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
     RL <- RL[-lambdas_with_no_betas]  #removing them from lambdas
     kt <- kt[-lambdas_with_no_betas]  #and from lambda indices
   }
-  bb <- as.matrix(abs(mL$beta[, kt])) #bb is a matrix listing beta values (rows) respective to the net of lambda values (cols)
+  bb <- as.matrix(abs(mL$beta[, kt]) + lam) #bb is a matrix listing beta values (rows) respective to the net of lambda values (cols)
+                                      #also, regularizing those betas to make them STRICTLY >0
+                         #(there have been cases of grpreg not observing the group constriant - vide hard_case_DMRnet_promoter test file in testing_branch)
   bb_predictor_sets <- ifelse(bb > 0, 1, 0)          #bb_predictor_sets is a matrix listing predictor sets (0 or 1 for each predictor)  (rows) respective to the net of lambda values (cols)
   ii <- duplicated(t(bb_predictor_sets))    #detecting duplicated predictor sets
   prz <- rep(1:p.x, fl-1)
   fac <- apply(bb[-1,ii == FALSE, drop = FALSE], 2, function(x) tapply(x, factor(prz), function(z) sum(z^2)*sqrt(length(z))))
-  if(is.null(dim(fac))){#in case of a single 2-level factor matrix in X, there is only one beta and fac would be reduced to a vector. This line here helps to convert it back to a matrix
+  if(is.null(dim(fac))){#in case of a single k-level factor matrix in X, there is only one group and fac would be reduced to a vector. This line here helps to convert it back to a matrix
     #by the way, a symmetric situation is not possible as grpreg does NOT accept a single lambda value nor nlambda=1, nlambda must be at least two
     fac <- t(as.matrix(fac))
   }
 
   SS <- sapply(1:sum(ii == FALSE), function(i) ifelse(fac[, i] > 0, 1, 0))
-  if(is.null(dim(SS))){   #for a single variable (a single 2-level factor) SS is a vector
+  if(is.null(dim(SS))){   #for a single variable (a single k-level factor) SS is a vector
     SS <- t(as.matrix(SS))  #change it into a HORIZONTAL matrix
   }
 

@@ -79,8 +79,8 @@ DMRnet4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
     ii <- duplicated(t(bb_predictor_sets))    #detecting duplicated predictor sets
     prz <- rep(1:p.x, fl-1)
     fac <- apply(bb[-1,ii == FALSE, drop = FALSE], 2, function(x) tapply(x, factor(prz), function(z) sum(z^2)*sqrt(length(z))))
-    #fac is a matrix with normalized betas relating to variables (rows) respective to non-duplicated lambdas (colums)
-    if(is.null(dim(fac))){  #in case of a single 2-level factor matrix in X, there is only one beta and fac would be reduced to a vector. This line here helps to convert it back to a matrix
+    #fac is a matrix with normalized beta statistics relating to GROUPS of variables (rows) respective to non-duplicated lambdas (colums)
+    if(is.null(dim(fac))){  #in case of a single k-level factor matrix in X, there is only one group and fac would be reduced to a vector. This line here helps to convert it back to a matrix
       #by the way, a symmetric situation is not possible as grpreg does NOT accept a single lambda value nor nlambda=1, nlambda must be at least two
        fac <- t(as.matrix(fac))
     }
@@ -97,7 +97,7 @@ DMRnet4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
     SS <- matrix(S, p.x, sum(ii == FALSE)*o) #SS is a rewrite of S with o*#lambdas columns and #variable rows
     SS <- t(unique(t(SS))) #removing duplicated (when multiplying by o-based partition) columns from SS
     if (p >= n) SS = SS[,-1]    #this removes the full model in the high-dimensional scenario of p>=n. In the high-dimensional scenario, the full model is too large to be further analysed
-    mm <- lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[,i], X, y, fl, clust.method, bb, lam))
+    mm <- lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[,i], X, y, fl, clust.method, lam))
     maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$rss)))
     rss <- sapply(1:length(mm), function(i) c(rep(Inf, maxl - length(mm[[i]]$rss)), mm[[i]]$rss))
     ind <- apply(rss, 1, which.min)
