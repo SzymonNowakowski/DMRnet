@@ -3,7 +3,7 @@ library(devtools)
 load_all()
 
 
-seed(strtoi(substr(digest("hard_case_SOSnet", "md5", serialize = FALSE),1,7),16))  #for reproducibility
+set.seed(strtoi(substr(digest("hard_case_SOSnet", "md5", serialize = FALSE),1,7),16))  #for reproducibility
 
 ######################## first put to test identified 5 hard columns ######################################################################
 data(thousand_rows_5vars_that_cause_problem_for_glmnet)
