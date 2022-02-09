@@ -89,10 +89,10 @@ glamer_4glm <- function(X, y, clust.method, nlambda, lam, maxp, lambda){
   prz <- rep(1:p.x, fl-1)
   fac <- apply(bb[-1,ii == FALSE, drop = FALSE], 2, function(x) tapply(x, factor(prz), function(z) sum(z^2)*sqrt(length(z))))
   #(3) removing duplicated predictor sets
-  #fac is a matrix with normlized betas relating to variables (rows) respective to non-duplicated lambdas (colums)
-  #nrow = #predictors
+  #fac is a matrix with normalized beta statistics relating to GROUPS of variables (rows) respective to non-duplicated lambdas (colums)
+  #nrow = #GROUPS of variables
   #ncol = #active lambdas
-  if(is.null(dim(fac))){     #in case of a single 2-level factor matrix in X, there is only one beta and fac would be reduced to a vector. This line here helps to convert it back to a matrix
+  if(is.null(dim(fac))){     #in case of a single k-level factor matrix in X, there is only one group and fac would be reduced to a vector. This line here helps to convert it back to a matrix
     #by the way, a symmetric situation is not possible as grpreg does NOT accept a single lambda value nor nlambda=1, nlambda must be at least two
     fac <- t(as.matrix(fac))
   }
