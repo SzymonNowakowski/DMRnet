@@ -6,4 +6,4 @@ source("massive_insurance.R")    #"hard_case_DMRnet.R" tests are inspired by thi
 source("massive_simulations.R")
 source("hard_case_SOSnet.R")
 source("hard_case_DMRnet_insurance.R")
-source("hard_case_DMRnet_promoter.R")
+source("hard_case_GLAMER_promoter.R")
