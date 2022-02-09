@@ -89,11 +89,6 @@ glamer_4lm <- function(X, y, clust.method, nlambda, lam, maxp, lambda){
     fac <- t(as.matrix(fac))
   }
 
-  bb[1+ which(groups %in% which(fac>0)),]<-bb[1+ which(groups %in% which(fac>0)),]+lam
-            #regularizing those betas that belong to groups > 0 to make DOUBLE SURE THEY ARE STRICTLY >0
-            #(there have been cases of grpreg not observing the group constraint - vide hard_case_DMRnet_promoter test file in testing_branch)
-
-
   SS <- sapply(1:sum(ii == FALSE), function(i) ifelse(fac[, i] > 0, 1, 0))
   if(is.null(dim(SS))){   #for a single variable (a single k-level factor) SS is a vector
     SS <- t(as.matrix(SS))  #change it into a HORIZONTAL matrix
@@ -104,7 +99,10 @@ glamer_4lm <- function(X, y, clust.method, nlambda, lam, maxp, lambda){
 
 
 
-  bb<-bb[,ii==FALSE, drop=FALSE]   #betas but for active lambdas only
+  bb<-rbind(bb[1,ii==FALSE, drop=FALSE], sapply(1:sum(ii==FALSE), function(c) sapply(1:(nrow(bb)-1), function(r) bb[,ii==FALSE, drop=FALSE][1+r,c]+lam*(fac[groups[r], c]>0))))
+        #betas but for active lambdas only
+          #regularizing those betas that belong to groups > 0 to make DOUBLE SURE THEY ARE STRICTLY >0
+          #(there have been cases of grpreg not observing the group constraint - vide hard_case_DMRnet_promoter test file in testing_branch)
 
   mm <- lapply(1:ncol(SS), function(i) glamer_4lm_help(SS[,i], bb[,i], mL, X, y, fl, clust.method, lam = lam))
   maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$rss)))
