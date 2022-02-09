@@ -65,10 +65,11 @@ glamer_4glm <- function(X, y, clust.method, nlambda, lam, maxp, lambda){
     user.lambda <- lambda
   }
 
+  groups <- rep(1:p.x, fl-1)
   #mL <- grpreg::grpreg(x.full[,-1], y, group=rep(1:p.x, fl-1) , penalty = "grLasso", family ="binomial", nlambda = nlambda, lambda = user.lambda)
   #to keep the x.full as a matrix after the intercept column is removed in case of a single 2-level factor column in X, drop=FALSE must be provided in grpreg call below in x.full[,-1, drop=FALSE]
   #otherwise x.full[,-1] would be reduced to a vector and grpreg would crash
-  mL <- grpreg::grpreg(x.full[,-1, drop=FALSE], y, group=rep(1:p.x, fl-1) , penalty = "grLasso", family ="binomial", nlambda = nlambda, lambda = user.lambda)
+  mL <- grpreg::grpreg(x.full[,-1, drop=FALSE], y, group=groups , penalty = "grLasso", family ="binomial", nlambda = nlambda, lambda = user.lambda)
   RL <- mL$lambda
   dfy <- apply(mL$beta, 2, function(x) sum(x!=0))
   kt <- 1:length(RL)
@@ -83,13 +84,13 @@ glamer_4glm <- function(X, y, clust.method, nlambda, lam, maxp, lambda){
     RL <- RL[-lambdas_with_no_betas]  #removing them from lambdas
     kt <- kt[-lambdas_with_no_betas]  #and from lambda indices
   }
-  bb <- as.matrix(abs(mL$beta[, kt]) + lam)   #bb is a matrix listing beta values (rows) respective to the net of lambda values (cols)
+  bb <- as.matrix(abs(mL$beta[, kt]))   #bb is a matrix listing beta values (rows) respective to the net of lambda values (cols)
                                   #also, regularizing those betas to make them STRICTLY >0
                                   #(there have been cases of grpreg not observing the group constriant - vide hard_case_DMRnet_promoter test file in testing_branch)
   bb_predictor_sets <- ifelse(bb > 0, 1, 0)          #bb_predictor_sets is a matrix listing predictor sets (0 or 1 for each predictor)  (rows) respective to the net of lambda values (cols)
   ii <- duplicated(t(bb_predictor_sets))    #detecting duplicated predictor sets
-  prz <- rep(1:p.x, fl-1)
-  fac <- apply(bb[-1,ii == FALSE, drop = FALSE], 2, function(x) tapply(x, factor(prz), function(z) sum(z^2)*sqrt(length(z))))
+
+  fac <- apply(bb[-1,ii == FALSE, drop = FALSE], 2, function(x) tapply(x, factor(groups), function(z) sum(z^2)*sqrt(length(z))))
   #(3) removing duplicated predictor sets
   #fac is a matrix with normalized beta statistics relating to GROUPS of variables (rows) respective to non-duplicated lambdas (colums)
   #nrow = #GROUPS of variables
@@ -98,6 +99,11 @@ glamer_4glm <- function(X, y, clust.method, nlambda, lam, maxp, lambda){
     #by the way, a symmetric situation is not possible as grpreg does NOT accept a single lambda value nor nlambda=1, nlambda must be at least two
     fac <- t(as.matrix(fac))
   }
+
+
+  bb[1+ which(groups %in% which(fac>0)),]<-bb[1+ which(groups %in% which(fac>0)),]+lam
+                #regularizing those betas that belong to groups > 0 to make DOUBLE SURE THEY ARE STRICTLY >0
+                #(there have been cases of grpreg not observing the group constraint - vide hard_case_DMRnet_promoter test file in testing_branch)
 
   #first, note that sum(ii==FALSE) is a number of predictor sets and it may be smaller than nlambda because of (1), (2), (3)
   SS <- sapply(1:sum(ii == FALSE), function(i) ifelse(fac[, i] > 0, 1, 0))
