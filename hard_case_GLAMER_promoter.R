@@ -4,7 +4,7 @@ data(promoX)
 data(promoy)
 
 ############ This problem case is extracted from promoter dataset: cv+sd.glamer failed on the 10th run of massive-promoter.
-############ The cause was that grpreg didn't observe the group constraints for the 15th column and returned 2 non-zero betas and one beta equalt to 0
+############ The cause was that grpreg didn't observe the group constraints for the 15th column and returned 2 non-zero betas and one beta equal to 0
 ############ Regularization was added to restore the group constraint (either all betas are zero, or all betas are non-zero in a group)
 
 
