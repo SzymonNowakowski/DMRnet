@@ -35,7 +35,7 @@ There are 4 classes of problems:
    **SOLVED**
 2. `B` does not contain a level(s) present in `A`.
 
-   (sample case: we did sample to `Xtr` the single Dutch national from the Insurance data set, and he is not present in `Xte`,
+   (sample case: we did sample to `Xtr` the single Dutch national from the [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data), and he is not present in `Xte`,
    because there is only one instance of Dutch national in the whole Insurance data set).
    As a result `predict(...)` would throw an error, because expanded model-matrix dimensions would be conflicting.
 
