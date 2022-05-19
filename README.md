@@ -87,4 +87,4 @@ Generally speaking, matrix rank in real world scenarios is more a numerical conc
 This remains to be introduced to GLAMER and DMRnet algorithms.
 
 ### Remaining issues
-The only outstanding (not fixed) case of DMRnet computation failure known to me at present results from [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672) and can be observed in `hard_case_GLAMER_insurance.R`  in `testing_branch` in [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data. 
+The only outstanding (not fixed) case of DMRnet computation failure known to me at present results from [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672) and can be observed in `hard_case_GLAMER_insurance.R`  in `testing_branch` in [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
