@@ -8,14 +8,17 @@ GLAMER stands for Group LAsso MERger and it is a new (simplified in relation to 
 
 To use GLAMER pass `algorithm="glamer"` in a call to `DMRnet` or cross validation routine. GLAMER is not supported in `DMR`.
 
-### Rebuilt the existing cross validation routine (models indexed by model dimension)
+### Rebuild of the existing cross validation routine (models indexed by model dimension)
 The following changes were introduced to improve the existing model dimension-indexed cross validation:
-1. The lambda net is first calculated from the full data and than this net is used for particular cross validation folds. 
+1. The net of lambda values is first calculated from the full data set and then this net is used for particular cross validation folds. 
 2. Apart from `df.min` which is the number of parameters of the model with minimal cross-validated error, the routine now returns `df.1se` which is the number of parameters of the smallest model falling under the upper curve of a prediction error plus one standard deviation. It can be used in `predict` for inference by passing `md="df.1se"` instead of the default `md="df.min"`.
+3. Corrected handling of mismatched factor levels (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
 
 To use the existing model dimension-indexed cross validation routine pass `indexation.mode="dimension"` in a call to `cv.DMRnet`.
 ### New cross validation routine  (models indexed by GIC)
-A new alternative cross validation routine was introduced to improve the existing model quality. It indexes models by GIC. The method was proposed and first implemented for gaussian family by Piotr Pokarowski. The new method has the additional feature, that the lambda net is first calculated from the full data and than this net is used for particular cross validation folds. 
+A new alternative cross validation routine was introduced to improve the existing model quality. It indexes models by GIC. The method was proposed and first implemented for gaussian family by Piotr Pokarowski. The new method additional features are:
+1. The net of lambda values is first calculated from the full data set and then this net is used for particular cross validation folds. 
+2. Correct way of handling the mismatched factor levels (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
 
 To use the new GIC-indexed cross validation routine pass `indexation.mode=GIC"` in a call to `cv.DMRnet`.
 ### Handling of mismatched factor levels
@@ -71,5 +74,17 @@ There are 4 classes of problems:
 
 ### Stability improvements
 
-### Weights parametrized
-This remains to be done
+Generally speaking, matrix rank in real world scenarios is more a numerical concept than a mathematical concept and its value may differ depending on a treshold. Thus various kinds of problems result from data matrices close to singular. 
+1. The pivots were added in SOSnet for gaussian families and as a consequence a non-full rank data matrix was handled correctly to some extent (see the next point)
+2. Numerical instability of QR decomposition in SOSnet for gaussian families (when rank is *much* lower than columns provided) may have resulted in crashes in QR decomposition, thus a `try`-`catch` clause was used to recalculate QR decomposition but only for pivoted columns within rank in case of failure of the original QR attempt.
+3. Adding the regularizations in gaussian family in `DMR` (note that this execution path is used in `DMRnet` too) in a form of adding an infinitesimally small diagonal matrix to `R` after QR decomposition calculation
+4. Correcting the error in DRMnet and cross validation in handling data with a single two-factor column, by adding `drop=FALSE` statement.
+5. Fixing negative values in binomial case coming from `w_stats` from numerical instability when `Kan` was very close to 0 and `Var` is not symmetric, but `w_stats` assumes symmetric `Var` (problem observed in `DMRnet` for binomial family in  [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data) - vide hard_case_DMRnet_insurance.R` test file in `testing_branch`).
+6. There have been cases of `grpreg` not observing a group constraint in [Promoter data set](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+%28Promoter+Gene+Sequences%29) (some betas that belong to groups > 0 were not strictly > 0) - vide `hard_case_DMRnet_promoter.R` test file in `testing_branch`. It was problematic in GLAMER only, as DMRnet recalculated the t-statistics and was not constrained by initial betas. It was fixed by adding a small constant to all betas in groups > 0 in GLAMER.
+7. Handling the mismatched factor levels corrected (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
+
+### Weight parametrization
+This remains to be introduced to GLAMER and DMRnet algorithms.
+
+### Remaining issues
+The only outstanding (not fixed) case of DMRnet computation failure known to me at present results from [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672) and can be observed in `hard_case_GLAMER_insurance.R`  in `testing_branch`. 
