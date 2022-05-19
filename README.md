@@ -1,14 +1,17 @@
 # DMRnet
 This is a fork of the CRAN R package repository for DMRnet — Delete or Merge Regressors Algorithms for Linear and Logistic Model Selection and High-Dimensional Data. The purpose of the fork is to maintain and develop new package versions.
 
-# Changes in DMRnet v. 0.3.0
+## Changes in DMRnet v. 0.3.0
 
-## GLAMER added
+### GLAMER added
+GLAMER stands for Group LAsso MERger and it is a new (simplified in relation to DMRnet) algorithm for which we prove partition selection consistency. It is the first result of that kind for high dimensional scenario. The relevant paper with algorithm description is the following: [Szymon Nowakowski, Piotr Pokarowski and Wojciech Rejchel. 2021. “Group Lasso Merger for Sparse Prediction with High-Dimensional Categorical Data.” arXiv:2112.11114](https://arxiv.org/abs/2112.11114)
 
-## New cross validation routine
+To use GLAMER use `algorithm="glamer"` in a call to `DMRnet` or cross validation routine. GLAMER is not supported in `DMR`.
 
-## Handling of mismatched factor levels
-The new treatment of factors in cross validation and in `DMRnet`/`predict` pair is based on the following analysis:
+### New cross validation routine
+
+### Handling of mismatched factor levels
+The new treatment of factors in cross validation/`predict` and in `DMRnet`/`predict` pairs is based on the following analysis:
 
 Let us assume that
 - `Xtr` is training data in cross validation or in a regular call via `DMRnet`->`model`
@@ -58,7 +61,7 @@ There are 4 classes of problems:
 
    And this solution is not fully satisfactory, thus this case remains **PROBLEMATIC**.
 
-## Stability improvements
+### Stability improvements
 
-## Weights parametrized
+### Weights parametrized
 This remains to be done
