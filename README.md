@@ -11,8 +11,8 @@ This is a fork of the CRAN R package repository for DMRnet — Delete
 The new treatment of factors in cross validation and in `DMRnet`/`predict` pair is based on the following analysis:
 
 Let us assume that
--`Xtr` is training data in cross validation or in a regular call via `DMRnet`->`model`
--`Xte` is test data in cross validation or in a regular call via `model`->`predict`
+- `Xtr` is training data in cross validation or in a regular call via `DMRnet`->`model`
+- `Xte` is test data in cross validation or in a regular call via `model`->`predict`
 
 Without loss of generality, let us consider `Xtr` and `Xte` to be one column only, with factors.
 
