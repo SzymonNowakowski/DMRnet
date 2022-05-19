@@ -83,7 +83,7 @@ Generally speaking, matrix rank in real world scenarios is more a numerical conc
 6. There have been cases of `grpreg` not observing a group constraint (i.e. a condition that either all betas are zero, or all betas are non-zero within a group) in [Promoter data set](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+%28Promoter+Gene+Sequences%29) - see `hard_case_DMRnet_promoter.R` test file in `testing_branch`. Some betas that belonged to groups > 0 were not strictly > 0. It was problematic in GLAMER only, as DMRnet recalculated the t-statistics and was not constrained by initial beta values. It was fixed by adding a small constant to all betas in groups with at least one non-zero beta in GLAMER.
 7. Handling the mismatched factor levels corrected (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
 
-### Weight parametrization
+### Weight parameterization
 This remains to be introduced to GLAMER and DMRnet algorithms.
 
 ### Remaining issues
