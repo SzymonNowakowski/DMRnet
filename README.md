@@ -135,7 +135,7 @@ The `testing_branch` GitHub branch serves double purpose:
          ![Adult](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_adult.svg)
        - [Promoter data set](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+%28Promoter+Gene+Sequences%29)  - binomial response
        
-         ![Promoter](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_promoter.svg)
+         ![Promoter](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_promoter.svg)
        - [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data) - gaussian response
        
          **Results unavailable due to 
@@ -144,7 +144,7 @@ The `testing_branch` GitHub branch serves double purpose:
          data - available 
          in [DAAG package](https://cran.rstudio.com/web/packages/DAAG/index.html) - gaussian response
          
-         ![Antigua](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_antigua.svg)
+         ![Antigua](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_antigua.svg)
        
     2. In the beginning of 2022 massive experiments were performed with DMRnet v. 0.2.0 
        and with new implementation of GLAMER and two new external cross validation routines, which got later
