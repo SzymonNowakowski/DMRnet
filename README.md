@@ -122,7 +122,7 @@ The `testing_branch` GitHub branch serves double purpose:
        (we would expect to get the same results with the new 
        version v. 0.3.0 as were obtained in the summer of 2021 with v. 0.2.0).
        
-       Care was taken to reproduce the same results, among others the calculations 
+       Care was taken to reproduce the same results, among others the new calculations in v. 0.3.0
        are started from the same seed values. However, calculations in v. 0.2.0 were much less stable and required
        `try ... catch` block to complete. Thus, from the first failed (and restarted) calculation in v. 0.2.0 the 
        new and old results start to diverge. It does not eliminate possibility to compare the 
@@ -132,10 +132,10 @@ The `testing_branch` GitHub branch serves double purpose:
        
        - [Adult data set](https://archive.ics.uci.edu/ml/datasets/Adult) - binomial response
        
-         ![Adult](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_adult_rotated.svg)
+         ![Adult](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_adult.svg)
        - [Promoter data set](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+%28Promoter+Gene+Sequences%29)  - binomial response
        
-         ![Promoter](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_promoter.pdf)
+         ![Promoter](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_promoter.svg)
        - [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data) - gaussian response
        
          **Results unavailable due to 
@@ -144,7 +144,7 @@ The `testing_branch` GitHub branch serves double purpose:
          data - available 
          in [DAAG package](https://cran.rstudio.com/web/packages/DAAG/index.html) - gaussian response
          
-         ![Antigua](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_antigua.pdf)
+         ![Antigua](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_antigua.svg)
        
     2. In the beginning of 2022 massive experiments were performed with DMRnet v. 0.2.0 
        and with new implementation of GLAMER and two new external cross validation routines, which got later
