@@ -65,7 +65,7 @@ cat("adult data loaded\n")
 #1 PERCENT TRAIN / 99 PERCENT TEST SPLIT
 runs<-200
 
-postscript("result_adult.pdf", horizontal=TRUE,onefile=FALSE)
+postscript("result_adult.ps", horizontal=TRUE,onefile=FALSE)
 par(mfrow=c(2,4))
 
 for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet")) {
