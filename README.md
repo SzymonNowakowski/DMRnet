@@ -126,8 +126,8 @@ The first purpose is testing agreement of the results obtained for the new versi
    (we would expect to get the same results with the new 
    version v. 0.3.0 as were obtained in the summer of 2021 with v. 0.2.0).
    
-   Care was taken to reproduce the same results, among others the new calculations in v. 0.3.0
-   are started from the same seed values. However, calculations in v. 0.2.0 were much less stable and required
+   Care was taken to reproduce exactly the same results, as an example: the new calculations in v. 0.3.0
+   were started from the same seed values. However, calculations in v. 0.2.0 were much less stable and required
    `try ... catch` block to complete. Thus, from the first failed (and restarted) calculation in v. 0.2.0 the 
    new and old results start to diverge. It does not eliminate possibility to compare the 
    resulting distributions.
