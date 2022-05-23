@@ -132,7 +132,7 @@ The `testing_branch` GitHub branch serves double purpose:
        
        - [Adult data set](https://archive.ics.uci.edu/ml/datasets/Adult) - binomial response
        
-         ![Adult](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_adult.svg)
+         ![Adult](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_adult_rotated.svg)
        - [Promoter data set](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+%28Promoter+Gene+Sequences%29)  - binomial response
        
          ![Promoter](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_promoter.pdf)
