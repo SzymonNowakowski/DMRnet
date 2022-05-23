@@ -87,16 +87,16 @@ Generally speaking, matrix rank in real world scenarios is more a numerical conc
 This remains to be introduced to GLAMER and DMRnet algorithms.
 
 ### Remaining issues
-The only outstanding (not fixed) case of DMRnet computation failure known to me at present results from [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672) and can be observed in `hard_case_GLAMER_insurance.R`  in `testing_branch` in [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
+The only outstanding (not fixed) case of GLAMER computation failure known to me at present results from [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672) and can be observed in `hard_case_GLAMER_insurance.R`  in `testing_branch` in [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
 
 ## Consistency with previous versions
 The `testing_branch` GitHub branch serves double purpose:
-1.  To test agreement of the results obtained for the new version v. 0.3.0 and the older version 0.2.0.
+1.  Testing agreement of the results obtained for the new version v. 0.3.0 and the older version 0.2.0.
 
     1. In the summer of 2021 massive experiments were performed with DMRnet v. 0.2.0 
        and with new implementation of GLAMER and two new external cross validation routines, 
        which got later implemented into DMRnet v. 0.3.0. In the scope of the experiments 
-       prediction error was calculated in the 4 data sets in 200 independent runs.
+       model dimension and prediction error was calculated in the 4 data sets in 200 independent runs.
     
        The two new cross validation routines were
        - `cvg` which stands for "(c)ross (v)alidation with models indexed with (G)IC" 
@@ -130,18 +130,53 @@ The `testing_branch` GitHub branch serves double purpose:
        The comparison is below:
        
        - [Adult data set](https://archive.ics.uci.edu/ml/datasets/Adult) - binomial response
+         ![Adult](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_adult.pdf)
        - [Promoter data set](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+%28Promoter+Gene+Sequences%29)  - binomial response
+         ![Promoter](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_promoter.pdf)
        - [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data) - gaussian response
+         **Results unavailable due to 
+         [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672)**
        - Antigua data set - Averages by block of yields for the Antigua Corn data - available in [DAAG package](https://cran.rstudio.com/web/packages/DAAG/index.html) - gaussian response
          ![Antigua](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_antigua.pdf)
        
     2. In the beginning of 2022 massive experiments were performed with DMRnet v. 0.2.0 
        and with new implementation of GLAMER and two new external cross validation routines, which got later
-       implemented into DMRnet v. 0.3.0. In the scope of the experiments 
+       implemented into DMRnet v. 0.3.0. In the scope of the experiments model dimension and 
        prediction error was calculated in 252 synthetic experiments, each consisting of 200 independent runs.
        
+       The possibilities discussed in a point above give rise to many combinations of which 3 were selected for the final consideration:
+       - `cvg.GLAMER` - GLAMER run with `cvg`.
+       - `cvg.DMRnet` - DMRnet run with `cvg`.
+       - `cv+sd.GLAMER` - GLAMER run with `cv+sd`.
        
-2.  To test that all previously identified crux cases pass in v. 0.3.0. 
-    To this end the following test cases were identified:
-    - `hard_case_DMRnet_insurance.R
-
+       The resulting model dimension and prediction error data was retained. 
+       It creates opportunity to compare the expected distibutions of model dimension and prediction error 
+       with the actual distributions we get with a new package
+       (we would expect to get the same results with the new 
+       version v. 0.3.0 as were obtained in the summer of 2021 with v. 0.2.0).
+       
+       **Results unavailable *yet* because of the scale of computations required to complete calculations**
+       
+2. Testing that all previously identified crux cases pass in v. 0.3.0. 
+   Many instabilities in v. 0.2.0 were removed *en bloc* with adding new strategy for handling missing factors 
+   and adding regularization. However, not all bugs were removed that way and the remaining 
+   bugs have some additional test files dedicated to testing that the particular bug remains fixed.
+   
+   To this end the following test cases were identified:
+   - `hard_case_DMRnet_insurance.R` - a compilation of tests for various previously 
+     identified bugs in DMRnet with data coming from 
+     [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
+     Please consult the comments in the file for more detailed information.
+   - `hard_case_GLAMER_insurance.R` - the only outstanding (not fixed) case of GLAMER computation 
+     failure known to me at present resulting from 
+     [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672) with
+     data isolated from 
+     [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
+   - `hard_case_GLAMER_promoter.R` - a problem with group constrained identified with GLAMER in
+     data isolated from 
+     [Promoter](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_promoter.pdf).
+     The cause was that `grpreg` didn't observe the group constraints for one of the columns 
+     and returned two non-zero betas and one beta equal to zero.
+   - `hard_case_SOSnet.R` - a problem in SOSnet with artificial data set 
+     (in which a matrix is close - but not exactly - singular) resulting in 
+     numerical instabilities with QR calculations fixed in v. 0.3.0.
