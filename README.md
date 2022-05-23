@@ -95,7 +95,7 @@ The `testing_branch` GitHub branch serves double purpose.
 
 ### Consistency with previous package versions
 
-The first purpose is testing agreement of the results obtained for the new version v. 0.3.0 and the older version 0.2.0.
+The first purpose is testing agreement of the results obtained for the new version v. 0.3.0 and the older version v. 0.2.0.
 
 1. In the summer of 2021 massive experiments were performed with DMRnet v. 0.2.0 
    and with new implementation of GLAMER and two new external cross validation routines, 
@@ -111,8 +111,8 @@ The first purpose is testing agreement of the results obtained for the new versi
       curve of a prediction error plus one standard deviation. In v. 0.3.0 it is now 
       available in `predict` for inference, use it by passing `md="df.1se"` instead of the default `md="df.min"`.
    
-   Throughout the experiments, the models were also created both in DMRnet and in GLAMER with a regular GIC
-   criterion, availavble in v. 0.2.0 for DMRnet and in v.0.3.0 both for DMRnet and for GLAMER. 
+   Throughout the experiments, the models were also selected with a regular GIC
+   criterion, both in DMRnet and in GLAMER. The GIC criterion was available in v. 0.2.0 for DMRnet and in v. 0.3.0 both for DMRnet and for GLAMER. 
    
    The above possibilities give rise to many combinations of which 4 were selected for the final consideration:
    - `cv+sd.GLAMER` - GLAMER run with `cv+sd`.
