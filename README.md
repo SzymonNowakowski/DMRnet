@@ -88,3 +88,60 @@ This remains to be introduced to GLAMER and DMRnet algorithms.
 
 ### Remaining issues
 The only outstanding (not fixed) case of DMRnet computation failure known to me at present results from [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672) and can be observed in `hard_case_GLAMER_insurance.R`  in `testing_branch` in [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
+
+## Consistency with previous versions
+The `testing_branch` GitHub branch serves double purpose:
+1.  To test agreement of the results obtained for the new version v. 0.3.0 and the older version 0.2.0.
+
+    1. In the summer of 2021 massive experiments were performed with DMRnet v. 0.2.0 
+       and with new implementation of GLAMER and two new external cross validation routines, 
+       which got later implemented into DMRnet v. 0.3.0. In the scope of the experiments 
+       prediction error was calculated in the 4 data sets in 200 independent runs.
+    
+       The two new cross validation routines were
+       - `cvg` which stands for "(c)ross (v)alidation with models indexed with (G)IC" 
+          and in the v. 0.3.0 is available in DMRnet by simply passing `indexation.mode=GIC"` 
+          in a call to `cv.DMRnet`.
+       - 'cv+sd' which is a regular cross validation with models indexed by model dimension, but
+          returning (instead of the best model) the smallest model falling under the upper 
+          curve of a prediction error plus one standard deviation.
+       
+       Throughout the experiments, the models were also created both in DMRnet and in GLAMER with a regular GIC
+       criterion, availavble in v. 0.2.0 for DMRnet and in v.0.3.0 both for DMRnet and for GLAMER. 
+       
+       The above possibilities give rise to many combinations of which 4 were selected for the final consideration:
+       - `cv+sd.GLAMER` - GLAMER run with `cv+sd`.
+       - `cvg.DMRnet` - DMRnet run with `cvg`.
+       - `gic.GLAMER` - GLAMER run with GIC criterion to select best model.
+       - `gic.DMRnet` - DMRnet run with GIC criterion to select best model.
+       
+       The resulting model dimension and prediction error data was retained. 
+       It creates opportunity to compare the expected distibutions of model dimension and prediction error 
+       with the actual distributions we get with a new package
+       (we would expect to get the same results with the new 
+       version v. 0.3.0 as were obtained in the summer of 2021 with v. 0.2.0).
+       
+       Care was taken to reproduce the same results, among others the calculations 
+       are started from the same seed values. However, calculations in v. 0.2.0 were much less stable and required
+       `try ... catch` block to complete. Thus, from the first failed (and restarted) calculation in v. 0.2.0 the 
+       new and old results start to diverge. It does not eliminate possibility to compare the 
+       resulting distributions.
+       
+       The comparison is below:
+       
+       - [Adult data set](https://archive.ics.uci.edu/ml/datasets/Adult) - binomial response
+       - [Promoter data set](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+%28Promoter+Gene+Sequences%29)  - binomial response
+       - [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data) - gaussian response
+       - Antigua data set - Averages by block of yields for the Antigua Corn data - available in [DAAG package](https://cran.rstudio.com/web/packages/DAAG/index.html) - gaussian response
+         ![Antigua](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_antigua.pdf)
+       
+    2. In the beginning of 2022 massive experiments were performed with DMRnet v. 0.2.0 
+       and with new implementation of GLAMER and two new external cross validation routines, which got later
+       implemented into DMRnet v. 0.3.0. In the scope of the experiments 
+       prediction error was calculated in 252 synthetic experiments, each consisting of 200 independent runs.
+       
+       
+2.  To test that all previously identified crux cases pass in v. 0.3.0. 
+    To this end the following test cases were identified:
+    - `hard_case_DMRnet_insurance.R
+
