@@ -128,7 +128,7 @@ The `testing_branch` GitHub branch serves double purpose:
        new and old results start to diverge. It does not eliminate possibility to compare the 
        resulting distributions.
        
-       The comparison is below:
+       The comparison charts are presented below:
        
        - [Adult data set](https://archive.ics.uci.edu/ml/datasets/Adult) - binomial response
        
