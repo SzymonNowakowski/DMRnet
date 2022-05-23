@@ -102,9 +102,10 @@ The `testing_branch` GitHub branch serves double purpose:
        - `cvg` which stands for "(c)ross (v)alidation with models indexed with (G)IC" 
           and in the v. 0.3.0 is available in DMRnet by simply passing `indexation.mode=GIC"` 
           in a call to `cv.DMRnet`.
-       - 'cv+sd' which is a regular cross validation with models indexed by model dimension, but
+       - `cv+sd` which is a regular cross validation with models indexed by model dimension, but
           returning (instead of the best model) the smallest model falling under the upper 
-          curve of a prediction error plus one standard deviation.
+          curve of a prediction error plus one standard deviation. In v. 0.3.0 it is now 
+          available in `predict` for inference, use it by passing `md="df.1se"` instead of the default `md="df.min"`.
        
        Throughout the experiments, the models were also created both in DMRnet and in GLAMER with a regular GIC
        criterion, availavble in v. 0.2.0 for DMRnet and in v.0.3.0 both for DMRnet and for GLAMER. 
@@ -130,13 +131,19 @@ The `testing_branch` GitHub branch serves double purpose:
        The comparison is below:
        
        - [Adult data set](https://archive.ics.uci.edu/ml/datasets/Adult) - binomial response
+       
          ![Adult](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_adult.pdf)
        - [Promoter data set](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+%28Promoter+Gene+Sequences%29)  - binomial response
+       
          ![Promoter](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_promoter.pdf)
        - [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data) - gaussian response
+       
          **Results unavailable due to 
          [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672)**
-       - Antigua data set - Averages by block of yields for the Antigua Corn data - available in [DAAG package](https://cran.rstudio.com/web/packages/DAAG/index.html) - gaussian response
+       - Antigua data set - Averages by block of yields for the Antigua Corn 
+         data - available 
+         in [DAAG package](https://cran.rstudio.com/web/packages/DAAG/index.html) - gaussian response
+         
          ![Antigua](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_antigua.pdf)
        
     2. In the beginning of 2022 massive experiments were performed with DMRnet v. 0.2.0 
@@ -145,9 +152,10 @@ The `testing_branch` GitHub branch serves double purpose:
        prediction error was calculated in 252 synthetic experiments, each consisting of 200 independent runs.
        
        The possibilities discussed in a point above give rise to many combinations of which 3 were selected for the final consideration:
+       - `cv+sd.GLAMER` - GLAMER run with `cv+sd`.
        - `cvg.GLAMER` - GLAMER run with `cvg`.
        - `cvg.DMRnet` - DMRnet run with `cvg`.
-       - `cv+sd.GLAMER` - GLAMER run with `cv+sd`.
+       
        
        The resulting model dimension and prediction error data was retained. 
        It creates opportunity to compare the expected distibutions of model dimension and prediction error 
