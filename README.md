@@ -155,7 +155,7 @@ The first purpose is testing agreement of the results obtained for the new versi
    implemented into DMRnet v. 0.3.0. In the scope of the experiments model dimension and 
    prediction error was calculated in 252 synthetic experiments, each consisting of 200 independent runs.
    
-   The possibilities discussed in a point above give rise 
+   The possible choices of an algorithm and a cross validation routine (discussed in point 1. above) give rise 
    to many combinations of which 3 were selected for the final consideration:
    - `cv+sd.GLAMER` - GLAMER run with `cv+sd`.
    - `cvg.GLAMER` - GLAMER run with `cvg`.
@@ -166,7 +166,7 @@ The first purpose is testing agreement of the results obtained for the new versi
    It creates opportunity to compare the expected distibutions of model dimension and prediction error 
    with the actual distributions we get with a new package
    (we would expect to get the same results with the new 
-   version v. 0.3.0 as were obtained in the summer of 2021 with v. 0.2.0).
+   version v. 0.3.0 as were obtained in the beginning of 2022 with v. 0.2.0).
    
    **Results unavailable *yet* because of the scale of computations required to complete calculations**
        
