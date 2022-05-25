@@ -189,9 +189,9 @@ To this end the following test cases were identified:
  [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
 - `hard_case_GLAMER_promoter.R` - a problem with group constrained identified with GLAMER in
  data isolated from 
- [Promoter](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_promoter.pdf).
- The cause was that `grpreg` didn't observe the group constraints for one of the columns 
+ [Promoter data set](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_promoter.pdf).
+ The cause was that `grpreg` didn't observe the so called *group constraint* for one of the columns 
  and returned two non-zero betas and one beta equal to zero.
 - `hard_case_SOSnet.R` - a problem in SOSnet with artificial data set 
- (in which a matrix is close - but not exactly - singular) resulting in 
+ (in which a matrix is close to - but not exactly - singular) resulting in 
  numerical instabilities with QR calculations fixed in v. 0.3.0.
