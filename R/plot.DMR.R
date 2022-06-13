@@ -1,12 +1,12 @@
 #' @title plot.DMR
 #'
-#' @description Plot coefficients from a DMR object.
+#' @description Plot coefficients from a \code{DMR} object.
 #'
-#' @param x Fitted DMR object.
+#' @param x Fitted \code{DMR} object.
 #'
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @details Produces a coefficient profile plot of the coefficient paths for a fitted DMR object.
+#' @details Produces a coefficient profile plot of the coefficient paths for a fitted \code{DMR} object.
 #'
 #' @examples
 #' data(miete)

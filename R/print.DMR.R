@@ -1,12 +1,12 @@
 #' @title print.DMR
 #'
-#' @description Print a DMR object.
+#' @description Print a \code{DMR} object.
 #'
-#' @param x Fitted DMR object.
+#' @param x Fitted \code{DMR} object.
 #'
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @details Print a summary of the DMR path at each step along the path.
+#' @details Print a summary of the \code{DMR} path at each step along the path.
 #'
 #' @return The summary is silently returned.
 #'

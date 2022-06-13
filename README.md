@@ -1,6 +1,23 @@
 # DMRnet
 This is a fork of the CRAN R package repository for DMRnet — Delete or Merge Regressors Algorithms for Linear and Logistic Model Selection and High-Dimensional Data. The purpose of the fork is to maintain and develop new package versions.
 
+##Installing `DMRnet`
+
+To install the development package version (currently: 0.3.0.9000) please execute
+```
+library(devtools)
+devtools::install_github("SzymonNowakowski/DMRnet")
+```
+
+Alternatively, to install the current stable CRAN version (currently: 0.2.0) please execute
+
+```
+install.packages("DMRnet")
+```
+
+After that, you can load the installed package into memory with a call to `library(DMRnet)`.
+
+
 ## Changes in DMRnet v. 0.3.0
 
 ### GLAMER added
@@ -15,12 +32,14 @@ The following changes were introduced to improve the existing model dimension-in
 3. Corrected handling of mismatched factor levels (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
 
 To use the existing model dimension-indexed cross validation routine pass `indexation.mode="dimension"` in a call to `cv.DMRnet`.
-### New cross validation routine  (models indexed by GIC)
+### New cross validation routine (models indexed by GIC)
 A new alternative cross validation routine was introduced to improve the existing model quality. It indexes models by GIC. The method was proposed and first implemented for gaussian family by Piotr Pokarowski. The new method additional features are:
 1. The net of lambda values is first calculated from the full data set and then this net is used for particular cross validation folds. 
 2. Correct way of handling the mismatched factor levels (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
 
 To use the new GIC-indexed cross validation routine pass `indexation.mode=GIC"` in a call to `cv.DMRnet`.
+
+The new cross validation routine (models indexed by GIC) is the default starting from version >=0.3.0.
 ### Handling of mismatched factor levels
 The new treatment of factors in cross validation/`predict` and in `DMRnet`/`predict` pairs is based on the following analysis:
 
@@ -84,7 +103,7 @@ Generally speaking, matrix rank in real world scenarios is more a numerical conc
 7. Handling the mismatched factor levels corrected (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
 
 ### Weight parameterization
-This remains to be introduced to GLAMER and DMRnet algorithms.
+This remains to be introduced to GLAMER and DMRnet algorithms in future versions >0.3.0.
 
 ### Remaining issues
 The only outstanding (not fixed) case of DMRnet computation failure known to me at present results from [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672) and can be observed in `hard_case_GLAMER_insurance.R`  in `testing_branch` in [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 

@@ -1,0 +1,54 @@
+---
+title: "Getting Started with DMRnet"
+author: "Szymon Nowakowski"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with DMRnet}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# This document
+
+The purpose of this vignette is to introduce readers to `DMRnet` package, 
+bring them up to speed by providing a simple
+use case example and point interested readers towards more informative material.
+
+
+# DMRnet package
+
+`DMRnet` is an R package for regression and classification with a 
+family of model selection algorithms.
+`DMRnet` package supports both continous and categorical predictors. 
+The overall number of regressors may exceed the number of observations. 
+
+The selected model consists of a subset of numerical regressors and partitions of levels of factors. 
+
+The available model selection algorithms are the following:
+
+- `DMRnet` is the default model selection algorithm that can be used both for $p<n$ and $p \geq n$ scenarios.
+- `DMR` is a model selection algorithm that can be used both for $p<n$ scenario only.
+- `GLAMER` is a model selection algorithm that can be used both for $p<n$ and $p \geq n$ scenarios. In comparison to `DMRnet`, the step of reordering variables based on their t-statistics is skipped. This is the first partition selection algorithm in literature for which a partition selection consistency has been proven.
+- `SOSnet` is the default model selection algorithm that is used both for $p<n$ and $p \geq n$ scenarios for continous-only regressors (with no categorical variables and, consequently, no partition selection). 
+
+Algorithm-wise, the package user has the following choices:
+
+- The user can select `DMRnet` algorithm by calling `DMRnet()` or `cv.DMRnet()` functions.
+- The user can select `GLAMER` algorithm by calling `DMRnet()` or `cv.DMRnet()` functions and passing `algorithm="glamer"` parameter.
+- The user can select `DMR` algorithm by calling `DMR()` or `cv.DMR()` functions.
+- The `SOSnet` algorithm is automatically chosen if `DMRnet()` or `cv.DMRnet()` functions were called with an input consisting of continous-only regressors.
+
+As this vignette is introductory only, and the choice of an algorithm is a somewhat more advanced topic, from now on it is assumed that the user works with `DMRnet` algorithm only. 
+
+
+
+```{r setup}
+#library(DMRnet)
+```

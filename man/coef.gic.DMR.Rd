@@ -7,7 +7,7 @@
 \method{coef}{gic.DMR}(object, ...)
 }
 \arguments{
-\item{object}{Fitted gic.DMR object.}
+\item{object}{Fitted \code{gic.DMR} object.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
@@ -15,10 +15,10 @@
 Vector of coefficients.
 }
 \description{
-Extracts coefficients from a gic.DMR object (for the model with minimal gic).
+Extracts coefficients from a \code{gic.DMR} object (for the model with minimal gic).
 }
 \details{
-Similar to other coef methods, this function extracts coefficients from a fitted gic.DMR object for the model with minimal gic.
+Similar to other \code{coef} methods, this function extracts coefficients from a fitted \code{gic.DMR} object for the model with minimal gic.
 }
 \examples{
 data(miete)
