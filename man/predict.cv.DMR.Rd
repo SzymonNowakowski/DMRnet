@@ -18,7 +18,7 @@
 
 \item{newx}{Data frame of new values for \code{X} at which predictions are to be made.}
 
-\item{type}{One of: \code{"link"}, \code{"response"}, \code{"class"}. For \code{family="gaussian"} for all values of type it gives the fitted values. For \code{family="binomial"} and \code{type="link"} gives the linear predictors, for \code{type="response"} it gives the fitted probabilities and for \code{type="class"} it produces  the  class  label  corresponding  to  the  maximum  probability.}
+\item{type}{One of: \code{"link"}, \code{"response"}, \code{"class"}. For \code{family="gaussian"} for all values of \code{type} it gives the fitted values. For \code{family="binomial"} and \code{type="link"} it returns the linear predictors, for \code{type="response"} it returns the fitted probabilities and for \code{type="class"} it produces the class labels corresponding to the maximum probability.}
 
 \item{md}{Value of the model dimension parameter at which predictions are required. The default is \code{md="df.min"} value indicating the model minimizing the cross validation error. Alternatively, \code{md="df.1se"} can be used, indicating the smallest model falling under the upper curve of a prediction error plus one standard deviation.}
 
