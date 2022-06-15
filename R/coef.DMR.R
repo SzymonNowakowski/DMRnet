@@ -29,5 +29,5 @@ coef.DMR <- function(object, df = NULL, ...){
                       stop("Error: wrong input type, df should have type numeric")
          }
          out <- object$beta[,ncol(object$beta) - df + 1]
-         return(out)
+         return(out[out!=0.0])
 }

@@ -20,5 +20,5 @@
 #' @export
 coef.gic.DMR <- function(object, ...){
         out <- coef.DMR(object$dmr.fit, df = object$df.min)
-        return(out)
+        return(out[out!=0])
 }

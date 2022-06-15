@@ -101,6 +101,7 @@ Generally speaking, matrix rank in real world scenarios is more a numerical conc
 
 Other improvements are the following:
 1. Fixing how the parameters get passed in `plot` family of functions.
+2. Updating how `coef` presents parameters: only non-zero coefficients get returned.
 4. Fixing the error in DRMnet and cross validation in handling data with a single two-factor column, by adding `drop=FALSE` statement.
 5. Fixing negative values in binomial case coming from `w_stats` from numerical instability when `Kan` was very close to 0 and `Var` is not symmetric, but `w_stats` assumes symmetric `Var` (problem observed in `DMRnet` for binomial family in [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data) - see hard_case_DMRnet_insurance.R` test file in `testing_branch`).
 6. There have been cases of `grpreg` not observing a group constraint (i.e. a condition that either all betas are zero, or all betas are non-zero within a group) in [Promoter data set](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+%28Promoter+Gene+Sequences%29) - see `hard_case_DMRnet_promoter.R` test file in `testing_branch`. Some betas that belonged to groups > 0 were not strictly > 0. It was problematic in GLAMER only, as DMRnet recalculated the t-statistics and was not constrained by initial beta values. It was fixed by adding a small constant to all betas in groups with at least one non-zero beta in GLAMER.

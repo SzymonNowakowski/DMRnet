@@ -34,5 +34,5 @@ coef.cv.DMR <- function(object, md="df.min", ...){
     stop("Error: wrong md, should be one of: df.min, df.1se")
   }
 
-        return(out)
+        return(out[out!=0])
 }
