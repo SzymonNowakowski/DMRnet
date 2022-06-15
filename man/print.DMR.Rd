@@ -7,7 +7,7 @@
 \method{print}{DMR}(x, ...)
 }
 \arguments{
-\item{x}{Fitted DMR object.}
+\item{x}{Fitted \code{DMR} object.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
@@ -15,10 +15,10 @@
 The summary is silently returned.
 }
 \description{
-Print a DMR object.
+Print a \code{DMR} object.
 }
 \details{
-Print a summary of the DMR path at each step along the path.
+Print a summary of the \code{DMR} path at each step along the path.
 }
 \examples{
 data(miete)

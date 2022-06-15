@@ -1,0 +1,200 @@
+---
+title: "Getting Started with DMRnet"
+author: "Szymon Nowakowski"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with DMRnet}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r, include = FALSE}
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+# This document
+
+The purpose of this vignette is to introduce readers to `DMRnet` package, 
+bring them up to speed by providing a simple
+use case example and point interested readers towards more comprehensive informative material.
+
+
+# `DMRnet` package
+
+`DMRnet` is an `R` package for regression and classification with a 
+family of model selection algorithms.
+`DMRnet` package supports both continuous and categorical predictors. 
+The overall number of regressors may exceed the number of observations. 
+
+The selected model consists of a subset of numerical regressors and partitions of levels of factors. 
+
+The available model selection algorithms are the following:
+
+- `DMRnet` is the default and the most comprehensive model selection algorithm in the package, it can be used both for $p<n$ and $p \geq n$ scenarios. It first executes a screening step in order to reduce the problem to $p<n$ and then uses `DMR` subsequently.
+- `GLAMER` is a model selection algorithm that can be used both for $p<n$ and $p \geq n$ scenarios. In comparison to `DMRnet`, the step of reordering variables based on their t-statistics is skipped. This is the first partition selection algorithm in literature for which a partition selection consistency has been proven [Nowakowski *et al.*, 2021].
+- `DMR` [Maj-Kańska *et al.*, 2015] is a model selection algorithm that can be used for $p<n$ scenario only.
+- `SOSnet` [Pokarowski and Mielniczuk, 2015, Pokarowski *et al.*, 2022] is a model selection algorithm that is used both for $p<n$ and $p \geq n$ scenarios for continuous-only regressors (with no categorical variables and, consequently, no partition selection). 
+
+Algorithm-wise, the package user has the following choices:
+
+- The user can select `DMRnet` algorithm by calling `DMRnet()` or `cv.DMRnet()` functions.
+- The user can select `GLAMER` algorithm by calling `DMRnet()` or `cv.DMRnet()` functions and passing `algorithm="glamer"` parameter.
+- The user can select `DMR` algorithm by calling `DMR()` or `cv.DMR()` functions.
+- The `SOSnet` algorithm is automatically chosen if `DMRnet()` or `cv.DMRnet()` functions were called with an input consisting of continuous-only regressors.
+
+As this vignette is introductory only, and the choice of an algorithm is a somewhat more advanced topic, from now on it is assumed that the user works with `DMRnet` algorithm only. 
+
+# OK, so let's get started
+
+To load the package into memory execute the following line:
+
+```{r setup}
+library(DMRnet)              
+```
+
+`DMRnet` package features two built-in data sets: [Promoter](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+\%28Promoter+Gene+Sequences\%29) and Miete [Fahrmeir *et al.*, 2004]. 
+
+We will work with Miete data set in this vignette.
+The
+Miete data consists of $n = 2053$ households interviewed for the Munich rent standard 2003. The
+response is continuous, it is monthly rent per square meter in Euros. There are 9 categorical and 2 continuous variables.
+
+
+```{r miete}
+data("miete")
+X <- miete[,-1]
+y <- miete$rent
+head(X)
+```
+
+Out of 9 categorical variables 7 have 2 levels each, and the two remaining (`area` and `rooms`) have 25 and 6 levels, respectively. This sums up to 45 levels. The way `DMRnet` handles levels results in 36 parameters for the categorical variables (the first level in each categorical variable is already considered included in the intercept). The 2 continuous variables give 2 additional parameters, which totals in $p = 39$ (including one parameter for the intercept).
+
+# Estimating and inspecting a sequence of models
+
+In contrast to explicit group lasso methods which need a design matrix with explicit groups, `DMRnet` package internally transforms an input matrix into a design matrix (e.g. by expanding factors into a set of one-hot encoded dummy variables). Thus, `X` needs no additional changes and already is all set to be fed into `DMRnet`:
+
+```{r DMRnet}
+models <- DMRnet(X, y, family="gaussian")
+models
+```
+
+Here, `family="gaussian"` argument was used to indicate, that we are interested in a linear regression for modelling a continuous response variable. The `family="gaussian"` is the default and could have been omitted as well. In a printout above you can notice a bunch of other default values set for some other parameters (e.g. `nlambda=100` requesting the cardinality of a net of lambda values used) in model estimation.
+
+The last part of a printout above presents a sequence of models estimated from `X`. Notice the models have varying number of parameters (model dimension `df` ranges from 39 for a full model down to 1 for the 39-th model).
+
+Let us plot the path for the coefficients for the 10 smallest models as a function of their model dimension `df`:
+
+```{r plot, fig.height=4, fig.width=6, small.mar=TRUE}
+plot(models, xlim=c(1, 10), lwd=2)
+```
+
+Notice how you can also pass other parameters (`xlim=c(1, 10), lwd=2`) to change the default behavior of the `plot()` function.
+
+To inspect the coefficients for a particular model in detail, one can use the `coef()` function. For the sake of the example, let's examine the last model from the plot, with `df=10`:
+
+```{r coef}
+coef(models, df=10)
+```
+
+Notice how `area`-related coefficients are all equal, effectively merging all 12 listed `area` levels with a coefficient -55.36 and merging all 13 remaining `area` levels with a coefficient 0.0.
+
+# Selecting best models
+
+
+There are two basic methods for model selection supported in `DMRnet` package. One is based on a $K$-fold Cross Validation (CV), the other is based on Generalized Information Criterion (GIC) [Foster and George, 1994].
+
+## Model selection with GIC
+
+A GIC-based model selection is performed directly on a sequence of models
+
+```{r GIC, fig.height=4, fig.width=6, small.mar=TRUE}
+gic.model <- gic.DMR(models)
+plot(gic.model)
+```
+
+One can read a model dimension with
+```{r gic.df.min}
+gic.model$df.min
+```
+
+One also has access to the best model coefficients with
+```{r gic.coef}
+coef(gic.model)
+```
+
+## Model selection with $K$-fold Cross Validation
+
+The default $K$ value is 10. Because the data needs to be partitioned into CV subsets which alternate as training and validating sets, the precomputed sequence of models in `models` variable cannot be used directly, as was the case with GIC-based model selection. Alternatively, to perform a 10-fold CV-based model selection execute
+
+```{r cross-validation, fig.height=4, fig.width=6, small.mar=TRUE}
+cv.model <- cv.DMRnet(X, y)
+plot(cv.model)
+```
+
+As before, one can access a model dimension with
+```{r cv.df.min}
+cv.model$df.min
+```
+
+Well, the dimension is the same as when we used GIC directly.
+Let's check if the CV-selected model is the same as the best model selected with GIC:
+```{r cv.coef}
+coef(cv.model)==coef(gic.model)
+```
+
+
+# Predicting response for new observations
+
+Models selected with both model selection methods can be used to predict response variable values for new
+observations.
+
+```{r predict}
+predict(gic.model, newx=head(X))
+predict(cv.model, newx=head(X))
+```
+
+No wonder the corresponding predictions are all equal, since the selected models were the same.
+
+One can predict the response variable values for the whole sequence of models as well.
+```{r seq-predict}
+predict(models, newx=head(X))
+```
+
+Notice how the `df12` model predictions overlap with the values we obtained above.
+
+# Classification with 2 classes
+
+For a classification task with 2 classes, the non-default `family="binomial"` should be provided in a call to `DMRnet` and `cv.DMRnet` (but not to `gic.DMR`) and the response variable should be a factor with two classes, with the last level in alphabetical order interpreted as the target class. It is illustrated with the following code with a somewhat artificial example:
+
+```{r binomial}
+binomial_y <- factor(y > mean(y))     #changing Miete response var y into a binomial factor with 2 classes
+binomial_models <- DMRnet(X, binomial_y, family="binomial")
+gic.binomial_model <- gic.DMR(binomial_models)
+gic.binomial_model$df.min
+```
+
+A corresponding `predict` call has a `type` parameter with the default value `"link"`, which returns the linear predictors. To change that behavior one can substitute the default with `type="response"` to get the fitted probabilities or `type="class"` to get the class labels corresponding to the maximum probability. So to get actual values compatible with a binomial `y`, `type="class"` should be used:
+
+```{r predict-binomial}
+predict(gic.binomial_model, newx=head(X), type="class")
+```
+
+Please note that 1 is the value of a target class in the `predict` output.
+
+# References
+
+1. Szymon Nowakowski, Piotr Pokarowski and Wojciech Rejchel. 2021. *Group Lasso Merger for Sparse Prediction with High-Dimensional Categorical Data.* arXiv [stat.ME]. <http://arxiv.org/abs/2112.11114>
+1. Aleksandra Maj-Kańska, Piotr Pokarowski and Agnieszka Prochenka, 2015. *Delete or merge regressors for linear model selection.* Electronic Journal of Statistics 9(2): 1749-1778. <https://projecteuclid.org/euclid.ejs/1440507392>
+2. Piotr Pokarowski and Jan Mielniczuk, 2015. *Combined l1 and greedy l0 penalized least squares for linear model selection.* Journal of Machine Learning Research 16(29): 961-992. <http://www.jmlr.org/papers/volume16/pokarowski15a/pokarowski15a.pdf>
+4. Piotr Pokarowski, Wojciech Rejchel, Agnieszka Sołtys, Michał Frej and Jan Mielniczuk, 2022. *Improving Lasso for model selection and prediction.* Scandinavian Journal of Statistics, 49(2): 831–863. <https://doi.org/10.1111/sjos.12546>
+5. Ludwig Fahrmeir, Rita Künstler, Iris Pigeot, Gerhard Tutz, 2004. Statistik: der Weg zur Datenanalyse. 5. Auflage, Berlin: Springer-Verlag.
+6. Dean P. Foster and Edward I. George, 1994. *The Risk Inflation Criterion for Multiple Regression.* The Annals of Statistics 22 (4): 1947–75.
+
+
+

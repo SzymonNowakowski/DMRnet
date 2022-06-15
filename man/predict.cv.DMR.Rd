@@ -4,14 +4,25 @@
 \alias{predict.cv.DMR}
 \title{predict.cv.DMR}
 \usage{
-\method{predict}{cv.DMR}(object, newx, type = "link", ...)
+\method{predict}{cv.DMR}(
+  object,
+  newx,
+  type = "link",
+  md = "df.min",
+  unknown.factor.levels = "error",
+  ...
+)
 }
 \arguments{
 \item{object}{Fitted cv.DMR object.}
 
-\item{newx}{Data frame of new values for X at which predictions are to be made.}
+\item{newx}{Data frame of new values for \code{X} at which predictions are to be made.}
 
-\item{type}{One of: link, response, class. For "gaussian" for all values of type it gives the fitted values. For "binomial" type "link" gives the linear predictors, for type "response" it gives the fitted probabilities and for type "class" it produces  the  class  label  corresponding  to  the  maximum  probability.}
+\item{type}{One of: \code{"link"}, \code{"response"}, \code{"class"}. For \code{family="gaussian"} for all values of \code{type} it gives the fitted values. For \code{family="binomial"} and \code{type="link"} it returns the linear predictors, for \code{type="response"} it returns the fitted probabilities and for \code{type="class"} it produces the class labels corresponding to the maximum probability.}
+
+\item{md}{Value of the model dimension parameter at which predictions are required. The default is \code{md="df.min"} value indicating the model minimizing the cross validation error. Alternatively, \code{md="df.1se"} can be used, indicating the smallest model falling under the upper curve of a prediction error plus one standard deviation.}
+
+\item{unknown.factor.levels}{The way of handling factor levels in test data not seen while training a model. One of \code{"error"} (the default - throwing an error) or \code{"NA"} (returning \code{NA} in place of legitimate value for problematic rows).}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
@@ -19,10 +30,10 @@
 Vector of predictions.
 }
 \description{
-Make predictions from a cv.DMR object (for the model with minimal cross-validated error).
+Make predictions from a cv.DMR object (for the model with minimal cross-validated error /the default/ or the smallest model falling under the upper curve of a prediction error plus one standard deviation).
 }
 \details{
-Similar to other predict methods, this function predicts fitted values from a fitted cv.DMR object for the model with minimal cross-validated error.
+Similar to other \code{predict} methods, this function predicts fitted values from a fitted \code{cv.DMR} object.
 }
 \examples{
 ## cv.DMR for linear regression

@@ -1,18 +1,18 @@
 #' @title predict.gic.DMR
 #'
-#' @description Make predictions from a gic.DMR object (for the model with minimal gic).
+#' @description Make predictions from a \code{gic.DMR} object (for the model with minimal GIC).
 #'
-#' @param object Fitted gic.DMR object.
+#' @param object Fitted \code{gic.DMR} object.
 #'
-#' @param newx Data frame of new values for X at which predictions are to be made.
+#' @param newx Data frame of new values for \code{X} at which predictions are to be made.
 #'
-#' @param type One of: link, response, class. For "gaussian" for all values of type it gives the fitted values. For "binomial" type "link" gives the linear predictors, for type "response" it gives the fitted probabilities and for type "class" it produces  the  class  label  corresponding  to  the  maximum  probability.
+#' @param type One of: \code{"link"}, \code{"response"}, \code{"class"}. For \code{family="gaussian"} for all values of \code{type} it gives the fitted values. For \code{family="binomial"} and \code{type="link"} it returns the linear predictors, for \code{type="response"} it returns the fitted probabilities and for \code{type="class"} it produces the class labels corresponding to the maximum probability.
 #'
-#' @param unknown.factor.levels The way of handling factor levels in test data not seen while training a model. One of "error" (the default - throwing an error) or "NA" (returning NA in place of legitimate value fr problematic rows)
+#' @param unknown.factor.levels The way of handling factor levels in test data not seen while training a model. One of \code{"error"} (the default - throwing an error) or \code{"NA"} (returning \code{NA} in place of legitimate value for problematic rows).
 #'
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @details Similar to other predict methods, this function predicts fitted values from a fitted gic.DMR object for the model with minimal gic.
+#' @details Similar to other \code{predict} methods, this function predicts fitted values from a fitted \code{gic.DMR} object for the model with minimal GIC.
 #'
 #' @return Vector of predictions.
 #'

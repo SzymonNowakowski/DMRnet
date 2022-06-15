@@ -7,15 +7,15 @@
 \method{plot}{cv.DMR}(x, ...)
 }
 \arguments{
-\item{x}{Fitted cv.DMR object.}
+\item{x}{Fitted \code{cv.DMR} object.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Plot cross-validated error values from a cv.DMR object.
+Plot cross-validated error values from a \code{cv.DMR} object.
 }
 \details{
-Produces a plot of cross-validated error values for the entire sequence of models from the fitted cv.DMR object.
+Produces a plot of cross-validated error values for the entire sequence of models from the fitted \code{cv.DMR} object.
 }
 \examples{
 ## cv.DMR for linear regression

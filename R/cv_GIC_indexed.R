@@ -157,6 +157,6 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                 }
         }
         #PP: out <- list(df.min = df.min, dmr.fit = dmr.fit, cvm = error, foldid = foldid)
-        out <- list(df.min = df.min, df.1se = NULL, dmr.fit = model.full, cvm = errGIC, foldid = foldid)
+        out <- list(df.min = df.min, df.1se = NULL, dmr.fit = model.full, cvm = gic.full, foldid = foldid)
         return(out)
 }

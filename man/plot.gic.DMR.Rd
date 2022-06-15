@@ -7,15 +7,15 @@
 \method{plot}{gic.DMR}(x, ...)
 }
 \arguments{
-\item{x}{Fitted gic.DMR object.}
+\item{x}{Fitted \code{gic.DMR} object.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Plot gic values from a gic.DMR object.
+Plot gic values from a \code{gic.DMR} object.
 }
 \details{
-Produces a plot of generalized information criterion for the entire sequence of models from the fitted gic.DMR object.
+Produces a plot of Generalized Information Criterion for the entire sequence of models from the fitted \code{gic.DMR} object.
 }
 \examples{
 data(miete)

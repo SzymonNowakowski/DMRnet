@@ -7,7 +7,7 @@
 \method{coef}{DMR}(object, df = NULL, ...)
 }
 \arguments{
-\item{object}{Fitted DMR object.}
+\item{object}{Fitted \code{DMR} object.}
 
 \item{df}{Number of parameters in the model for which coefficients are required. Default is the entire path of models.}
 
@@ -20,7 +20,7 @@ Vector or matrix of coefficients.
 Extracts coefficients from a DMR object.
 }
 \details{
-Similar to other coef methods, this function extracts coefficients from a fitted DMR object.
+Similar to other \code{coef} methods, this function extracts coefficients from a fitted \code{DMR} object.
 }
 \examples{
 data(miete)

@@ -86,18 +86,18 @@ DMRnet4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
     }
     B <- apply(fac, 2, function(x) stats::quantile(x[x!=0], seq(0, 1, length = (o + 1))[-(o + 1)]))
     #B is a matrix of
-                  #   - o-based quantiles of non-zero Betas (without the last, 100% quantile) (rows)
+                  #   - o-based quantiles of non-zero GROUPS of Betas (without the last, 100% quantile) (rows)
                   #   - lambdas (cols)
     B[is.na(B)] <- 0
     S <- sapply(1:o, function(j){
       out <- sapply(1:sum(ii == FALSE), function(i) ifelse(fac[, i] >= B[j,i], 1, 0))    #the smallest lambda is the-only-intercept lambda. All other betas are 0. In this way, the o-based quantiles are all-zero and this: 0==fac[, i]>=B[j,i]==0 is TRUE, so a column with value 1 in all rows is returned
                                   #this is a bit tricky, but this line (and condition `>=` above) indeed determines the first column of SS to be a column with value 1 in all rows (the full model)
     })
-    #S is a matrix selecting betas (#variables*#lambdas of them) (rows) respective to o-based partitions (cols)
-    SS <- matrix(S, p.x, sum(ii == FALSE)*o) #SS is a rewrite of S with o*#lambdas columns and #variable rows
+    #S is a matrix selecting betas (#GROUPS of variables*#lambdas of them) (rows) respective to o-based partitions (cols)
+    SS <- matrix(S, p.x, sum(ii == FALSE)*o) #SS is a rewrite of S with o*#lambdas columns and #GROUPS of variable rows
     SS <- t(unique(t(SS))) #removing duplicated (when multiplying by o-based partition) columns from SS
     if (p >= n) SS = SS[,-1]    #this removes the full model in the high-dimensional scenario of p>=n. In the high-dimensional scenario, the full model is too large to be further analysed
-    mm <- lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[,i], X, y, fl, clust.method, lam))
+    mm <- lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[,i], X, y, fl, clust.method, lam))  #note that it the original matrix X, not X.full that enters DMRnet4lm_help function
     maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$rss)))
     rss <- sapply(1:length(mm), function(i) c(rep(Inf, maxl - length(mm[[i]]$rss)), mm[[i]]$rss))
     ind <- apply(rss, 1, which.min)

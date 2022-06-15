@@ -7,15 +7,15 @@
 \method{plot}{DMR}(x, ...)
 }
 \arguments{
-\item{x}{Fitted DMR object.}
+\item{x}{Fitted \code{DMR} object.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Plot coefficients from a DMR object.
+Plot coefficients from a \code{DMR} object.
 }
 \details{
-Produces a coefficient profile plot of the coefficient paths for a fitted DMR object.
+Produces a coefficient profile plot of the coefficient paths for a fitted \code{DMR} object.
 }
 \examples{
 data(miete)

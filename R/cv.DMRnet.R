@@ -4,11 +4,11 @@
 #'
 #' @param X Input data frame, of dimension n x p; each row is an observation vector. Columns can be numerical or integer for continuous predictors or factors for categorical predictors.
 #'
-#' @param y Response variable. Numerical for family="gaussian" or a factor with two levels for family="binomial". For family="binomial" the last level in alphabetical order is the target class.
+#' @param y Response variable. Numerical for \code{family="gaussian"} or a factor with two levels for \code{family="binomial"}. For \code{family="binomial"} the last level in alphabetical order is the target class.
 #'
-#' @param family Response type; one of: "gaussian", "binomial".
+#' @param family Response type; one of: \code{"gaussian"}, \code{"binomial"}.
 #'
-#' @param clust.method Clustering method used for partitioning levels of factors; see function \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html}{hclust} in package \pkg{stats} for details.
+#' @param clust.method Clustering method used for partitioning levels of factors; see function \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html}{hclust} in package \pkg{stats} for details. \code{clust.method="complete"} is the default.
 #'
 #' @param o Parameter of the group lasso screening step, described in \code{\link{DMRnet}}.
 #'
@@ -16,23 +16,23 @@
 #'
 #' @param lam The amount of penalization in rigde regression (used for logistic regression in order to allow for parameter estimation in linearly separable setups) or the amount of matrix regularization in case of linear regression. Used only for numerical reasons. The default is 1e-7.
 #'
-#' @param interc Should intercept(s) be fitted (default=TRUE) or set to zero (FALSE). If in X there are any categorical variables, interc=TRUE.
+#' @param interc Should intercept(s) be fitted (the default, \code{interc=TRUE}) or set to zero (\code{interc=FALSE}). If in \code{X} there are any categorical variables, \code{interc=TRUE} must be set.
 #'
 #' @param maxp Maximal number of parameters of the model, smaller values result in quicker computation.
 #'
 #' @param nfolds Number of folds in cross-validation. The default value is 10.
 #'
-#' @param indexation.mode How the cross validation algorithm should index the models for internal quality comparisons; one of: "GIC" (the default) for GIC-indexed cross validation, "dimension", for model dimension-indexed cross validation.
+#' @param indexation.mode How the cross validation algorithm should index the models for internal quality comparisons; one of: \code{"GIC"} (the default) for GIC-indexed cross validation, \code{"dimension"}, for model dimension-indexed cross validation.
 #'
-#' @param algorithm The algorithm to be used to merge levels; one of: "DMRnet" (the default), "glamer".
+#' @param algorithm The algorithm to be used to merge levels; one of: \code{"DMRnet"} (the default), \code{"glamer"}.
 #'
-#' @details cv.DMRnet algorithm does k-fold cross-validation for DMRnet. The df for the minimal estimated prediction error is returned.
+#' @details cv.DMRnet algorithm does \code{nfold}-fold cross-validation for DMRnet. The df for the minimal estimated prediction error is returned.
 #'
 #' @return An object with S3 class "cv.DMR" is  returned,  which  is  a  list  with  the  ingredients  of  the  cross-validation fit.
 #' \describe{
 #'   \item{df.min}{df (number of parameters) of the model with minimal cross-validated error.}
-#'   \item{df.1se}{df (number of parameters) of the smallest model falling under the upper curve of a prediction error plus one standard deviation. Only for the indexation.mode equal to "dimension", otherwise it is set to NULL.}
-#'   \item{dmr.fit}{Fitted DMR object for the full data.}
+#'   \item{df.1se}{df (number of parameters) of the smallest model falling under the upper curve of a prediction error plus one standard deviation. Only for the indexation.mode equal to \code{"dimension"}, otherwise it is set to \code{NULL}.}
+#'   \item{dmr.fit}{Fitted \code{DMR} object for the full data.}
 #'   \item{cvm}{The mean cross-validated error for the entire sequence of models.}
 #'   \item{foldid}{The fold assignments used.}
 #' }
