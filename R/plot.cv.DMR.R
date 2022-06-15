@@ -19,7 +19,7 @@
 #'
 #' @export
 plot.cv.DMR <- function(x, ...){
-  graphics::plot(length(x$cvm):1, x$cvm, pch = 16, xlab = "df", ylab = "cv error")
+  graphics::plot(length(x$cvm):1, x$cvm, pch = 16, xlab = "df", ylab = "cv error", ...)
   graphics::points(x$df.min, min(x$cvm), pch = 16, col = 2)
   #TODO: plot df.1se too, if available (not NULL)
 }

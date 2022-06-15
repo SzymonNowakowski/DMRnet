@@ -17,6 +17,6 @@
 #' plot(g)
 #' @export
 plot.gic.DMR <- function(x, ...){
-  graphics::plot(x$dmr.fit$df, x$gic, pch = 16, col = 1, xlab = "df", ylab = "GIC")
+  graphics::plot(x$dmr.fit$df, x$gic, pch = 16, col = 1, xlab = "df", ylab = "GIC", ...)
   graphics::points(x$df.min, min(x$gic), pch = 16, col = 2)
 }

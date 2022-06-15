@@ -1,5 +1,5 @@
 #' @title Delete or Merge Regressors net
-#'`
+#'
 #' @description Fit a path of linear (\code{family="gaussian"}) or logistic (\code{family="binomial"}) regression models, where models are subsets of continuous predictors and partitions of levels of factors in \code{X}. Works even if p>=n (the number of observations is greater than the number of columns in the model matrix).
 #'
 #' @param X Input data frame; each row is an observation vector; each column can be numerical or integer for a continuous predictor or a factor for a categorical predictor.

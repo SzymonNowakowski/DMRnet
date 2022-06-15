@@ -2,8 +2,7 @@
 % Please edit documentation in R/DMRnet.R
 \name{DMRnet}
 \alias{DMRnet}
-\title{Delete or Merge Regressors net
-`}
+\title{Delete or Merge Regressors net}
 \usage{
 DMRnet(
   X,

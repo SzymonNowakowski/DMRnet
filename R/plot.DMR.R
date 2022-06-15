@@ -17,8 +17,8 @@
 #' @export
 plot.DMR <- function (x, ...){
          if (x$interc == TRUE){
-           graphics::matplot(x$df, t(x$beta[-1,]), type = "l", lty = "solid", ylab = "Coefficients", xlab = "df")
+           graphics::matplot(x$df, t(x$beta[-1,]), type = "l", lty = "solid", ylab = "Coefficients", xlab = "df", ...)
          } else{
-           graphics::matplot(x$df, t(x$beta), type = "l", lty = "solid", ylab = "Coefficients", xlab = "df")
+           graphics::matplot(x$df, t(x$beta), type = "l", lty = "solid", ylab = "Coefficients", xlab = "df", ...)
          }
 }

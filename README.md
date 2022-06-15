@@ -93,14 +93,18 @@ There are 4 classes of problems:
 
 ### Stability improvements
 
-Generally speaking, matrix rank in real world scenarios is more a numerical concept than a mathematical concept and its value may differ depending on a treshold. Thus various kinds of problems result from data matrices close to singular. 
+
+Generally speaking, matrix rank in real world scenarios is more a numerical concept than a mathematical concept and its value may differ depending on a treshold. Thus various kinds of problems result from data matrices close to singular:
 1. The pivots were added in SOSnet for gaussian families and as a consequence a non-full rank data matrix was handled correctly to some extent (see the next point)
 2. Numerical instability of QR decomposition in SOSnet for gaussian families (when rank is *much* lower than columns provided) may have resulted in crashes in QR decomposition, thus a `try`-`catch` clause was used to recalculate QR decomposition but only for pivoted columns within rank in case of failure of the original QR attempt.
 3. Adding the regularizations in gaussian family in `DMR` (note that this execution path is used in `DMRnet` too) in a form of adding an infinitesimally small diagonal matrix to `R` after QR decomposition calculation
-4. Correcting the error in DRMnet and cross validation in handling data with a single two-factor column, by adding `drop=FALSE` statement.
+
+Other improvements are the following:
+1. Fixing how the parameters get passed in `plot` family of functions.
+4. Fixing the error in DRMnet and cross validation in handling data with a single two-factor column, by adding `drop=FALSE` statement.
 5. Fixing negative values in binomial case coming from `w_stats` from numerical instability when `Kan` was very close to 0 and `Var` is not symmetric, but `w_stats` assumes symmetric `Var` (problem observed in `DMRnet` for binomial family in [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data) - see hard_case_DMRnet_insurance.R` test file in `testing_branch`).
 6. There have been cases of `grpreg` not observing a group constraint (i.e. a condition that either all betas are zero, or all betas are non-zero within a group) in [Promoter data set](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+%28Promoter+Gene+Sequences%29) - see `hard_case_DMRnet_promoter.R` test file in `testing_branch`. Some betas that belonged to groups > 0 were not strictly > 0. It was problematic in GLAMER only, as DMRnet recalculated the t-statistics and was not constrained by initial beta values. It was fixed by adding a small constant to all betas in groups with at least one non-zero beta in GLAMER.
-7. Handling the mismatched factor levels corrected (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
+
 
 ### Weight parameterization
 This remains to be introduced to GLAMER and DMRnet algorithms in future versions >0.3.0.
