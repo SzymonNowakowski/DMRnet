@@ -91,7 +91,7 @@ Here, `family="gaussian"` argument was used to indicate, that we are interested 
 
 The last part of a printout above is a list of models estimated from `X`. Notice the models have varying number of parameters (model dimension `df` ranges from 39 for a full model down to 1 for the 39-th model).
 
-Let us plot the value of coefficients for the last 10 smallest models (depending on their model dimension `df`):
+Let us plot the path for the coefficients for the 10 smallest models as a function of their model dimension `df`:
 
 ```{r plot, h=4, w=6, small.mar=TRUE}
 plot(models, xlim=c(1, 10))
