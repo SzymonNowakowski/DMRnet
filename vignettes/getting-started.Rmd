@@ -37,7 +37,7 @@ The selected model consists of a subset of numerical regressors and partitions o
 The available model selection algorithms are the following:
 
 - `DMRnet` is the default and the most comprehensive model selection algorithm in the package, it can be used both for $p<n$ and $p \geq n$ scenarios. It first executes a screening step in order to reduce the problem to $p<n$ and then uses `DMR` subsequently.
-- `GLAMER` is a model selection algorithm that can be used both for $p<n$ and $p \geq n$ scenarios. In comparison to `DMRnet`, the step of reordering variables based on their t-statistics is skipped. This is the first partition selection algorithm in literature for which a partition selection consistency has been proven [Nowakowski *et al.*, 2021].
+- `GLAMER` is a model selection algorithm that can be used both for $p<n$ and $p \geq n$ scenarios. In comparison to `DMRnet`, the step of reordering variables based on their t-statistics is skipped. This is the first partition selection algorithm in literature for which a partition selection consistency has been proven for high dimensional scenario [Nowakowski *et al.*, 2021].
 - `DMR` [Maj-Kańska *et al.*, 2015] is a model selection algorithm that can be used for $p<n$ scenario only.
 - `SOSnet` [Pokarowski and Mielniczuk, 2015, Pokarowski *et al.*, 2022] is a model selection algorithm that is used both for $p<n$ and $p \geq n$ scenarios for continuous-only regressors (with no categorical variables and, consequently, no partition selection). 
 
