@@ -1,4 +1,4 @@
-xhwcv_indexation.mode_distribute <- function(X, y, nfolds, indexation.mode, model_function, ...) {
+cv_indexation.mode_distribute <- function(X, y, nfolds, indexation.mode, model_function, ...) {
 
        X <- data.frame(X, check.names = TRUE, stringsAsFactors = TRUE)
 
