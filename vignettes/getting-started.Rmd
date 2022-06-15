@@ -94,9 +94,19 @@ The last part of a printout above is a list of models estimated from `X`. Notice
 Let us plot the path for the coefficients for the 10 smallest models as a function of their model dimension `df`:
 
 ```{r plot, h=4, w=6, small.mar=TRUE}
-plot(models, xlim=c(1, 10))
+plot(models, xlim=c(1, 10), lwd=2)
 ```
 
+Notice how you can pass other parameters (`xlim=c(1, 10), lwd=2`) to change the default behaviour of the `plot()` function.
+
+To examine the coefficients for a particular model in detail, one can use the `coef()` function. For the sake of the example, let's examine the last model from the plot, with `df=10`:
+
+```{r coef}
+coef(models, df=10)
+```
+
+
+You'll notice, that 
 # References
 
 
