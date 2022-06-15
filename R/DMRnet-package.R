@@ -2,7 +2,7 @@
 #'
 #' @name DMRnet-package
 #' @docType package
-#' @description Model selection algorithms for regression and classification, where the predictors can be continous or categorical and the number of regressors may exceed the number of observations. The selected model consists of a subset of numerical regressors and partitions of levels of factors.
+#' @description Model selection algorithms for regression and classification, where the predictors can be continuous or categorical and the number of regressors may exceed the number of observations. The selected model consists of a subset of numerical regressors and partitions of levels of factors.
 #' @section DMRnet Functions:
 #'
 #' Similar in use to \pkg{glmnet}. It consists of the following functions:
