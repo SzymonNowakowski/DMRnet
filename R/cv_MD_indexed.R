@@ -79,10 +79,10 @@ cv_MD_indexed <- function(X, y, nfolds, model_function, ...) {
         error <- sapply(1:length(error), function(i) error[[i]][(length(error[[i]]) - foldmin + 1) : length(error[[i]])])
         error <- rowSums(error)/real_n
 
-        kt <- which(error == min(na.omit(error)))
+        kt <- which(error == min(stats::na.omit(error)))
         df.min <- model$df[kt[length(kt)]]
 
-        kt <- which(error <= min(na.omit(error)) + sd(na.omit(error)))
+        kt <- which(error <= min(stats::na.omit(error)) + stats::sd(stats::na.omit(error)))
         df.1se <- model$df[kt[length(kt)]]
 
         out <- list(df.min = df.min, df.1se = df.1se, dmr.fit = model.full, cvm = error, foldid = foldid)

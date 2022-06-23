@@ -55,7 +55,7 @@
 #' ypr <- predict(m1, newx = Xte, df = g$df.min)
 #'
 #' ## DMR for logistic regression
-#' # notice that only part of dataset promoter was used since DMR works only if p<n, for p>=n use DMRnet
+#' # notice that only part of dataset promoter was used: DMR works only if p<n, for p>=n use DMRnet
 #' data(promoter)
 #' ytr <- factor(promoter[1:80,1])
 #' Xtr <- promoter[1:80,2:11]
