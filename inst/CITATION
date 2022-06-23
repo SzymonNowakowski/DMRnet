@@ -1,0 +1,16 @@
+citHeader("To cite DMRnet in publications use:")
+
+citEntry(entry="Article",
+	 author = personList(as.person("Aleksandra Maj-Kańska"),
+	 	  	     as.person("Piotr Pokarowski"),
+	 	  	     as.person("Agnieszka Prochenka")),
+         title = "Delete or merge regressors for linear model selection",
+         journal = "Electronic Journal of Statistics",
+         year = "2015",
+         volume = "9",
+         number = "2",
+         pages = "1749-1778",
+         url="https://projecteuclid.org/euclid.ejs/1440507392",
+         textVersion = "Aleksandra Maj-Kańska, Piotr Pokarowski and Agnieszka Prochenka, 2015. Delete or merge regressors for linear model selection. Electronic Journal of Statistics 9(2): 1749-1778. https://projecteuclid.org/euclid.ejs/1440507392")
+
+
