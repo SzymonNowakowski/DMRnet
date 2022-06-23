@@ -111,7 +111,7 @@ There are two basic methods for model selection supported in `DMRnet` package. O
 
 ## Model selection with GIC
 
-A GIC-based model selection is performed directly on a sequence of models
+A GIC-based model selection is performed directly on a precomputed sequence of models
 
 ```{r GIC, fig.height=4, fig.width=6, small.mar=TRUE}
 gic.model <- gic.DMR(models)
@@ -152,7 +152,7 @@ coef(cv.model)==coef(gic.model)
 # Predicting response for new observations
 
 Models selected with both model selection methods can be used to predict response variable values for new
-observations.
+observations:
 
 ```{r predict}
 predict(gic.model, newx=head(X))
@@ -161,7 +161,7 @@ predict(cv.model, newx=head(X))
 
 No wonder the corresponding predictions are all equal, since the selected models were the same.
 
-One can predict the response variable values for the whole sequence of models as well.
+One can predict the response variable values for the whole sequence of models as well:
 ```{r seq-predict}
 predict(models, newx=head(X))
 ```
