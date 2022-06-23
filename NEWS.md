@@ -18,5 +18,5 @@
 - Fixing how the parameters get passed in `plot` family of functions
 - Returning only non-zero coefficients in `coef`
 - Fixing `DRMnet` and cross validation in handling data with a single two-factor column
-- Fixing negative wald statistics in binomial case
+- Fixing negative Wald statistics in binomial case
 - Fixing cases of `grpreg` not observing a group constraint  
