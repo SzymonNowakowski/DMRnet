@@ -3,6 +3,8 @@ load_all()
 data(insXtr)
 data(insytr)
 
+set.seed(0)
+
 cat("glamer single 2-level factor column:\n")
 glamer <- DMRnet(Xtr[1], ytr, family = "gaussian", algorithm="glamer")
 
