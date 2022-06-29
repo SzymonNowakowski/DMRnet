@@ -3,6 +3,10 @@ library(vioplot)
 library(digest)
 load_all()
 
+
+#if no arguments, it generates data (it is a very long process, a couple of months at least on decent hardware) or load the precomputed results
+#if arguments are provided (beta, snr, rho: in that order) it generates and saves the precomputed portion of data
+
 ##### Model matrix (data.frame) generation
 generModel = function(n, p, rho){
   ## generation iid W[i,] ~ N(0,S), S=(1-a)*I_p + a*11'
@@ -19,8 +23,7 @@ generModel = function(n, p, rho){
 
 
 
-pdf(file="result_high_dimensional_simulation.ps", width=2400 / 25.4, height=2100 / 25.4, onefile=FALSE)   #units: inches, calculated from mm (2400x2100 in mm^2)
-par(mfrow=c(21,24))
+
 
 
 
@@ -70,13 +73,42 @@ n <- 500; p <- 100;
 
 gr <- rep(1:p, each=23)
 
-for (beta_choice in 1:6) {
+args <- commandArgs(trailingOnly = TRUE)
 
-  beta <- beta_list[[beta_choice]]       #6 choices
-  denot <- names(beta_list)[beta_choice]
 
-  for (rho in c(0, 0.5)) {
-    for (snr in 1.5^(-1:5)) {
+if (length(args)==0) {
+  pdf(file="result_high_dimensional_simulation.ps", width=2400 / 25.4, height=2100 / 25.4, onefile=FALSE)   #units: inches, calculated from mm (2400x2100 in mm^2)
+  par(mfrow=c(21,24))
+
+}
+
+if (length(args)>=1) {
+  beta_choice <- as.numeric(args[1])
+} else {
+  beta_choice <- 1:6
+}
+
+if (length(args)>=2) {
+  snr_choice <- 1.5^(-1:5)[as.numeric(args[2])]
+} else {
+  snr_choice <- 1.5^(-1:5)
+}
+
+if (length(args)>=3) {
+  rho_choice <- c(0, 0.5)[as.numeric(args[3])]
+} else {
+  rho_choice <- c(0, 0.5)
+}
+
+
+
+for (actual_beta in beta_choice) {
+
+  beta <- beta_list[[actual_beta]]       #6 choices
+  denot <- names(beta_list)[actual_beta]
+
+  for (rho in rho_choice) {
+    for (snr in snr_choice) {
       theme <- theme <- paste(denot, snr, rho)
       seed <- strtoi(substr(digest(theme, "md5", serialize = FALSE),1,7),16)
       set.seed(seed)
@@ -86,48 +118,55 @@ for (beta_choice in 1:6) {
 
         filename <- paste(denot, "snr", as.character(round(snr,3)), "rho", as.character(rho), alg, sep="_")
 
-        expected_results<-read.table(paste("data_simulations/",paste(filename, "csv", sep="."), sep=""), header=TRUE, sep=",")
+        filename_with_ext<-paste(filename,"csv",sep=".")
+
+        expected_results<-read.table(paste("data_simulations/",filename_with_ext, sep=""), header=TRUE, sep=",")
         rownames(expected_results)<-expected_results$X
         expected_results<-expected_results[-1]
 
-        OUT <- simplify2array( lapply(1:200, function(i){
-          cat(i,"\n")
-          ##### 1. Model generation
-          XX <- generModel(n, p, rho)
-          X <- model.matrix(~., data=XX)
-          mu <- X %*% beta
-          signal2 <- mean( (mu - mean(mu))^2 )
-          sigma <- sqrt(signal2) / snr
-          y <- mu + rnorm(n, sd=sigma)
+        if (file.exists(filename_with_ext)) {
+          OUT<-read.table(filename_with_ext, header=TRUE, sep=",")
+          OUT<-OUT[-1]
+        } else {
+          OUT <- simplify2array( lapply(1:200, function(i){
+            cat(i,"\n")
+            ##### 1. Model generation
+            XX <- generModel(n, p, rho)
+            X <- model.matrix(~., data=XX)
+            mu <- X %*% beta
+            signal2 <- mean( (mu - mean(mu))^2 )
+            sigma <- sqrt(signal2) / snr
+            y <- mu + rnorm(n, sd=sigma)
 
-          ##### 2. Fitting methods
+            ##### 2. Fitting methods
 
-          MOD <- cv.DMRnet(XX, y, nlambda=100, nfolds=10, algorithm = substr(alg, nchar(alg)-5, nchar(alg)), indexation.mode = (if(substr(alg,1,3)=="cvg") "GIC" else "dimension" ))
-          md0 <- if(substr(alg,1,3)=="cvg") MOD$df.min else MOD$df.1se
+            MOD <- cv.DMRnet(XX, y, nlambda=100, nfolds=10, algorithm = substr(alg, nchar(alg)-5, nchar(alg)), indexation.mode = (if(substr(alg,1,3)=="cvg") "GIC" else "dimension" ))
+            md0 <- if(substr(alg,1,3)=="cvg") MOD$df.min else MOD$df.1se
 
-          ##### 3. Prediction error estimation
-          ERR <- replicate(100,{
-            XX_test <- generModel(1000, p, rho)
-            X_test <- model.matrix(~., data=XX_test)
-            mu_test <- X_test %*% beta
+            ##### 3. Prediction error estimation
+            ERR <- replicate(100,{
+              XX_test <- generModel(1000, p, rho)
+              X_test <- model.matrix(~., data=XX_test)
+              mu_test <- X_test %*% beta
 
-            yy <- predict(MOD, XX_test)
+              yy <- predict(MOD, XX_test)
 
-            c( signal2_test = mean((mu_test - mean(mu_test))^2),
-               mse = mean((mu_test - yy)^2) )
-          })
-          c(signal2 = signal2, sigma = sigma, apply(ERR,1,mean), md0=md0)
+              c( signal2_test = mean((mu_test - mean(mu_test))^2),
+                 mse = mean((mu_test - yy)^2) )
+            })
+            c(signal2 = signal2, sigma = sigma, apply(ERR,1,mean), md0=md0)
 
-        }))
+          }))
 
 
-        #write.csv(OUT, file=paste(filename,"csv",sep="."))
+          write.csv(OUT, file=filename_with_ext)
+        }
+        if (length(args)==0) {
+          main_desc <- paste(denot, paste("snr", as.character(round(snr,3)), sep="="), paste("rho", as.character(rho), sep="="), sep=" ")
 
-        main_desc <- paste(denot, paste("snr", as.character(round(snr,3)), sep="="), paste("rho", as.character(rho), sep="="), sep=" ")
-
-        vioplot(list(actual=OUT[4], expected=as.numeric(expected_results["mse",])), xlab = alg, ylab="Error", main=main_desc)
-        vioplot(list(actual=OUT[5], expected=as.numeric(expected_results["md0",])), xlab = alg, ylab="Model Dimension", main=main_desc)
-
+          vioplot(list(actual=OUT[4], expected=as.numeric(expected_results["mse",])), xlab = alg, ylab="Error", main=main_desc)
+          vioplot(list(actual=OUT[5], expected=as.numeric(expected_results["md0",])), xlab = alg, ylab="Model Dimension", main=main_desc)
+        }
       }
     }
   }
