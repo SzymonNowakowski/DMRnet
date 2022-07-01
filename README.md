@@ -111,7 +111,8 @@ Other improvements are the following:
 This remains to be introduced to GLAMER and DMRnet algorithms in future versions >0.3.0.
 
 ### Remaining issues
-The only outstanding (not fixed) case of GLAMER computation failure known to me at present results from [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672) and can be observed in `hard_case_GLAMER_insurance.R`  in `testing_branch` in [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
+
+The only outstanding (not fixed) cases of DMRnet computation failure known to me at present are gathered in `hard_case_GLAMER_insurance.R`  in  `testing_branch` in [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
 
 ## Purpose of the `testing_branch`
 
@@ -219,3 +220,4 @@ To this end the following test cases were identified:
 - `hard_case_SOSnet.R` - a problem in SOSnet with artificial data set 
  (in which a matrix is close to - but not exactly - singular) resulting in 
  numerical instabilities with QR calculations fixed in v. 0.3.0.
+
