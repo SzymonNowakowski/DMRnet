@@ -111,4 +111,113 @@ Other improvements are the following:
 This remains to be introduced to GLAMER and DMRnet algorithms in future versions >0.3.0.
 
 ### Remaining issues
+
 The only outstanding (not fixed) cases of DMRnet computation failure known to me at present are gathered in `hard_case_GLAMER_insurance.R`  in  `testing_branch` in [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
+
+## Purpose of the `testing_branch`
+
+The `testing_branch` GitHub branch serves double purpose.
+
+### Consistency with previous package versions
+
+The first purpose is testing agreement of the results obtained for the new version v. 0.3.0 and the older version v. 0.2.0.
+
+1. In the summer of 2021 massive experiments were performed with DMRnet v. 0.2.0 
+   and with new implementation of GLAMER and two new external cross validation routines, 
+   which got later implemented into DMRnet v. 0.3.0. In the scope of the experiments 
+   model dimension and prediction error was calculated in the 4 data sets in 200 independent runs.
+
+   The two new cross validation routines were
+   - `cvg` which stands for "(c)ross (v)alidation with models indexed with (G)IC" 
+      and in the v. 0.3.0 is available in DMRnet by simply passing `indexation.mode=GIC"` 
+      in a call to `cv.DMRnet`.
+   - `cv+sd` which is a regular cross validation with models indexed by model dimension, but
+      returning (instead of the best model) the smallest model falling under the upper 
+      curve of a prediction error plus one standard deviation. In v. 0.3.0 it is now 
+      available in `predict` for inference, use it by passing `md="df.1se"` instead of the default `md="df.min"`.
+   
+   Throughout the experiments, the models were also selected with a regular GIC
+   criterion, both in DMRnet and in GLAMER. The GIC criterion was available in v. 0.2.0 for DMRnet and in v. 0.3.0 both for DMRnet and for GLAMER. 
+   
+   The above possibilities give rise to many combinations of which 4 were selected for the final consideration:
+   - `cv+sd.GLAMER` - GLAMER run with `cv+sd`.
+   - `cvg.DMRnet` - DMRnet run with `cvg`.
+   - `gic.GLAMER` - GLAMER run with GIC criterion to select best model.
+   - `gic.DMRnet` - DMRnet run with GIC criterion to select best model.
+   
+   The resulting model dimension and prediction error data was retained. 
+   It creates opportunity to compare the expected distibutions of model dimension and prediction error 
+   with the actual distributions we get with a new package
+   (we would expect to get the same results with the new 
+   version v. 0.3.0 as were obtained in the summer of 2021 with v. 0.2.0).
+   
+   Care was taken to reproduce exactly the same results, as an example: the new calculations in v. 0.3.0
+   were started from the same seed values. However, calculations in v. 0.2.0 were much less stable and required
+   `try ... catch` block to complete. Thus, from the first failed (and restarted) calculation in v. 0.2.0 the 
+   new and old results start to diverge. It does not eliminate possibility to compare the 
+   resulting distributions.
+   
+   The comparison charts are presented below:
+   
+   - [Adult data set](https://archive.ics.uci.edu/ml/datasets/Adult) - binomial response
+   
+     ![Adult](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_adult.svg)
+   - [Promoter data set](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+%28Promoter+Gene+Sequences%29) - binomial response
+   
+     ![Promoter](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_promoter.svg)
+   - [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data) - gaussian response
+   
+     **Results unavailable due to 
+     [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672)**
+   - Antigua data set - Averages by block of yields for the Antigua Corn 
+     data - available 
+     in [DAAG package](https://cran.rstudio.com/web/packages/DAAG/index.html) - gaussian response
+     
+     ![Antigua](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_antigua.svg)
+   
+2. In the beginning of 2022 massive experiments were performed with DMRnet v. 0.2.0 
+   and with new implementation of GLAMER and two new external cross validation routines, which got later
+   implemented into DMRnet v. 0.3.0. In the scope of the experiments model dimension and 
+   prediction error was calculated in 252 synthetic experiments, each consisting of 200 independent runs.
+   
+   The possible choices of an algorithm and a cross validation routine (discussed in point 1. above) give rise 
+   to many combinations of which 3 were selected for the final consideration:
+   - `cv+sd.GLAMER` - GLAMER run with `cv+sd`.
+   - `cvg.GLAMER` - GLAMER run with `cvg`.
+   - `cvg.DMRnet` - DMRnet run with `cvg`.
+   
+   
+   The resulting model dimension and prediction error data was retained. 
+   It creates opportunity to compare the expected distibutions of model dimension and prediction error 
+   with the actual distributions we get with a new package
+   (we would expect to get the same results with the new 
+   version v. 0.3.0 as were obtained in the beginning of 2022 with v. 0.2.0).
+   
+   **Results unavailable *yet* because of the scale of computations required to complete calculations**
+       
+### Very hard cases
+
+The second purpose is testing that all previously identified crux cases pass in v. 0.3.0. 
+Many instabilities in v. 0.2.0 were removed *en bloc* with adding new strategy for handling missing factors 
+and adding regularization. However, not all bugs were removed that way and the remaining 
+bugs have some additional test files dedicated to testing that the particular bug remains fixed.
+
+To this end the following test cases were identified:
+- `hard_case_DMRnet_insurance.R` - a compilation of tests for various previously 
+ identified bugs in DMRnet with data coming from 
+ [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
+ Please consult the comments in the file for more detailed information.
+- `hard_case_GLAMER_insurance.R` - the only outstanding (not fixed) cases of GLAMER computation 
+ failure known to me at present. One of them results from 
+ [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672) with
+ data isolated from 
+ [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
+- `hard_case_GLAMER_promoter.R` - a problem with group constrained identified with GLAMER in
+ data isolated from 
+ [Promoter data set](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_promoter.pdf).
+ The cause was that `grpreg` didn't observe the so called *group constraint* for one of the columns 
+ and returned two non-zero betas and one beta equal to zero.
+- `hard_case_SOSnet.R` - a problem in SOSnet with artificial data set 
+ (in which a matrix is close to - but not exactly - singular) resulting in 
+ numerical instabilities with QR calculations fixed in v. 0.3.0.
+
