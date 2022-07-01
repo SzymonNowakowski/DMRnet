@@ -206,8 +206,8 @@ To this end the following test cases were identified:
  identified bugs in DMRnet with data coming from 
  [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
  Please consult the comments in the file for more detailed information.
-- `hard_case_GLAMER_insurance.R` - the only outstanding (not fixed) case of GLAMER computation 
- failure known to me at present resulting from 
+- `hard_case_GLAMER_insurance.R` - the only outstanding (not fixed) cases of GLAMER computation 
+ failure known to me at present. One of them results from 
  [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672) with
  data isolated from 
  [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
