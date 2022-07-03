@@ -33,7 +33,7 @@ for (mega_run in 1:20) {
     if (part == "glamer") {
       run_list<-run_list_glamer
     } else{
-      run_lis<-run_list_dmrnet
+      run_list<-run_list_dmrnet
     }
 
     set.seed(return_seed(part, letters[mega_run]))
