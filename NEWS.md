@@ -19,4 +19,4 @@
 - Returning only non-zero coefficients in `coef`
 - Fixing `DRMnet` and cross validation in handling data with a single two-factor column
 - Fixing negative Wald statistics in binomial case
-- Fixing cases of `grpreg` not observing a group constraint  
+- Workaround in GLAMER for [cases of `grpreg` not observing a group constraint](https://github.com/pbreheny/grpreg/issues/54)
