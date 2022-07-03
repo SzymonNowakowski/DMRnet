@@ -40,7 +40,12 @@ if (is.na(sum(coef(mod, df=439)))) {    # has NA ?
 
 ############## GLAMER with cv+sd had problems with SVD routine on the 5th CV run on 17th run of massive-insurance tests with a seed derived from "insUrance_"
 data("5_cv_MD")
-mod <- DMRnet(Xtr, ytr, algorithm="glamer")
+mod <- DMRnet(Xtr, ytr, algorithm="glamer")   #Error in La.svd(x, nu, nv) : error code 1 from Lapack routine 'dgesdd'
+
+################# ISOLATED CASE ###################
+data(crashes_svd_1)
+svd(crashes_svd)    #<--------------crashes
+
 
 ################DMRnet in CVG had problems with NAs too, on the 1st run AFTER the fix in massive_insurance (commit 4eca99d)
 #cvg.DMRnet with cvg
