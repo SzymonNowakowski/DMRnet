@@ -95,9 +95,10 @@ There are 4 classes of problems:
 
 
 Generally speaking, matrix rank in real world scenarios is more a numerical concept than a mathematical concept and its value may differ depending on a treshold. Thus various kinds of problems result from data matrices close to singular:
-1. The pivots were added in SOSnet for gaussian families and as a consequence a non-full rank data matrix was handled correctly to some extent (see the next point)
+1. The pivots were added in SOSnet for gaussian families and as a consequence a non-full rank data matrix was handled correctly to some extent (see the next point).
 2. Numerical instability of QR decomposition in SOSnet for gaussian families (when rank is *much* lower than columns provided) may have resulted in crashes in QR decomposition, thus a `try`-`catch` clause was used to recalculate QR decomposition but only for pivoted columns within rank in case of failure of the original QR attempt.
-3. Adding the regularizations in gaussian family in `DMR` (note that this execution path is used in `DMRnet` too) in a form of adding an infinitesimally small diagonal matrix to `R` after QR decomposition calculation
+3. Adding the regularizations in gaussian family in `DMR` (note that this execution path is used in `DMRnet` too) in a form of adding an infinitesimally small diagonal matrix to `R` after QR decomposition calculation.
+4. Fixing NA values resulting in attempting non-penalized regression in case of non-full rank design matrices.
 
 Other improvements are the following:
 1. Fixing how the parameters get passed in `plot` family of functions.
