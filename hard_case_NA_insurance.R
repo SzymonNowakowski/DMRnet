@@ -42,7 +42,7 @@ cat("DMR, family gaussian:\n")
 mod <- DMR(X, y)
 if (is.na(sum(coef(mod, df=460)))) {    # has NA ?
   stop("Found NA values in a model returned from DMR/gaussian")
-}
+}    #FIXED by PR#28
 
 
 y <- factor(y>mean(y))
@@ -57,7 +57,7 @@ cat("DMR, family binomial:\n")
 mod <- DMR(X, y, family="binomial")
 if (is.na(sum(coef(mod, df=460)))) {    # has NA ?
   stop("Found NA values in a model returned from DMR/binomial")
-}
+}   #FIXED by PR#28
 
 
 cat("completed\n")
