@@ -9,7 +9,7 @@ data(promoy)
 ############           ****     "These penalties are sparse at the group level – the coefficients within a group will either all equal zero or none will equal zero."
 ############ Regularization was added to restore the group constraint (either all betas are zero, or all betas are non-zero in a group)
 
-
+set.seed(0)   #to make the tests reprodicible
 
 cat("binomial glamer single 4-level factor column:\n")
 b_glamer <- DMRnet(X[15], y, family = "binomial", algorithm="glamer")

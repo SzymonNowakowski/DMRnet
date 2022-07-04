@@ -3,7 +3,7 @@ load_all()
 data(insXtr)
 data(insytr)
 
-set.seed(0)
+set.seed(0)    #to make the tests reproducible
 
 cat("glamer single 2-level factor column:\n")
 glamer <- DMRnet(Xtr[1], ytr, family = "gaussian", algorithm="glamer")
