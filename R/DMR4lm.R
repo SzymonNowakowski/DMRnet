@@ -175,6 +175,10 @@ DMR4lm <- function(X, y, clust.method, lam){
      }
    }
    m <- stats::lm.fit(as.matrix(rep(1, length(y))), y)
+
+   m$coef[is.na(m$coef)] <- min(abs(m$coef[!is.na(m$coef)])) / 1000.0 #setting a very small (close to 0) value for the variables exceeding design matrix rank
+                    #consult the comment in part2beta_help() for longer explanation
+
    b = cbind(b, c(m$coef, rep(0, length(heig) - 1)))
    rss = c(rss, sum(m$res^2))
    if(length(ord) > 0){

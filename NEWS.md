@@ -12,6 +12,7 @@
 - Adding pivots in SOSnet for gaussian families
 - Adding a `try`-`catch` clause to recalculate QR decomposition for pivoted columns within rank in case of failure
 - Adding the regularizations in gaussian family in `DMR` direct calls and calls via `DMRnet`
+- fixing NA values resulting in attempting non-penalized regression in case of non-full rank design matrices
 
 ## Other improvements
 
