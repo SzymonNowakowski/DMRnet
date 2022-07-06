@@ -1,9 +1,19 @@
-library(devtools)
-load_all()
-data(la_svd_Xtr)
-data(la_svd_ytr)
 
 ############ These problem cases are extracted from insurance dataset:
+
+
+############## with OpenBLAS which was supposed to be a workaround for LAPACK issue#672
+############## I got an error in DMRnet on a matrix that passed SVD without OpenBLAS (cv.DMRnet gaussian test in hard_case_DMRnet_insurance.R test
+############## in the 5th CV run
+############## the following is the extracted isolated case
+
+cat("DMRnet 5th run CV isolated_case with OpenBLAS:\n")
+data(crashes_svd_with_Open_BLAS)
+d<-svd(crashes_svd)    #<--------------crashes
+
+
+library(devtools)
+load_all()
 
 ############## GLAMER with cv+sd failed on 48th run of massive-insurance tests with a seed derived from "insurance_"
 
@@ -18,6 +28,8 @@ data(la_svd_ytr)
 
 
 cat("glamer:\n")
+data(la_svd_Xtr)
+data(la_svd_ytr)
 glamer <- DMRnet(Xtr, ytr, family = "gaussian", algorithm = "glamer")
 
 

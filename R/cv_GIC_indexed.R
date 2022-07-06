@@ -9,7 +9,7 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                 foldid <- sample(rep(1:nfolds,length.out=n))   #PP replaces cvfolds by a simpler sample(rep()) function
                 #PP new code error <- list()
                 err <- list(); rss <- list(); #md <- list()
-
+                save(X,y,file="F_cv_gic.RData")
                 model.full <- model_function(X, y, ...)
                 lambda.full<- model.full$lambda
 
@@ -20,6 +20,7 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                         Xtr <- X[foldid != fold, ,drop = FALSE]
                         ytr <- y[foldid != fold, drop = FALSE]
 
+                        save(Xtr, Xte,ytr, yte,file=paste(fold,"_cv_gic.RData", sep=""))
                         compute_model <- cv_compute_model(model_function, Xtr, ytr, Xte, yte, real_n, lambda.full = lambda.full, ...)   #three letter abbreviations (lambda.full vs lam) make this function call confused, so explicit passing of named parameter i.e. lambda.full=lambda.full is required
                         model<-compute_model$model
                         Xtr<-compute_model$Xtr
