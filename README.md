@@ -110,6 +110,3 @@ Other improvements are the following:
 
 ### Weight parameterization
 This remains to be introduced to GLAMER and DMRnet algorithms in future versions >0.3.0.
-
-### Remaining issues
-The only outstanding (not fixed) cases of DMRnet computation failure known to me at present are gathered in `hard_case_GLAMER_insurance.R`  in  `testing_branch` in [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
