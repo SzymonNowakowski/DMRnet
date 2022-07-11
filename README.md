@@ -111,10 +111,6 @@ Other improvements are the following:
 ### Weight parameterization
 This remains to be introduced to GLAMER and DMRnet algorithms in future versions >0.3.0.
 
-### Remaining issues
-
-The only outstanding (not fixed) cases of DMRnet computation failure known to me at present are gathered in `hard_case_GLAMER_insurance.R`  in  `testing_branch` in [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
-
 ## Purpose of the `testing_branch`
 
 The `testing_branch` GitHub branch serves double purpose.
@@ -208,11 +204,12 @@ To this end the following test cases were identified:
  identified bugs in DMRnet with data coming from 
  [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
  Please consult the comments in the file for more detailed information.
-- `hard_case_GLAMER_insurance.R` - the only outstanding (not fixed) cases of GLAMER computation 
- failure known to me at present. One of them results from 
+- `hard_case_LAPACK_SVD_insurance.R` - the outstanding (not fixed) cases of GLAMER and DMRnet computation 
+ failure resulting from 
  [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672) with
  data isolated from 
  [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
+- `hard_case_NA_insurance.R` - cases in which NA values were returned for GLAMER, DMRnet and DMR for [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data) because design matrices involved were not of full rank. [PR#27](https://github.com/SzymonNowakowski/DMRnet/pull/27) and [PR#28](https://github.com/SzymonNowakowski/DMRnet/pull/28) fixed those issues.
 - `hard_case_GLAMER_promoter.R` - a problem with group constrained identified with GLAMER in
  data isolated from 
  [Promoter data set](https://nbviewer.org/github/SzymonNowakowski/DMRnet/blob/testing_branch/result_promoter.pdf).
