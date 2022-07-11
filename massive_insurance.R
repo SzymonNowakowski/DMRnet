@@ -28,7 +28,7 @@ cat("insurance data loaded\n")
 
 results_mes<-results_dfs<-matrix(nrow=200, ncol=4)
 
-for (mega_run in 1:20) {
+for (mega_run in 1:4) {
   for (part in c("glamer", "DMRnet")) {
     if (part == "glamer") {
       run_list<-run_list_glamer
@@ -148,8 +148,8 @@ par(mfrow=c(2,4))
 for (model_index in 1:4) {
   model_choice <- c("cv+sd.GLAMER","gic.GLAMER",  "cvg.DMRnet", "gic.DMRnet") [model_index]
   index <- model_index + 1 # a number of the corresponding expected result in a result filename
-  vioplot(list(actual=results_mes[,model_index], expected=insurance.expected.errors[[index]]), ylab="Error", main=model_choice)
-  vioplot(list(actual=results_dfs[,model_index], expected=insurance.expected.df[[index]]), ylab="Model Dimension", main=model_choice)
+  vioplot(list(actual=results_mes[,model_index], expected=insurance.expected.errors[[index]][1:40]), ylab="Error", main=model_choice)
+  vioplot(list(actual=results_dfs[,model_index], expected=insurance.expected.df[[index]][1:40]), ylab="Model Dimension", main=model_choice)
 }
 
 
