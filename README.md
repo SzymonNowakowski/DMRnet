@@ -164,7 +164,9 @@ The first purpose is testing agreement of the results obtained for the new versi
      ![Promoter](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_promoter.svg)
    - [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data) - gaussian response
    
-     **Results unavailable due to 
+     ![Insurance](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_insurance.svg)
+     
+     **Results compared only for 40 initial results (out of 200 available) due to 
      [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672)**
    - Antigua data set - Averages by block of yields for the Antigua Corn 
      data - available 
