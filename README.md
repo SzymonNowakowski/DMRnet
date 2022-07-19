@@ -167,7 +167,8 @@ The first purpose is testing agreement of the results obtained for the new versi
      ![Insurance](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_insurance.svg)
      
      **Results compared only for 40 initial results (out of 200 available) due to 
-     [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672)**
+     [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672) 
+     thus higher variance is to be expected**
    - Antigua data set - Averages by block of yields for the Antigua Corn 
      data - available 
      in [DAAG package](https://cran.rstudio.com/web/packages/DAAG/index.html) - gaussian response
@@ -192,7 +193,7 @@ The first purpose is testing agreement of the results obtained for the new versi
    (we would expect to get the same results with the new 
    version v. 0.3.0 as were obtained in the beginning of 2022 with v. 0.2.0).
    
-   **Results unavailable *yet* because of the scale of computations required to complete calculations**
+   ![High Dimensional Simulations](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_high_dimensional_simulation.svg)
        
 ### Very hard cases
 

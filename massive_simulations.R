@@ -77,7 +77,7 @@ args <- commandArgs(trailingOnly = TRUE)
 
 
 if (length(args)==0) {
-  pdf(file="result_high_dimensional_simulation.ps", width=2400 / 25.4, height=2100 / 25.4, onefile=FALSE)   #units: inches, calculated from mm (2400x2100 in mm^2)
+  pdf(file="result_high_dimensional_simulation.pdf", width=2100 / 25.4, height=2400 / 25.4, onefile=FALSE)   #units: inches, calculated from mm (2400x2100 in mm^2)
   par(mfrow=c(21,24))
 
 }
@@ -126,7 +126,7 @@ for (actual_beta in beta_choice) {
 
         if (file.exists(filename_with_ext)) {
           OUT<-read.table(filename_with_ext, header=TRUE, sep=",")
-          OUT<-OUT[-1]
+          OUT<-OUT[,-1]
         } else {
           OUT <- simplify2array( lapply(1:200, function(i){
             cat(i,"\n")
@@ -164,8 +164,11 @@ for (actual_beta in beta_choice) {
         if (length(args)==0) {
           main_desc <- paste(denot, paste("snr", as.character(round(snr,3)), sep="="), paste("rho", as.character(rho), sep="="), sep=" ")
 
-          vioplot(list(actual=OUT[4], expected=as.numeric(expected_results["mse",])), xlab = alg, ylab="Error", main=main_desc)
-          vioplot(list(actual=OUT[5], expected=as.numeric(expected_results["md0",])), xlab = alg, ylab="Model Dimension", main=main_desc)
+          vioplot(list(actual=as.numeric(OUT[4,]), expected=as.numeric(expected_results["mse",])), xlab = alg, ylab="Error", main=main_desc)
+          if (sd(as.numeric(expected_results["md0",])) == 0 & sd(as.numeric(OUT[5,])) == 0)
+            boxplot(list(actual=as.numeric(OUT[5,]), expected=as.numeric(expected_results["md0",])), xlab = alg, ylab="Model Dimension", main=main_desc)
+          else
+            vioplot(list(actual=as.numeric(OUT[5,]), expected=as.numeric(expected_results["md0",])), xlab = alg, ylab="Model Dimension", main=main_desc)
         }
       }
     }
