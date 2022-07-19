@@ -3,13 +3,13 @@ This is a fork of the CRAN R package repository for DMRnet — Delete
 
 ## Installing `DMRnet` package
 
-To install the development package version (currently: 0.3.0.9000) please execute
+To install the development package version (currently: 0.3.1) please execute
 ```
 library(devtools)
 devtools::install_github("SzymonNowakowski/DMRnet")
 ```
 
-Alternatively, to install the current stable CRAN version (currently: 0.2.0) please execute
+Alternatively, to install the current stable CRAN version (currently: 0.3.1) please execute
 
 ```
 install.packages("DMRnet")
@@ -18,7 +18,7 @@ install.packages("DMRnet")
 After that, you can load the installed package into memory with a call to `library(DMRnet)`.
 
 
-## Changes in DMRnet v. 0.3.0
+## Changes in DMRnet v. 0.3.1
 
 ### GLAMER added
 GLAMER stands for Group LAsso MERger and it is a new (simplified in relation to DMRnet) algorithm for which we prove partition selection consistency. It is the first result of that kind for high dimensional scenario. The relevant paper with algorithm description is the following: [Szymon Nowakowski, Piotr Pokarowski and Wojciech Rejchel, 2021. “Group Lasso Merger for Sparse Prediction with High-Dimensional Categorical Data.” arXiv:2112.11114](https://arxiv.org/abs/2112.11114)
@@ -39,7 +39,7 @@ A new alternative cross validation routine was introduced to improve the existin
 
 To use the new GIC-indexed cross validation routine pass `indexation.mode=GIC"` in a call to `cv.DMRnet`.
 
-The new cross validation routine (models indexed by GIC) is the default starting from version >=0.3.0.
+The new cross validation routine (models indexed by GIC) is the default starting from version >=0.3.1.
 ### Handling of mismatched factor levels
 The new treatment of factors in cross validation/`predict` and in `DMRnet`/`predict` pairs is based on the following analysis:
 
@@ -58,7 +58,7 @@ There are 4 classes of problems:
 1. `C` is a strict superset of `A`.
 
    Then if treated naively, `DMRnet(...)` when constructing a model would throw an error,
-   because we would end up with `NaN` values in a column dedicated to this superflous factor level (to be exact, it would happen when a columns gets normalized).
+   because we would end up with `NaN` values in a column dedicated to this superfluous factor level (to be exact, it would happen when a columns gets normalized).
 
    The solution to that is very simple. Before the model gets constructed in `DMRnet` we recalculate the factor level set, `C_new`. Then `C_new=A`.
 
@@ -94,10 +94,10 @@ There are 4 classes of problems:
 ### Stability improvements
 
 
-Generally speaking, matrix rank in real world scenarios is more a numerical concept than a mathematical concept and its value may differ depending on a treshold. Thus various kinds of problems result from data matrices close to singular:
+Generally speaking, matrix rank in real world scenarios is more a numerical concept than a mathematical concept and its value may differ depending on a threshold. Thus various kinds of problems result from data matrices close to singular:
 1. The pivots were added in SOSnet for gaussian families and as a consequence a non-full rank data matrix was handled correctly to some extent (see the next point).
 2. Numerical instability of QR decomposition in SOSnet for gaussian families (when rank is *much* lower than columns provided) may have resulted in crashes in QR decomposition, thus a `try`-`catch` clause was used to recalculate QR decomposition but only for pivoted columns within rank in case of failure of the original QR attempt.
-3. Adding the regularizations in gaussian family in `DMR` (note that this execution path is used in `DMRnet` too) in a form of adding an infinitesimally small diagonal matrix to `R` after QR decomposition calculation.
+3. Adding the regularization in gaussian family in `DMR` (note that this execution path is used in `DMRnet` too) in a form of adding an infinitesimally small diagonal matrix to `R` after QR decomposition calculation.
 4. Fixing NA values resulting in attempting non-penalized regression in case of non-full rank design matrices.
 
 Other improvements are the following:
@@ -109,4 +109,4 @@ Other improvements are the following:
 
 
 ### Weight parameterization
-This remains to be introduced to GLAMER and DMRnet algorithms in future versions >0.3.0.
+This remains to be introduced to GLAMER and DMRnet algorithms in future versions >0.3.1.

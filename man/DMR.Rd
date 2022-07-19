@@ -22,14 +22,14 @@ DMR(
 
 \item{clust.method}{Clustering method used for partitioning levels of factors; see function \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html}{hclust} in package \pkg{stats} for details. \code{clust.method="complete"} is the default.}
 
-\item{lam}{The amount of penalization in rigde regression (used for logistic regression in order to allow for parameter estimation in linearly separable setups) or the amount of matrix regularization in case of linear regression. Used only for numerical reasons. The default is 1e-7.}
+\item{lam}{The amount of penalization in ridge regression (used for logistic regression in order to allow for parameter estimation in linearly separable setups) or the amount of matrix regularization in case of linear regression. Used only for numerical reasons. The default is 1e-7.}
 
 \item{lambda}{The net of lambda values. It is optional and serves only for consistency with \code{DMRnet}. It is not used in \code{DMR}.}
 }
 \value{
 An object with S3 class \code{"DMR"}, which  is  a  list  with  the  ingredients:
 
-\item{beta}{Matrix p times p of estimated paramters; each column corresponds to a model on the nested path having from p to 1 parameter (denoted as df).}
+\item{beta}{Matrix p times p of estimated parameters; each column corresponds to a model on the nested path having from p to 1 parameter (denoted as df).}
 \item{df}{Vector of degrees of freedom; from p to 1.}
 \item{rss/loglik}{Measure of fit for the nested models: rss (residual sum of squares) is returned for \code{family="gaussian"} and loglik (loglikelihood) is returned for \code{family="binomial"}.}
 \item{n}{Number of observations.}

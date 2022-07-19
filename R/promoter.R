@@ -1,6 +1,6 @@
 #' promoter dataset
 #'
-#' It consists of E. Coli promoter gene sequences starting at position -50 (p-50) and ending at position +7 (p7). Each of these 57 Fields is filled by one of {a, g, t, c}. The task is to recognize promoters, which are genetic regions which initiate the first step in the expression of adjacent genes (transcription). There are 53 promoters and 53 nonpromoter sequences.
+#' It consists of E. coli promoter gene sequences starting at position -50 (p-50) and ending at position +7 (p7). Each of these 57 Fields is filled by one of {a, g, t, c}. The task is to recognize promoters, which are genetic regions which initiate the first step in the expression of adjacent genes (transcription). There are 53 promoters and 53 non-promoter sequences.
 #'
 #' @docType data
 #'

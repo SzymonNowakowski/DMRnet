@@ -14,8 +14,8 @@
 #'   \item{area}{Municipality.}
 #'   \item{kitchen}{Upmarket kitchen, yes = 1, no = 0.}
 #'   \item{rooms}{Number of rooms.}
-#'   \item{best}{Best adress, yes = 1, no = 0.}
-#'   \item{good}{Good adress, yes = 1, no =0.}
+#'   \item{best}{Best address, yes = 1, no = 0.}
+#'   \item{good}{Good address, yes = 1, no =0.}
 #'   \item{warm}{Warm water, yes = 0, no = 1.}
 #'   \item{central}{Central heating, yes = 0, no = 1.}
 #'   \item{year}{Year of construction.}
