@@ -71,9 +71,9 @@ The final path of models is chosen by minimizing the likelihood of the models fo
 \examples{
 ## DMRnet for linear regression
 data(miete)
-ytr <- miete[1:1500,1]
-Xtr <- miete[1:1500,-1]
-Xte <- miete[1501:2053,-1]
+ytr <- miete[1:500,1]
+Xtr <- miete[1:500,-1]
+Xte <- miete[501:1000,-1]
 m1 <- DMRnet(Xtr, ytr)
 print(m1)
 plot(m1)
@@ -97,9 +97,9 @@ ypr <- predict(m2, newx = Xte, df = g$df.min)
 
 ## GLAMER for linear regression
 data(miete)
-ytr <- miete[1:1500,1]
-Xtr <- miete[1:1500,-1]
-Xte <- miete[1501:2053,-1]
+ytr <- miete[1:500,1]
+Xtr <- miete[1:500,-1]
+Xte <- miete[501:1000,-1]
 m1 <- DMRnet(Xtr, ytr, algorithm="glamer")
 print(m1)
 plot(m1)
