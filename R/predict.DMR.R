@@ -68,7 +68,7 @@ predict.DMR <- function(object, newx, df = NULL, type = "link", unknown.factor.l
          if(ncol(Z) != nrow(object$beta) | is.null(ncol(newx))){
                     stop(paste("Error: non-conforming arrays, newx should be a data frame with ncol equal to", nrow(object$beta)))
          }
-         if(class(df) != "numeric" & class(df) != "integer" & is.null(class(df))){
+         if(!inherits(df, "numeric") & !inherits(df, "integer") & is.null(class(df))){
                       stop("Error: wrong input type, df should have type numeric, integer or NULL")
          }
          if (names(object)[3] == "rss") type = "link"

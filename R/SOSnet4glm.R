@@ -1,5 +1,5 @@
 SOSnet4glm <- function(X, y, o, nlambda, lam, interc, maxp, lambda){
-          if (class(y) != "factor"){
+          if (!inherits(y, "factor")){
              stop("Error: y should be a factor")
           }
           lev <- levels(y)

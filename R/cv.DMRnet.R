@@ -14,7 +14,7 @@
 #'
 #' @param nlambda Parameter of the group lasso screening step, described in \code{\link{DMRnet}}.
 #'
-#' @param lam The amount of penalization in rigde regression (used for logistic regression in order to allow for parameter estimation in linearly separable setups) or the amount of matrix regularization in case of linear regression. Used only for numerical reasons. The default is 1e-7.
+#' @param lam The amount of penalization in ridge regression (used for logistic regression in order to allow for parameter estimation in linearly separable setups) or the amount of matrix regularization in case of linear regression. Used only for numerical reasons. The default is 1e-7.
 #'
 #' @param interc Should intercept(s) be fitted (the default, \code{interc=TRUE}) or set to zero (\code{interc=FALSE}). If in \code{X} there are any categorical variables, \code{interc=TRUE} must be set.
 #'

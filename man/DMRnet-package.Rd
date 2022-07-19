@@ -36,9 +36,9 @@ vignette("getting-started", package="DMRnet")
 \references{
 Aleksandra Maj-Kańska, Piotr Pokarowski and Agnieszka Prochenka, 2015. Delete or merge regressors for linear model selection. Electronic Journal of Statistics 9(2): 1749-1778. \url{https://projecteuclid.org/euclid.ejs/1440507392}
 
-Piotr Pokarowski and Jan Mielniczuk, 2015. Combined l1 and greedy l0 penalized least squares for linear model selection. Journal of Machine Learning Research 16(29): 961-992. \url{http://www.jmlr.org/papers/volume16/pokarowski15a/pokarowski15a.pdf}
+Piotr Pokarowski and Jan Mielniczuk, 2015. Combined l1 and greedy l0 penalized least squares for linear model selection. Journal of Machine Learning Research 16(29): 961-992. \url{https://www.jmlr.org/papers/volume16/pokarowski15a/pokarowski15a.pdf}
 
-Piotr Pokarowski, Wojciech Rejchel, Agnieszka Sołtys, Michał Frej and Jan Mielniczuk, 2022. Improving Lasso for model selection and prediction. Scandinavian Journal of Statistics, 49(2): 831–863. \url{https://doi.org/10.1111/sjos.12546}
+Piotr Pokarowski, Wojciech Rejchel, Agnieszka Sołtys, Michał Frej and Jan Mielniczuk, 2022. Improving Lasso for model selection and prediction. Scandinavian Journal of Statistics, 49(2): 831–863. \doi{10.1111/sjos.12546}
 }
 \author{
 Agnieszka Prochenka-Sołtys, Piotr Pokarowski, Szymon Nowakowski

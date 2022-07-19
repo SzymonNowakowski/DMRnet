@@ -25,7 +25,7 @@ coef.DMR <- function(object, df = NULL, ...){
                          colnames(out) <- paste("df", object$df, sep = "")
                          return(out)
          }
-         if(class(df) != "numeric" & class(df) != "integer"){
+         if(!inherits(df, "numeric") & !inherits(df, "integer")){
                       stop("Error: wrong input type, df should have type numeric")
          }
          out <- object$beta[,ncol(object$beta) - df + 1]

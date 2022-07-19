@@ -31,7 +31,7 @@ cv_MD_indexed <- function(X, y, nfolds, model_function, ...) {
 
         } else{
                 if (family == "binomial"){
-                        if (class(y) != "factor"){
+                        if (!inherits(y, "factor")){
                                 stop("Error: y should be a factor")
                         }
                         lev <- levels(factor(y))
