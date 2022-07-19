@@ -120,7 +120,7 @@ for (actual_beta in beta_choice) {
 
         filename_with_ext<-paste(filename,"csv",sep=".")
 
-        expected_results<-read.table(paste("data_simulations/",filename_with_ext, sep=""), header=TRUE, sep=",")
+        expected_results<-read.table(paste("data_simulations/0.2.0/",filename_with_ext, sep=""), header=TRUE, sep=",")
         rownames(expected_results)<-expected_results$X
         expected_results<-expected_results[-1]
 
