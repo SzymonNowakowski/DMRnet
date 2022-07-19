@@ -6,7 +6,7 @@ DMR4lm <- function(X, y, clust.method, lam){
               stop("Error: non-conforming data: nrow(X) not equal to length(y)")
     }
     ssd <- apply(X, 2, function(x) length(unique(x)))   #number of unique values in each column of X
-    if (ssd[1] == 1 & (class(X[,1]) == "numeric" | class(X[,1]) == "integer")){  # removing the first column in case
+    if (ssd[1] == 1 & (inherits(X[,1], "numeric") | inherits(X[,1], "integer"))){  # removing the first column in case
         # in case is a numeric constant in X
         # i.e. in case it is an Intercept. Other than that, constant columns are NOT allowed
        X <- X[,-1, drop = FALSE]   #drop=FALSE keeps the dimensions of X

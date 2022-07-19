@@ -1,5 +1,5 @@
 DMRnet4glm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda) {
-    if (class(y) != "factor"){
+    if (!inherits(y, "factor")){
        stop("Error: y should be a factor")
     }
     lev <- levels(factor(y))
@@ -12,7 +12,7 @@ DMRnet4glm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda) {
               stop("Error: non-conforming data: nrow(X) not equal to length(y)")
     }
     ssd <- apply(X, 2, function(x) length(unique(x)))
-    if (ssd[1] == 1 & (class(X[,1]) == "numeric" | class(X[,1]) == "integer")){
+    if (ssd[1] == 1 & (inherits(X[,1], "numeric") | inherits(X[,1], "integer"))){
        X <- X[,-1, drop = FALSE]
        ssd <- ssd[-1]
     }

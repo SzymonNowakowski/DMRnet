@@ -1,4 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^doc$
-cran-comments.md
+^cran-comments.md$
+^CRAN-SUBMISSION$
