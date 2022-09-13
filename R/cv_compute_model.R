@@ -8,7 +8,7 @@ cv_compute_model<-function(model_function, Xtr, ytr, Xte, yte, real_n, lambda.fu
     Xtr <- Xtr[,-singular, drop=FALSE]
   }
   if (ncol(Xtr) == 0) {
-    stop("Unable to perform cross validation. No columns in training set have any variablity in one of the folds")
+    stop("Unable to perform cross validation. No columns in training set have any variability in one of the folds.")
   }
 
   model <- model_function(Xtr, ytr, ..., lambda = lambda.full)
@@ -30,7 +30,7 @@ cv_compute_model<-function(model_function, Xtr, ytr, Xte, yte, real_n, lambda.fu
 
   #TODO: maybe one can do better if all test data is removed in one of the folds?
   if (length(yte) == 0) {
-    stop("Unable to perform cross validation. Empty test set in one of the folds")
+    stop("Unable to perform cross validation. Empty test set in one of the folds.")
   }
 
   return (list(model=model, Xtr=Xtr, ytr=ytr, Xte=Xte, yte=yte, real_n=real_n))
