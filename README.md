@@ -29,26 +29,34 @@ After that, you can load the installed package into memory with a call to `libra
 ## Changes in DMRnet v. 0.3.1
 
 ### GLAMER added
+
 GLAMER stands for Group LAsso MERger and it is a new (simplified in relation to DMRnet) algorithm for which we prove partition selection consistency. It is the first result of that kind for high dimensional scenario. The relevant paper with algorithm description is the following: [Szymon Nowakowski, Piotr Pokarowski and Wojciech Rejchel, 2021. “Group Lasso Merger for Sparse Prediction with High-Dimensional Categorical Data.” arXiv:2112.11114](https://arxiv.org/abs/2112.11114)
 
 To use GLAMER pass `algorithm="glamer"` in a call to `DMRnet` or cross validation routine. GLAMER is not supported in `DMR`.
 
 ### Rebuild of the existing cross validation routine (models indexed by model dimension)
+
 The following changes were introduced to improve the existing model dimension-indexed cross validation:
 1. The net of lambda values is first calculated from the full data set and then this net is used for particular cross validation folds. 
 2. Apart from `df.min` which is the number of parameters of the model with minimal cross-validated error, the routine now returns `df.1se` which is the number of parameters of the smallest model falling under the upper curve of a prediction error plus one standard deviation. It can be used in `predict` for inference by passing `md="df.1se"` instead of the default `md="df.min"`.
-3. Corrected handling of mismatched factor levels (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
+3. Correct way of handling the mismatched factor levels (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
 
 To use the existing model dimension-indexed cross validation routine pass `indexation.mode="dimension"` in a call to `cv.DMRnet`.
+
 ### New cross validation routine (models indexed by GIC)
-A new alternative cross validation routine was introduced to improve the existing model quality. It indexes models by GIC. The method was proposed and first implemented for gaussian family by Piotr Pokarowski. The new method additional features are:
+
+A new cross validation routine was introduced to improve the existing model quality. It indexes models by GIC. The method was proposed and first implemented for gaussian family by Piotr Pokarowski. The new method additional features are:
 1. The net of lambda values is first calculated from the full data set and then this net is used for particular cross validation folds. 
 2. Correct way of handling the mismatched factor levels (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
 
-To use the new GIC-indexed cross validation routine pass `indexation.mode=GIC"` in a call to `cv.DMRnet`.
 
 The new cross validation routine (models indexed by GIC) is the default starting from version >=0.3.1.
+
+To use the new GIC-indexed cross validation routine you can also pass explicitly `indexation.mode=GIC"` in a call to `cv.DMRnet`.
+
+
 ### Handling of mismatched factor levels
+
 The new treatment of factors in cross validation/`predict` and in `DMRnet`/`predict` pairs is based on the following analysis:
 
 Let us assume that
@@ -63,44 +71,49 @@ Let us also consider the following definitions:
 - `C=levels(Xtr)` is a set of factor levels in original data that `Xtr` originates from, but it is still assigned to `Xtr` via the `levels()` function. As a rule, when taking subsets, `R` does not eliminate redundant factors, so let us note that `C` is a superset of `A`.
 
 There are 4 classes of problems:
+
 1. `C` is a strict superset of `A`.
 
-   Then if treated naively, `DMRnet(...)` when constructing a model would throw an error,
-   because we would end up with `NaN` values in a column dedicated to this superfluous factor level (to be exact, it would happen when a columns gets normalized).
+   Then, if treated naively, `DMRnet(...)` when constructing a model would throw an error,
+   because we would end up with `NaN` values in a column dedicated to this superfluous factor level (to be exact, it would happen when columns get normalized).
 
-   The solution to that is very simple. Before the model gets constructed in `DMRnet` we recalculate the factor level set, `C_new`. Then `C_new=A`.
+   The solution to that is straightforward. Before the model gets constructed in `DMRnet` we recalculate the factor level set, `C_new`. Then `C_new=A`.
 
    **SOLVED**
-2. `B` does not contain a level(s) present in `A`.
+   
+1. `B` does not contain a level(s) present in `A`.
 
    (sample case: we did sample to `Xtr` the single Dutch national from the [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data), and he is not present in `Xte`,
    because there is only one instance of Dutch national in the whole Insurance data set).
    As a result `predict(...)` would throw an error, because expanded model-matrix dimensions would be conflicting.
 
-   The solution is simple here, too: in constructing a model make a note about true `A` set (it is stored in `levels.listed` variable in a model)
+   The solution is simple here, too: in constructing a model make a note about the true `A` set (technically, it gets stored into `levels.listed` variable in a model)
    and then in `predict(...)` assign the levels of `Xte` to be equal to `A`. Only then create the model-matrix.
 
    **SOLVED**
-3. `B` contains a factor level(s) not present in `A`, AND we are doing CV, so we have access to `Xtr`.
+   
+1. `B` contains a factor level(s) not present in `A`, AND we are doing CV, so we have access to `Xtr`.
 
    The solution is to remove the rows with levels that are going to cause problems later in `predict(...)` from `Xte` before the prediction.
    The other solution would be to predict using unknown.factor.levels="NA" flag and then eliminate the `NAs` from comparisons (this solution is NOT used at present)
 
    **SOLVED**
 
-4. `B` contains a factor level(s) not present in `A`, AND we are NOT doing CV, so we have no access to `Xtr`.
+1. `B` contains a factor level(s) not present in `A`, AND we are NOT doing CV, so we have no access to `Xtr`.
 
    This case is problematic because this situation gets identified too late - we are already in `predict(...)`.
-   At this point, only the model created by `DMRnet(...)` function and passed to `predict(...)` is known.
-   We cannot perform inference and we cannot perform any imputation for the problematic data point, either (we don't know `Xtr` and have no access to it).
+   At this point, only the model created by `DMRnet(...)` function
+   (which got passed into `predict(...)` function) is known.
+   We cannot perform inference and we cannot perform any imputation for the problematic data point, either 
+   (we don't know `Xtr` and have no access to it).
    
    All that remains is to throw an error (when `unknown.factor.levels="error"`, the default) OR
-   eliminate the problematic rows, predict, and then replenish the result with `NAs` in place of problematic values (when `unknown.factor.levels="NA"`).
+   eliminate the problematic rows, predict, and then replenish the result with `NAs` in place 
+   of problematic values (when `unknown.factor.levels="NA"`).
 
-   And this solution is not fully satisfactory, thus this case remains **PROBLEMATIC**.
+   None of this solutions is fully satisfactory, thus this case remains **PROBLEMATIC**.
 
 ### Stability improvements
-
 
 Generally speaking, matrix rank in real world scenarios is more a numerical concept than a mathematical concept and its value may differ depending on a threshold. Thus various kinds of problems result from data matrices close to singular:
 1. The pivots were added in SOSnet for gaussian families and as a consequence a non-full rank data matrix was handled correctly to some extent (see the next point).
@@ -115,6 +128,6 @@ Other improvements are the following:
 5. Fixing negative values in binomial case coming from `w_stats` from numerical instability when `Kan` was very close to 0 and `Var` is not symmetric, but `w_stats` assumes symmetric `Var` (problem observed in `DMRnet` for binomial family in [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data) - see hard_case_DMRnet_insurance.R` test file in `testing_branch`).
 6. There have been [cases of `grpreg` not observing a group constraint](https://github.com/pbreheny/grpreg/issues/54) (i.e. a condition that either all betas are zero, or all betas are non-zero within a group) in [Promoter data set](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+%28Promoter+Gene+Sequences%29) - see `hard_case_DMRnet_promoter.R` test file in `testing_branch`. Some betas that belonged to groups > 0 were not strictly > 0. It was problematic in GLAMER only, as DMRnet recalculated the t-statistics and was not constrained by initial beta values. It was fixed in GLAMER by adding a small constant to all betas in groups with at least one non-zero beta.
 
-
 ### Weight parameterization
+
 This remains to be introduced to GLAMER and DMRnet algorithms in future versions >0.3.1.
