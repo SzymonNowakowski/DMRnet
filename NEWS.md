@@ -1,6 +1,8 @@
 
 # DMRnet 0.3.1.9001
 
+- Startup message added
+
 # DMRnet 0.3.1
 
 ## Major changes
