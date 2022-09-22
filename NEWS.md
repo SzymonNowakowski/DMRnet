@@ -1,6 +1,8 @@
 
 # DMRnet 0.3.1.9002
 
+- Improved readability of a getting-started vignette
+
 # DMRnet 0.3.1.9001
 
 - Improved readability of Readme on CRAN ([issue #32](https://github.com/SzymonNowakowski/DMRnet/issues/32))
