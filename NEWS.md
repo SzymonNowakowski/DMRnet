@@ -1,7 +1,8 @@
 
 # DMRnet 0.3.1.9001
 
-- Startup message added
+- Improved readability of Readme on CRAN ([issue #32](https://github.com/SzymonNowakowski/DMRnet/issues/32))
+- Welcome message on package load added
 
 # DMRnet 0.3.1
 
