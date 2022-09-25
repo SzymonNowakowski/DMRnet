@@ -55,7 +55,7 @@ As this vignette is introductory only, and the choice of an algorithm is a somew
 To load the package into memory execute the following line:
 
 ```{r setup}
-library(DMRnet)              
+library(DMRnet)
 ```
 
 `DMRnet` package features two built-in data sets: [Promoter](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+\%28Promoter+Gene+Sequences\%29) and Miete [Fahrmeir *et al.*, 2004]. 

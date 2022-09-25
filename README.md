@@ -37,8 +37,11 @@ To use GLAMER pass `algorithm="glamer"` in a call to `DMRnet` or cross validatio
 ### Rebuild of the existing cross validation routine (models indexed by model dimension)
 
 The following changes were introduced to improve the existing model dimension-indexed cross validation:
+
 1. The net of lambda values is first calculated from the full data set and then this net is used for particular cross validation folds. 
-2. Apart from `df.min` which is the number of parameters of the model with minimal cross-validated error, the routine now returns `df.1se` which is the number of parameters of the smallest model falling under the upper curve of a prediction error plus one standard deviation. It can be used in `predict` for inference by passing `md="df.1se"` instead of the default `md="df.min"`.
+
+2. Apart from `df.min` which is the model with minimal cross-validated error, the routine now returns `df.1se` which is the smallest model falling under the upper curve of a prediction error plus one standard deviation. It can be used in `predict` for inference by passing `md="df.1se"` instead of the default `md="df.min"`.
+
 3. Correct way of handling the mismatched factor levels (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
 
 To use the existing model dimension-indexed cross validation routine pass `indexation.mode="dimension"` in a call to `cv.DMRnet`.
@@ -46,9 +49,12 @@ To use the existing model dimension-indexed cross validation routine pass `index
 ### New cross validation routine (models indexed by GIC)
 
 A new cross validation routine was introduced to improve the existing model quality. It indexes models by GIC. The method was proposed and first implemented for gaussian family by Piotr Pokarowski. The new method additional features are:
-1. The net of lambda values is first calculated from the full data set and then this net is used for particular cross validation folds. 
-2. Correct way of handling the mismatched factor levels (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
 
+1. The net of lambda values is first calculated from the full data set and then this net is used for particular cross validation folds.
+
+2. The routine returns `df.min` which is the smallest model minimizing the prediction error and `df.1se` which is the smallest model falling under the upper curve of a prediction error plus one standard deviation. The latter can be used in `predict` for inference by passing `md="df.1se"` instead of the default `md="df.min"`.
+
+3. Correct way of handling the mismatched factor levels (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
 
 The new cross validation routine (models indexed by GIC) is the default starting from version >=0.3.1.
 
