@@ -7,11 +7,13 @@
 
 # DMRnet
 
-This is a repository for DMRnet — Delete or Merge Regressors algorithms for linear and logistic model selection with high-dimensional data (the number of regressors may exceed the number of observations). The predictors can be continuous or categorical. The selected model consists of a subset of numerical regressors and partitions of levels of factors.
+DMRnet (Delete or Merge Regressors) is a suit of algorithms for linear and logistic model selection with high-dimensional data (i.e. the number of regressors may exceed the number of observations). The predictors can be continuous or categorical. The selected model consists of a subset of numerical regressors and partitions of levels of factors. 
+
+For information on how to get started using DMRnet, see our [getting started vignette](https://cran.r-project.org/web/packages/DMRnet/vignettes/getting-started.html).
 
 ## Installing `DMRnet` package
 
-To install the development package version (currently: 0.3.1.9001) please execute
+To install the development package version (currently: 0.3.1.9002) please execute
 ```
 library(devtools)
 devtools::install_github("SzymonNowakowski/DMRnet")
