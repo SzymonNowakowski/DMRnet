@@ -26,40 +26,27 @@ install.packages("DMRnet")
 After that, you can load the installed package into memory with a call to `library(DMRnet)`.
 
 
-## Changes in DMRnet v. 0.3.1
+## Features
 
 ### GLAMER added
 
-GLAMER stands for Group LAsso MERger and it is a new (simplified in relation to DMRnet) algorithm for which we prove partition selection consistency. It is the first result of that kind for high dimensional scenario. The relevant paper with algorithm description is the following: [Szymon Nowakowski, Piotr Pokarowski and Wojciech Rejchel, 2021. “Group Lasso Merger for Sparse Prediction with High-Dimensional Categorical Data.” arXiv:2112.11114](https://arxiv.org/abs/2112.11114)
+GLAMER was added in 0.3.1 version of the package. GLAMER stands for Group LAsso MERger and it is a new (simplified in relation to DMRnet) algorithm for which we prove partition selection consistency. It is the first result of that kind for high dimensional scenario. The relevant paper with algorithm description is the following: [Szymon Nowakowski, Piotr Pokarowski and Wojciech Rejchel, 2021. “Group Lasso Merger for Sparse Prediction with High-Dimensional Categorical Data.” arXiv:2112.11114](https://arxiv.org/abs/2112.11114)
 
-To use GLAMER pass `algorithm="glamer"` in a call to `DMRnet` or cross validation routine. GLAMER is not supported in `DMR`.
+To use GLAMER pass `algorithm="glamer"` in a call to `DMRnet()` or cross validation routine `cv.DMRnet()`. GLAMER is not supported in `DMR`.
 
-### Rebuild of the existing cross validation routine (models indexed by model dimension)
+### Two cross validation routines
 
-The following changes were introduced to improve the existing model dimension-indexed cross validation:
+A new cross validation routine was introduced to improve the computed model quality. It indexes models by GIC. The method was proposed and first implemented for *gaussian* family by Piotr Pokarowski. Since 0.3.1 version of the package it has been built into `DMRnet` for both *gaussian* and *binomial* families. 
 
-1. The net of lambda values is first calculated from the full data set and then this net is used for particular cross validation folds. 
+All in all, the cross validation features in the package are the following:
 
-2. Apart from `df.min` which is the model with minimal cross-validated error, the routine now returns `df.1se` which is the smallest model falling under the upper curve of a prediction error plus one standard deviation. It can be used in `predict` for inference by passing `md="df.1se"` instead of the default `md="df.min"`.
+1. Models can be indexed by GIC or by model dimension. The relevant setting is selected with, respectively, `indexation.mode="GIC"` or `indexation.mode="dimension"` parameter in a call to `cv.DMRnet()`. The setting that indexes models by GIC has been the default since 0.3.1 version of the package.
 
-3. Correct way of handling the mismatched factor levels (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
+2. The net of lambda values is first calculated from the full data set and then this net is used for particular cross validation folds. The motivation behind this change is to stabilize the results.
 
-To use the existing model dimension-indexed cross validation routine pass `indexation.mode="dimension"` in a call to `cv.DMRnet`.
+3. Apart from `df.min`, which is the model with minimal cross-validated error, the routines now return `df.1se` which is the smallest model falling under the upper curve of a prediction error plus one standard deviation. It can be used in `predict()` for inference by passing `md="df.1se"` instead of the default `md="df.min"`.
 
-### New cross validation routine (models indexed by GIC)
-
-A new cross validation routine was introduced to improve the existing model quality. It indexes models by GIC. The method was proposed and first implemented for gaussian family by Piotr Pokarowski. The new method additional features are:
-
-1. The net of lambda values is first calculated from the full data set and then this net is used for particular cross validation folds.
-
-2. The routine returns `df.min` which is the smallest model minimizing the prediction error and `df.1se` which is the smallest model falling under the upper curve of a prediction error plus one standard deviation. The latter can be used in `predict` for inference by passing `md="df.1se"` instead of the default `md="df.min"`.
-
-3. Correct way of handling the mismatched factor levels (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
-
-The new cross validation routine (models indexed by GIC) is the default starting from version >=0.3.1.
-
-To use the new GIC-indexed cross validation routine you can also pass explicitly `indexation.mode=GIC"` in a call to `cv.DMRnet`.
-
+4. Cross validation handles the mismatched factor levels in a way that minimizes incorrect behavior (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
 
 ### Handling of mismatched factor levels
 
@@ -121,28 +108,9 @@ There are 4 classes of problems:
 
 ### Stability improvements
 
-Generally speaking, matrix rank in real world scenarios is more a numerical concept than a mathematical concept and its value may differ depending on a threshold. Thus various kinds of problems result from data matrices close to singular:
+Generally speaking, matrix rank in real world scenarios is more a numerical concept than a mathematical concept and its value may differ depending on a threshold. Thus various kinds of problems result from data matrices close to singular. Since 0.3.1 version of the package, the work has been devoted to improve stability of computations with such ill-defined matrices. See `NEWS.md` for more information on detailed stability improvements.
 
-1. The pivots were added in SOSnet for gaussian families and as a consequence a non-full rank data matrix was handled correctly to some extent (see the next point).
-
-2. Numerical instability of QR decomposition in SOSnet for gaussian families (when rank is *much* lower than columns provided) may have resulted in crashes in QR decomposition, thus a `try`-`catch` clause was used to recalculate QR decomposition but only for pivoted columns within rank in case of failure of the original QR attempt.
-
-3. Adding the regularization in gaussian family in `DMR` (note that this execution path is used in `DMRnet` too) in a form of adding an infinitesimally small diagonal matrix to `R` after QR decomposition calculation.
-
-4. Fixing NA values resulting in attempting non-penalized regression in case of non-full rank design matrices.
-
-Other improvements are the following:
-
-1. Fixing how the parameters get passed in `plot` family of functions.
-
-2. Updating how `coef` presents parameters: only non-zero coefficients get returned.
-
-3. Fixing the error in `DRMnet` and cross validation in handling data with a single two-factor column, by adding `drop=FALSE` statement.
-
-4. Fixing negative values in binomial case coming from `w_stats` from numerical instability when `Kan` was very close to 0 and `Var` is not symmetric, but `w_stats` assumes symmetric `Var` (problem observed in `DMRnet` for binomial family in [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data) - see hard_case_DMRnet_insurance.R` test file in `testing_branch`).
-
-5. There have been [cases of `grpreg` not observing a group constraint](https://github.com/pbreheny/grpreg/issues/54) (i.e. a condition that either all betas are zero, or all betas are non-zero within a group) in [Promoter data set](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+%28Promoter+Gene+Sequences%29) - see `hard_case_DMRnet_promoter.R` test file in `testing_branch`. Some betas that belonged to groups > 0 were not strictly > 0. It was problematic in GLAMER only, as DMRnet recalculated the t-statistics and was not constrained by initial beta values. It was fixed in GLAMER by adding a small constant to all betas in groups with at least one non-zero beta.
 
 ### Weight parameterization
 
-This remains to be introduced to GLAMER and DMRnet algorithms in future versions >0.3.1.
+This remains to be introduced to GLAMER and DMRnet algorithms in future versions.
