@@ -1,5 +1,16 @@
 
+# DMRnet 0.3.1.9002
+
+- Improved readability of a getting-started vignette
+- Fixed a bug in model-indexed cross validation related to folds with different model sizes
+- Added df.1se to GIC-indexed cross validation
+- Improved CV plots with df.1se model
+
+
 # DMRnet 0.3.1.9001
+
+- Improved readability of Readme on CRAN ([issue #32](https://github.com/SzymonNowakowski/DMRnet/issues/32))
+- Welcome message on package load added
 
 # DMRnet 0.3.1
 

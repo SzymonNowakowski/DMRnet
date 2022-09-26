@@ -55,7 +55,7 @@ As this vignette is introductory only, and the choice of an algorithm is a somew
 To load the package into memory execute the following line:
 
 ```{r setup}
-library(DMRnet)              
+library(DMRnet)
 ```
 
 `DMRnet` package features two built-in data sets: [Promoter](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+\%28Promoter+Gene+Sequences\%29) and Miete [Fahrmeir *et al.*, 2004]. 
@@ -73,7 +73,7 @@ y <- miete$rent
 head(X)
 ```
 
-Out of 9 categorical variables 7 have 2 levels each, and the two remaining (`area` and `rooms`) have 25 and 6 levels, respectively. This sums up to 45 levels. The way `DMRnet` handles levels results in 36 parameters for the categorical variables (the first level in each categorical variable is already considered included in the intercept). The 2 continuous variables give 2 additional parameters, which totals in $p = 39$ (including one parameter for the intercept).
+Out of 9 categorical variables 7 have 2 levels each, and the two remaining (`area` and `rooms`) have 25 and 6 levels, respectively. This sums up to 45 levels. The way `DMRnet` handles levels results in 36 parameters for the categorical variables (the first level in each categorical variable is already considered included in the intercept). The 2 continuous variables give 2 additional parameters, the intercept is one more, so it totals in $p = 39$.
 
 # Estimating and inspecting a sequence of models
 
@@ -102,7 +102,7 @@ To inspect the coefficients for a particular model in detail, one can use the `c
 coef(models, df=10)
 ```
 
-Notice how `area`-related coefficients are all equal, effectively merging all 12 listed `area` levels with a coefficient -55.36 and merging all 13 remaining `area` levels with a coefficient 0.0.
+Notice how `area`-related coefficients are all equal, effectively merging all 12 listed `area` levels with a coefficient -55.36 and merging all 13 remaining `area` levels with a coefficient 0.0. The 13 remaining `area` levels merged with a coefficient 0.0 were unlisted in a printout above. The reason behind it is that only non-zero coefficients get listed in the `coef()` function.
 
 # Selecting best models
 
@@ -130,7 +130,7 @@ coef(gic.model)
 
 ## Model selection with $K$-fold Cross Validation
 
-The default $K$ value is 10. Because the data needs to be partitioned into CV subsets which alternate as training and validating sets, the precomputed sequence of models in `models` variable cannot be used directly, as was the case with GIC-based model selection. Alternatively, to perform a 10-fold CV-based model selection execute
+The default $K$ value is 10. Because the data needs to be partitioned into CV subsets which alternate as training and validating sets, the precomputed sequence of models in `models` variable cannot be used directly, as was the case with GIC-based model selection. Instead, to perform a 10-fold CV-based model selection execute
 
 ```{r cross-validation, fig.height=4, fig.width=6, small.mar=TRUE}
 cv.model <- cv.DMRnet(X, y)

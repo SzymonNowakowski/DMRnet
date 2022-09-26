@@ -75,15 +75,19 @@ cv_MD_indexed <- function(X, y, nfolds, model_function, ...) {
                         stop("Error: wrong family, should be one of: gaussian, binomial")
                 }
         }
-        foldmin <- min(sapply(error, length))
+        foldmin <- min(c(sapply(error, length), length(model.full$df)))   #taking into consideration the length of a full model, which may be SMALLER than in any of the folds
         error <- sapply(1:length(error), function(i) error[[i]][(length(error[[i]]) - foldmin + 1) : length(error[[i]])])
         error <- rowSums(error)/real_n
+        #error stores classification errors for models sized foldmin -> 1
 
-        kt <- which(error == min(stats::na.omit(error)))
-        df.min <- model$df[kt[length(kt)]]
+        kt <- which(error == min(stats::na.omit(error)))   #kt stores indexes in error equal to a minimum error.
+                #if there is more than one such index, the LAST one is the one returned, because LAST means a smaller model.
+        df.min <- model$df[length(error[[nfolds]]) - foldmin + kt[length(kt)]]   #model is a model computed in the last cross validation fold (==nfolds)
+              #so in case there are differences in model lengths in cv folds, the model size in that particular model needs to be shifted
 
         kt <- which(error <= min(stats::na.omit(error)) + stats::sd(stats::na.omit(error)))
-        df.1se <- model$df[kt[length(kt)]]
+        df.1se <- model$df[length(error[[nfolds]]) - foldmin + kt[length(kt)]]
+
 
         out <- list(df.min = df.min, df.1se = df.1se, dmr.fit = model.full, cvm = error, foldid = foldid)
         return(out)

@@ -5,9 +5,7 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
         if (family == "gaussian"){
                 n <- length(y)
                 real_n <- 0 #recount  of test instances
-                #PP new code foldid <- cvfolds(n, nfolds)
                 foldid <- sample(rep(1:nfolds,length.out=n))   #PP replaces cvfolds by a simpler sample(rep()) function
-                #PP new code error <- list()
                 err <- list(); rss <- list(); #md <- list()
 
                 model.full <- model_function(X, y, ...)
@@ -37,19 +35,12 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
 
                 }
 
-                #PP new code foldmin <- min(sapply(error, length))
-                #            error <- sapply(1:length(error), function(i) error[[i]][(length(error[[i]]) - foldmin + 1) : length(error[[i]])])
-                #            error <- rowSums(error)/n
+
                 len_err <- sapply(err, length)
                 foldmin <- min(len_err)
                 ERR <- sapply(1:nfolds, function(i) err[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
                 #err <- rowMeans(ERR); kt <- which(err == min(err)); df.min <- dmr$df[kt[length(kt)]]; plot(err, type="o")
 
-
-
-
-                #PP new code kt <- which(error == min(error))
-                #            df.min <- dmr$df[kt[length(kt)]]
                 p1 <- model.full$df[1]
                 s2 <- model.full$rss[1]/(n-p1)
                 Const <- exp(seq(log(2/50),log(2*50), length=80))
@@ -63,13 +54,9 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
 
                 r <- model.full$rss
                 kt <- which(errGIC == min(errGIC))
-                indGIC <- kt[length(kt)]
+                indGIC <- kt[length(kt)]    #TODO: why last?
                 gic.full <- (r+laGIC[indGIC]*length(r):1)/(real_n*s2)
                 #plot(gic.full[length(gic.full):1])
-                indMod <- which.min(gic.full)
-                df.min <- model.full$df[indMod]
-
-
 
         } else{
                 if (family == "binomial"){
@@ -119,9 +106,6 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
 
                         }
 
-                        #PP new code foldmin <- min(sapply(error, length))
-                        #            error <- sapply(1:length(error), function(i) error[[i]][(length(error[[i]]) - foldmin + 1) : length(error[[i]])])
-                        #            error <- rowSums(error)/(n1+n2)
                         len_err <- sapply(err, length)
                         foldmin <- min(len_err)
                         ERR <- sapply(1:nfolds, function(i) err[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
@@ -131,8 +115,6 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
 
 
 
-                        #SzN new code based on PP's new code kt <- which(error == min(error))
-                        #            df.min <- dmr$df[kt[length(kt)]]
                         p1 <- model.full$df[1]
                         Const <- exp(seq(log(2/50),log(2*50), length=80))
                         laGIC <- Const*log(p1)
@@ -145,18 +127,24 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
 
                         ll <- -2*model.full$loglik
                         kt <- which(errGIC == min(errGIC))
-                        indGIC <- kt[length(kt)]
+                        indGIC <- kt[length(kt)]    #TODO: why last?
                         gic.full <- (ll+laGIC[indGIC]*length(ll):1)/real_n
                         #plot(gic.full[length(gic.full):1])
-                        indMod <- which.min(gic.full)
-                        df.min <- model.full$df[indMod]
 
                 }
                 else{
                         stop("Error: wrong family, should be one of: gaussian, binomial")
                 }
         }
-        #PP: out <- list(df.min = df.min, dmr.fit = dmr.fit, cvm = error, foldid = foldid)
-        out <- list(df.min = df.min, df.1se = NULL, dmr.fit = model.full, cvm = gic.full, foldid = foldid)
+        kt <- which(gic.full == min(stats::na.omit(gic.full))) #kt stores indexes in error equal to a minimum error.
+        #if there is more than one such index, the LAST one is the one returned, because LAST means a smaller model.
+        indMod <- kt[length(kt)]
+        df.min <- model.full$df[indMod]
+
+        kt <- which(gic.full <= min(stats::na.omit(gic.full)) + stats::sd(stats::na.omit(gic.full)))
+        indMod <- kt[length(kt)]
+        df.1se <- model.full$df[indMod]
+
+        out <- list(df.min = df.min, df.1se = df.1se, dmr.fit = model.full, cvm = gic.full, foldid = foldid)
         return(out)
 }

@@ -24,10 +24,10 @@
 #' @export
 coef.cv.DMR <- function(object, md="df.min", ...){
 
-  if (md=="df.1se" & !is.null(object$df.1se)) {
+  if (md=="df.1se") {#} & !is.null(object$df.1se)) {
     out <- coef.DMR(object$dmr.fit, df = object$df.1se)
-  } else if (md=="df.1se") {   #object$df.1se is null
-    stop("Error: required the smallest model falling under the upper curve of a prediction error plus one standard deviation, but it is not set. Use size=`df.min` instead, for the model minimizing the cross validation error.")
+  #} else if (md=="df.1se") {   #object$df.1se is null
+  #  stop("Error: required the smallest model falling under the upper curve of a prediction error plus one standard deviation, but it is not set. Use size=`df.min` instead, for the model minimizing the cross validation error.")
   } else if (md=="df.min") {
     out <- coef.DMR(object$dmr.fit, df = object$df.min)
   } else{

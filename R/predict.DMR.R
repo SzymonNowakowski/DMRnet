@@ -76,7 +76,10 @@ predict.DMR <- function(object, newx, df = NULL, type = "link", unknown.factor.l
                          out <- Z%*%object$beta
                          colnames(out) <- paste("df", object$df, sep = "")
          } else {
-                         out <- Z%*%object$beta[,ncol(object$beta) - df + 1]
+                  if (df>ncol(object$beta)) {
+                    stop(paste("Error: requested prediction for model size df =",df,"exceeding maximum model size available which is", ncol(object$beta)))
+                  }
+                  out <- Z%*%object$beta[,ncol(object$beta) - df + 1]
          }
          if(type == "response" | type == "class"){
                  out <- exp(out)

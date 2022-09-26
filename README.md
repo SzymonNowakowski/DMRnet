@@ -26,29 +26,30 @@ install.packages("DMRnet")
 After that, you can load the installed package into memory with a call to `library(DMRnet)`.
 
 
-## Changes in DMRnet v. 0.3.1
+## Features
 
 ### GLAMER added
-GLAMER stands for Group LAsso MERger and it is a new (simplified in relation to DMRnet) algorithm for which we prove partition selection consistency. It is the first result of that kind for high dimensional scenario. The relevant paper with algorithm description is the following: [Szymon Nowakowski, Piotr Pokarowski and Wojciech Rejchel, 2021. “Group Lasso Merger for Sparse Prediction with High-Dimensional Categorical Data.” arXiv:2112.11114](https://arxiv.org/abs/2112.11114)
 
-To use GLAMER pass `algorithm="glamer"` in a call to `DMRnet` or cross validation routine. GLAMER is not supported in `DMR`.
+GLAMER was added in 0.3.1 version of the package. GLAMER stands for Group LAsso MERger and it is a new (simplified in relation to DMRnet) algorithm for which we prove partition selection consistency. It is the first result of that kind for high dimensional scenario. The relevant paper with algorithm description is the following: [Szymon Nowakowski, Piotr Pokarowski and Wojciech Rejchel, 2021. “Group Lasso Merger for Sparse Prediction with High-Dimensional Categorical Data.” arXiv:2112.11114](https://arxiv.org/abs/2112.11114)
 
-### Rebuild of the existing cross validation routine (models indexed by model dimension)
-The following changes were introduced to improve the existing model dimension-indexed cross validation:
-1. The net of lambda values is first calculated from the full data set and then this net is used for particular cross validation folds. 
-2. Apart from `df.min` which is the number of parameters of the model with minimal cross-validated error, the routine now returns `df.1se` which is the number of parameters of the smallest model falling under the upper curve of a prediction error plus one standard deviation. It can be used in `predict` for inference by passing `md="df.1se"` instead of the default `md="df.min"`.
-3. Corrected handling of mismatched factor levels (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
+To use GLAMER pass `algorithm="glamer"` in a call to `DMRnet()` or cross validation routine `cv.DMRnet()`. GLAMER is not supported in `DMR`.
 
-To use the existing model dimension-indexed cross validation routine pass `indexation.mode="dimension"` in a call to `cv.DMRnet`.
-### New cross validation routine (models indexed by GIC)
-A new alternative cross validation routine was introduced to improve the existing model quality. It indexes models by GIC. The method was proposed and first implemented for gaussian family by Piotr Pokarowski. The new method additional features are:
-1. The net of lambda values is first calculated from the full data set and then this net is used for particular cross validation folds. 
-2. Correct way of handling the mismatched factor levels (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
+### Two cross validation routines
 
-To use the new GIC-indexed cross validation routine pass `indexation.mode=GIC"` in a call to `cv.DMRnet`.
+A new cross validation routine was introduced to improve the computed model quality. It indexes models by GIC. The method was proposed and first implemented for *gaussian* family by Piotr Pokarowski. Since 0.3.1 version of the package it has been built into `DMRnet` for both *gaussian* and *binomial* families. 
 
-The new cross validation routine (models indexed by GIC) is the default starting from version >=0.3.1.
+All in all, the cross validation features in the package are the following:
+
+1. Models can be indexed by GIC or by model dimension. The relevant setting is selected with, respectively, `indexation.mode="GIC"` or `indexation.mode="dimension"` parameter in a call to `cv.DMRnet()`. The setting that indexes models by GIC has been the default since 0.3.1 version of the package.
+
+2. The net of lambda values is first calculated from the full data set and then this net is used for particular cross validation folds. The motivation behind this change is to stabilize the results.
+
+3. Apart from `df.min`, which is the model with minimal cross-validated error, the routines now return `df.1se` which is the smallest model falling under the upper curve of a prediction error plus one standard deviation. It can be used in `predict()` for inference by passing `md="df.1se"` instead of the default `md="df.min"`.
+
+4. Cross validation handles the mismatched factor levels in a way that minimizes incorrect behavior (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
+
 ### Handling of mismatched factor levels
+
 The new treatment of factors in cross validation/`predict` and in `DMRnet`/`predict` pairs is based on the following analysis:
 
 Let us assume that
@@ -63,61 +64,56 @@ Let us also consider the following definitions:
 - `C=levels(Xtr)` is a set of factor levels in original data that `Xtr` originates from, but it is still assigned to `Xtr` via the `levels()` function. As a rule, when taking subsets, `R` does not eliminate redundant factors, so let us note that `C` is a superset of `A`.
 
 There are 4 classes of problems:
+
 1. `C` is a strict superset of `A`.
 
-   Then if treated naively, `DMRnet(...)` when constructing a model would throw an error,
-   because we would end up with `NaN` values in a column dedicated to this superfluous factor level (to be exact, it would happen when a columns gets normalized).
+   Then, if treated naively, `DMRnet(...)` when constructing a model would throw an error,
+   because we would end up with `NaN` values in a column dedicated to this superfluous factor level (to be exact, it would happen when columns get normalized).
 
-   The solution to that is very simple. Before the model gets constructed in `DMRnet` we recalculate the factor level set, `C_new`. Then `C_new=A`.
+   The solution to that is straightforward. Before the model gets constructed in `DMRnet` we recalculate the factor level set, `C_new`. Then `C_new=A`.
 
    **SOLVED**
-2. `B` does not contain a level(s) present in `A`.
+   
+1. `B` does not contain a level(s) present in `A`.
 
    (sample case: we did sample to `Xtr` the single Dutch national from the [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data), and he is not present in `Xte`,
    because there is only one instance of Dutch national in the whole Insurance data set).
    As a result `predict(...)` would throw an error, because expanded model-matrix dimensions would be conflicting.
 
-   The solution is simple here, too: in constructing a model make a note about true `A` set (it is stored in `levels.listed` variable in a model)
+   The solution is simple here, too: in constructing a model make a note about the true `A` set (technically, it gets stored into `levels.listed` variable in a model)
    and then in `predict(...)` assign the levels of `Xte` to be equal to `A`. Only then create the model-matrix.
 
    **SOLVED**
-3. `B` contains a factor level(s) not present in `A`, AND we are doing CV, so we have access to `Xtr`.
+   
+1. `B` contains a factor level(s) not present in `A`, AND we are doing CV, so we have access to `Xtr`.
 
    The solution is to remove the rows with levels that are going to cause problems later in `predict(...)` from `Xte` before the prediction.
    The other solution would be to predict using unknown.factor.levels="NA" flag and then eliminate the `NAs` from comparisons (this solution is NOT used at present)
 
    **SOLVED**
 
-4. `B` contains a factor level(s) not present in `A`, AND we are NOT doing CV, so we have no access to `Xtr`.
+1. `B` contains a factor level(s) not present in `A`, AND we are NOT doing CV, so we have no access to `Xtr`.
 
    This case is problematic because this situation gets identified too late - we are already in `predict(...)`.
-   At this point, only the model created by `DMRnet(...)` function and passed to `predict(...)` is known.
-   We cannot perform inference and we cannot perform any imputation for the problematic data point, either (we don't know `Xtr` and have no access to it).
+   At this point, only the model created by `DMRnet(...)` function
+   (which got passed into `predict(...)` function) is known.
+   We cannot perform inference and we cannot perform any imputation for the problematic data point, either 
+   (we don't know `Xtr` and have no access to it).
    
    All that remains is to throw an error (when `unknown.factor.levels="error"`, the default) OR
-   eliminate the problematic rows, predict, and then replenish the result with `NAs` in place of problematic values (when `unknown.factor.levels="NA"`).
+   eliminate the problematic rows, predict, and then replenish the result with `NAs` in place 
+   of problematic values (when `unknown.factor.levels="NA"`).
 
-   And this solution is not fully satisfactory, thus this case remains **PROBLEMATIC**.
+   None of this solutions is fully satisfactory, thus this case remains **PROBLEMATIC**.
 
 ### Stability improvements
 
-
-Generally speaking, matrix rank in real world scenarios is more a numerical concept than a mathematical concept and its value may differ depending on a threshold. Thus various kinds of problems result from data matrices close to singular:
-1. The pivots were added in SOSnet for gaussian families and as a consequence a non-full rank data matrix was handled correctly to some extent (see the next point).
-2. Numerical instability of QR decomposition in SOSnet for gaussian families (when rank is *much* lower than columns provided) may have resulted in crashes in QR decomposition, thus a `try`-`catch` clause was used to recalculate QR decomposition but only for pivoted columns within rank in case of failure of the original QR attempt.
-3. Adding the regularization in gaussian family in `DMR` (note that this execution path is used in `DMRnet` too) in a form of adding an infinitesimally small diagonal matrix to `R` after QR decomposition calculation.
-4. Fixing NA values resulting in attempting non-penalized regression in case of non-full rank design matrices.
-
-Other improvements are the following:
-1. Fixing how the parameters get passed in `plot` family of functions.
-2. Updating how `coef` presents parameters: only non-zero coefficients get returned.
-4. Fixing the error in `DRMnet` and cross validation in handling data with a single two-factor column, by adding `drop=FALSE` statement.
-5. Fixing negative values in binomial case coming from `w_stats` from numerical instability when `Kan` was very close to 0 and `Var` is not symmetric, but `w_stats` assumes symmetric `Var` (problem observed in `DMRnet` for binomial family in [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data) - see hard_case_DMRnet_insurance.R` test file in `testing_branch`).
-6. There have been [cases of `grpreg` not observing a group constraint](https://github.com/pbreheny/grpreg/issues/54) (i.e. a condition that either all betas are zero, or all betas are non-zero within a group) in [Promoter data set](https://archive.ics.uci.edu/ml/datasets/Molecular+Biology+%28Promoter+Gene+Sequences%29) - see `hard_case_DMRnet_promoter.R` test file in `testing_branch`. Some betas that belonged to groups > 0 were not strictly > 0. It was problematic in GLAMER only, as DMRnet recalculated the t-statistics and was not constrained by initial beta values. It was fixed in GLAMER by adding a small constant to all betas in groups with at least one non-zero beta.
+Generally speaking, matrix rank in real world scenarios is more a numerical concept than a mathematical concept and its value may differ depending on a threshold. Thus various kinds of problems result from data matrices close to singular. Since 0.3.1 version of the package, the work has been devoted to improve stability of computations with such ill-defined matrices. See `NEWS.md` for more information on detailed stability improvements.
 
 
 ### Weight parameterization
-This remains to be introduced to GLAMER and DMRnet algorithms in future versions >0.3.1.
+
+This remains to be introduced to GLAMER and DMRnet algorithms in future versions.
 
 ## Purpose of the `testing_branch`
 
@@ -125,24 +121,24 @@ The `testing_branch` GitHub branch serves double purpose.
 
 ### Consistency with previous package versions
 
-The first purpose is testing agreement of the results obtained for the new version v. 0.3.1 and the older version v. 0.2.0.
+The first purpose is testing agreement of the results obtained for the new versions and the older version v. 0.2.0.
 
 1. In the summer of 2021 massive experiments were performed with DMRnet v. 0.2.0 
    and with new implementation of GLAMER and two new external cross validation routines, 
-   which got later implemented into DMRnet v. 0.3.1. In the scope of the experiments 
+   which got later implemented into DMRnet. In the scope of the experiments 
    model dimension and prediction error was calculated in the 4 data sets in 200 independent runs.
 
    The two new cross validation routines were
    - `cvg` which stands for "(c)ross (v)alidation with models indexed with (G)IC" 
-      and in the v. 0.3.1 is available in DMRnet by simply passing `indexation.mode=GIC"` 
+      and since 0.3.1 version of the package is available in DMRnet by simply passing `indexation.mode=GIC"` 
       in a call to `cv.DMRnet`.
    - `cv+sd` which is a regular cross validation with models indexed by model dimension, but
       returning (instead of the best model) the smallest model falling under the upper 
-      curve of a prediction error plus one standard deviation. In v. 0.3.1 it is now 
+      curve of a prediction error plus one standard deviation. Since 0.3.1 version of the package it is now 
       available in `predict` for inference, use it by passing `md="df.1se"` instead of the default `md="df.min"`.
    
    Throughout the experiments, the models were also selected with a regular GIC
-   criterion, both in DMRnet and in GLAMER. The GIC criterion was available in v. 0.2.0 for DMRnet and in v. 0.3.1 both for DMRnet and for GLAMER. 
+   criterion, both in DMRnet and in GLAMER. The GIC criterion was available in v. 0.2.0 for DMRnet and since 0.3.1 version of the package for both DMRnet and for GLAMER. 
    
    The above possibilities give rise to many combinations of which 4 were selected for the final consideration:
    - `cv+sd.GLAMER` - GLAMER run with `cv+sd`.
@@ -152,11 +148,11 @@ The first purpose is testing agreement of the results obtained for the new versi
    
    The resulting model dimension and prediction error data was retained. 
    It creates opportunity to compare the expected distibutions of model dimension and prediction error 
-   with the actual distributions we get with a new package
+   with the actual distributions for new packages
    (we would expect to get the same results with the new 
-   version v. 0.3.1 as were obtained in the summer of 2021 with v. 0.2.0).
+   versions of the package as were obtained in the summer of 2021 with v. 0.2.0).
    
-   Care was taken to reproduce exactly the same results, as an example: the new calculations in v. 0.3.1
+   Care was taken to reproduce exactly the same results, as an example: the new calculations in new package versions
    were started from the same seed values. However, calculations in v. 0.2.0 were much less stable and required
    `try ... catch` block to complete. Thus, from the first failed (and restarted) calculation in v. 0.2.0 the 
    new and old results start to diverge. It does not eliminate possibility to compare the 
@@ -185,7 +181,7 @@ The first purpose is testing agreement of the results obtained for the new versi
    
 2. In the beginning of 2022 massive experiments were performed with DMRnet v. 0.2.0 
    and with new implementation of GLAMER and two new external cross validation routines, which got later
-   implemented into DMRnet v. 0.3.1. In the scope of the experiments model dimension and 
+   implemented into DMRnet since 0.3.1 version of the package. In the scope of the experiments model dimension and 
    prediction error was calculated in 252 synthetic experiments, each consisting of 200 independent runs.
    
    The possible choices of an algorithm and a cross validation routine (discussed in point 1. above) give rise 
@@ -197,15 +193,15 @@ The first purpose is testing agreement of the results obtained for the new versi
    
    The resulting model dimension and prediction error data was retained. 
    It creates opportunity to compare the expected distibutions of model dimension and prediction error 
-   with the actual distributions we get with a new package
+   with the actual distributions for new packages
    (we would expect to get the same results with the new 
-   version v. 0.3.1 as were obtained in the beginning of 2022 with v. 0.2.0).
+   versions of the package as were obtained in the beginning of 2022 with v. 0.2.0).
    
    ![High Dimensional Simulations](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_high_dimensional_simulation.svg)
        
-### Very hard cases
+### Torture testing 
 
-The second purpose is testing that all previously identified crux cases pass in v. 0.3.1. 
+The second purpose is testing that all previously identified very hard cases pass in new versions of the package.
 Many instabilities in v. 0.2.0 were removed *en bloc* with adding new strategy for handling missing factors 
 and adding regularization. However, not all bugs were removed that way and the remaining 
 bugs have some additional test files dedicated to testing that the particular bug remains fixed.
@@ -228,6 +224,5 @@ To this end the following test cases were identified:
  and returned two non-zero betas and one beta equal to zero.
 - `hard_case_SOSnet.R` - a problem in SOSnet with artificial data set 
  (in which a matrix is close to - but not exactly - singular) resulting in 
- numerical instabilities with QR calculations fixed in v. 0.3.1.
-
+ numerical instabilities with QR calculations.
 
