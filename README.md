@@ -148,7 +148,7 @@ The first purpose is testing agreement of the results obtained for the new versi
    
    The resulting model dimension and prediction error data was retained. 
    It creates opportunity to compare the expected distibutions of model dimension and prediction error 
-   with the actual distributions for new packages
+   with the actual distributions for new package versions
    (we would expect to get the same results with the new 
    versions of the package as were obtained in the summer of 2021 with v. 0.2.0).
    
@@ -193,7 +193,7 @@ The first purpose is testing agreement of the results obtained for the new versi
    
    The resulting model dimension and prediction error data was retained. 
    It creates opportunity to compare the expected distibutions of model dimension and prediction error 
-   with the actual distributions for new packages
+   with the actual distributions for new package versions
    (we would expect to get the same results with the new 
    versions of the package as were obtained in the beginning of 2022 with v. 0.2.0).
    
@@ -202,7 +202,7 @@ The first purpose is testing agreement of the results obtained for the new versi
 ### Torture testing 
 
 The second purpose is testing that all previously identified very hard cases pass in new versions of the package.
-Many instabilities in v. 0.2.0 were removed *en bloc* with adding new strategy for handling missing factors 
+Many instabilities in v. 0.2.0 were removed *en bloc* by adding new strategy for handling missing factors 
 and adding regularization. However, not all bugs were removed that way and the remaining 
 bugs have some additional test files dedicated to testing that the particular bug remains fixed.
 
