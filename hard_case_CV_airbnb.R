@@ -25,7 +25,7 @@ cat("Starting blind testing\n")
 #first, define a gaussian function, which will *not* test model computation in each run
 #(because it fails on LAPACK-related bugs, as is the case with insurance dataset)
 #but rather will test the model prediction. It was what failed with CV in 0.3.1
-gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_percent, runs=200) {
+gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_percent) {
 
   errors<-list()
 
@@ -150,8 +150,8 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
     if (is.na(median(MSEs.1se)))
       stop("Median for df.1se model error is NA")
 
-    errors[[model_name]]<-MSEs
-    errors[[paste(model_name, ".1se", sep="")]]<-MSEs.1se
+    errors[[model_choice]]<-MSEs
+    errors[[paste(model_choice, ".1se", sep="")]]<-MSEs.1se
 
   }
 
