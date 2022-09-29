@@ -71,11 +71,11 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
         #cat("removed", length(singular_columns), "columns due to singular values\n")
       }
 
-      if (model_choice=="cv.DMRnet" ) {
+      if (model_choice=="cvg.DMRnet" ) {
         cat("run", run, model_choice, "with cv indexed by gic\n")
         model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10),
                                   error=function(cond) {
-                                    message("Numerical instability in model creation in CV (cv.DMRnet) detected. Will skip this 1-percent set. Original error:")
+                                    message("Numerical instability in model creation in CV (cvg.DMRnet) detected. Will skip this 1-percent set. Original error:")
                                     message(cond); cat("\n")
                                     return(c(1,1))
                                   })
@@ -84,7 +84,7 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
           next
         }
 
-      } else  if (model_choice=="cvm.DMRnet" ) {
+      } else  if (model_choice=="cv.DMRnet" ) {
         cat("run", run, model_choice, "with cv indexed by model dimension\n")
         model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10, indexation.mode="dimension"),
                                   error=function(cond) {
@@ -97,11 +97,11 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
           next
         }
 
-      } else  if (model_choice=="cv.GLAMER") {
+      } else  if (model_choice=="cvg.GLAMER") {
         cat("run", run, "GLAMER with cv indexed by GIC\n")
         model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10, algorithm="glamer"),
                                   error=function(cond) {
-                                    message("Numerical instability in model creation in CV (cv.glamer) detected. Will skip this 1-percent set. Original error:")
+                                    message("Numerical instability in model creation in CV (cvg.GLAMER) detected. Will skip this 1-percent set. Original error:")
                                     message(cond); cat("\n")
                                     return(c(1,1))
                                   })
@@ -111,11 +111,11 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
         }
 
 
-      } else  if (model_choice=="cvm.GLAMER") {
+      } else  if (model_choice=="cv.GLAMER") {
         cat("run", run, "GLAMER with cv indexed by model dimension\n")
         model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10, algorithm="glamer", indexation.mode="dimension"),
                                   error=function(cond) {
-                                    message("Numerical instability in model creation in CV (cv.glamer) detected. Will skip this 1-percent set. Original error:")
+                                    message("Numerical instability in model creation in CV (cv.GLAMER) detected. Will skip this 1-percent set. Original error:")
                                     message(cond); cat("\n")
                                     return(c(1,1))
                                   })
@@ -162,7 +162,7 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
 data(airbnb)
 cat("data loaded\n")
 
-model_choices<-c( "cv.GLAMER","cvm.GLAMER", "cv.DMRnet", "cvm.DMRnet")
+model_choices<-c( "cvg.GLAMER","cv.GLAMER", "cvg.DMRnet", "cv.DMRnet")
 
 cat("running test for ", model_choices, "\n")
 
