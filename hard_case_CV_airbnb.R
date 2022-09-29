@@ -155,7 +155,7 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
 
   }
 
-  write.csv(errors, paste(set_name, "errors.csv", sep="_"))   #the intention is too keep those results for future versions comparison
+  write.csv(errors, paste(set_name, train_percent, "errors.csv", sep="_"))   #the intention is too keep those results for future versions comparison
 
 }
 
@@ -168,7 +168,5 @@ cat("running test for ", model_choices, "\n")
 
 cat(">>starting 0.04 percent 200 runs test\n")
 gaussian(air_X, air_y, factor_columns=1:4, model_choices=model_choices, set_name="airbnb", train_percent=0.04, runs=200)
-cat(">>starting 0.02 percent 200 runs test\n")
-gaussian(air_X, air_y, factor_columns=1:4, model_choices=model_choices, set_name="airbnb", train_percent=0.02, runs=200)
 
 cat("completed\n")
