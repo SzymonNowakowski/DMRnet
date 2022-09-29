@@ -26,7 +26,7 @@ cat("Starting blind testing")
 #(because it fails on LAPACK-related bugs, as is the case with insurance dataset)
 #but rather will test the model prediction. It was what failed with CV in 0.3.1
 gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_percent, runs=200) {
-  set.seed(strtoi(substr(digest(paste(set_name, train_percent), "md5", serialize = FALSE),1,7),16))
+  set.seed(as.integer(10000*train_percent))
 
   for (model_choice in model_choices) {
 
