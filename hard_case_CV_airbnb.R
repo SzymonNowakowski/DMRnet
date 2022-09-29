@@ -37,7 +37,7 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
     run<-1
 
     while (run<=runs) {
-      cat("generating train/test sets\n")
+      #cat("generating train/test sets\n")
       sample.percent <- sample(1:nrow(allX), train_percent*nrow(allX))
       data.train.percent.x <- allX[sample.percent, , drop=FALSE]
       data.train.percent.y <- ally[sample.percent,drop=FALSE]
@@ -65,11 +65,11 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
       if (length(singular_columns)>0) {
         data.test.percent.x <- data.test.percent.x[,-singular_columns]
         data.train.percent.x <- data.train.percent.x[,-singular_columns]
-        cat("removed", length(singular_columns), "columns due to singular values\n")
+        #cat("removed", length(singular_columns), "columns due to singular values\n")
       }
 
       if (model_choice=="cv.DMRnet" ) {
-        cat(model_choice, "with cv indexed by gic\n")
+        #cat(model_choice, "with cv indexed by gic\n")
         model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10),
                                   error=function(cond) {
                                     message("Numerical instability in model creation in CV (cv.DMRnet) detected. Will skip this 1-percent set. Original error:")
@@ -110,9 +110,6 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
 
       } else  if (model_choice=="cvm.GLAMER") {
         cat("GLAMER with cv indexed by model dimension\n")
-        full_seed<-.Random.seed
-        save(full_seed, data.train.percent.x, data.train.percent.y, file=paste(run, "_airbnb.train.RData", sep=""))
-
         model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10, algorithm="glamer", indexation.mode="dimension"),
                                   error=function(cond) {
                                     message("Numerical instability in model creation in CV (cv.glamer) detected. Will skip this 1-percent set. Original error:")
@@ -127,20 +124,16 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
 
       }
 
-     if (model_choice=="cv.DMRnet" | model_choice == "cv.GLAMER" ) {
-        cat(model_choice, "pred\n")
-        prediction<- predict(model.percent, newx=data.test.percent.x, md="df.min")
-        prediction.1se<- predict(model.percent, newx=data.test.percent.x, md="df.1se")
-      } else  if (model_choice=="cvm.DMRnet" | model_choice == "cvm.GLAMER" ) {
-        cat(model_choice, "pred\n")
-        prediction<- predict(model.percent, newx=data.test.percent.x, md="df.min")
-        prediction.1se<- predict(model.percent, newx=data.test.percent.x, md="df.1se")
-      }
+      prediction<- predict(model.percent, newx=data.test.percent.x, md="df.min")
+      prediction.1se<- predict(model.percent, newx=data.test.percent.x, md="df.1se")
 
-      MSEs[run]<-mean((prediction[!is.na(prediction)] - data.test.percent.y[!is.na(prediction)])^2)
-      if (model_choice=="cvm.DMRnet" | model_choice == "cvm.GLAMER" | model_choice=="cv.DMRnet" | model_choice == "cv.GLAMER" ) {
-        MSEs.1se[run]<-mean((prediction.1se[!is.na(prediction.1se)] - data.test.percent.y[!is.na(prediction.1se)])^2)
-      }
+      MSEs[run]<-mean((prediction - data.test.percent.y)^2)
+      MSEs.1se[run]<-mean((prediction.1se - data.test.percent.y)^2)
+
+      if (is.na(median(MSEs[MSEs>0])))
+        stop("Median for df.min model error is NA")
+      if (is.na(median(MSEs.1se[MSEs.1se>0])))
+        stop("Median for df.1se model error is NA")
 
       run<-run+1
     }
