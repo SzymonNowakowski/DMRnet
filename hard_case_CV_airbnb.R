@@ -68,24 +68,7 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
         cat("removed", length(singular_columns), "columns due to singular values\n")
       }
 
-
-      if (model_choice=="gic.DMRnet") {
-        cat("DMRnet with GIC only\n")
-        model.percent <- tryCatch(DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100),
-                                  error=function(cond) {
-                                    message("Numerical instability in model creation in GIC (gic.DMRnet) detected. Will skip this 1-percent set. Original error:")
-                                    message(cond); cat("\n")
-                                    return(c(1,1))
-                                  })
-
-        if (length(model.percent)==2) {
-          next
-        }
-
-        cat("GIC\n")
-        gic <- gic.DMR(model.percent)
-
-      } else  if (model_choice=="cv.DMRnet" ) {
+      if (model_choice=="cv.DMRnet" ) {
         cat(model_choice, "with cv indexed by gic\n")
         model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10),
                                   error=function(cond) {
@@ -110,21 +93,6 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
         if (length(model.percent)==2) {
           next
         }
-
-      } else if (model_choice=="gic.GLAMER") {
-        cat("GLAMER method\n")
-        model.percent <- tryCatch(model.percent <- DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, algorithm="glamer"),
-                                  error=function(cond) {
-                                    message("Numerical instability in model creation in GIC (gic.GLAMER) detected. Will skip this 1-percent set. Original error:")
-                                    message(cond); cat("\n")
-                                    return(c(1,1))
-                                  })
-
-        if (length(model.percent)==2) {
-          next
-        }
-        cat("GIC\n")
-        gic <- gic.DMR(model.percent)   #we are using existing gic calculation which is compatible with GLAMER models
 
       } else  if (model_choice=="cv.GLAMER") {
         cat("GLAMER with cv indexed by GIC\n")
@@ -159,11 +127,7 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
 
       }
 
-      if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
-        cat(model_choice, "pred\n")
-        prediction<- predict(gic, newx=data.test.percent.x)
-
-      } else  if (model_choice=="cv.DMRnet" | model_choice == "cv.GLAMER" ) {
+     if (model_choice=="cv.DMRnet" | model_choice == "cv.GLAMER" ) {
         cat(model_choice, "pred\n")
         prediction<- predict(model.percent, newx=data.test.percent.x, md="df.min")
         prediction.1se<- predict(model.percent, newx=data.test.percent.x, md="df.1se")
@@ -197,7 +161,11 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
 }
 
 data(airbnb)
-cat("data loaded")
+cat("data loaded\n")
+
+model_choices<-c( "cv.GLAMER","cvm.GLAMER", "cv.DMRnet", "cvm.DMRnet")
+
+cat("running test for ", model_choices, "\n")
 
 cat(">>starting 0.04 percent 200 runs test")
 gaussian(air_X, air_y, factor_columns=1:4, model_choices=model_choices, set_name="airbnb", train_percent=0.04, runs=200)
