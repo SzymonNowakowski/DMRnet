@@ -19,7 +19,7 @@ if (mod$df.min > ncol(mod$dmr.fit$beta))                              #in DMRnet
                                                                                          # > ncol(mod$dmr.fit$beta)
                                                                                          # [1] 53
 
-cat("Starting blind testing")
+cat("Starting blind testing\n")
 
 #now move to more extensive (and blind) tests
 #first, define a gaussian function, which will *not* test model computation in each run
