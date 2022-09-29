@@ -26,6 +26,9 @@ cat("Starting blind testing")
 #(because it fails on LAPACK-related bugs, as is the case with insurance dataset)
 #but rather will test the model prediction. It was what failed with CV in 0.3.1
 gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_percent, runs=200) {
+
+  errors<-list()
+
   set.seed(as.integer(10000*train_percent))
 
   for (model_choice in model_choices) {
@@ -69,7 +72,7 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
       }
 
       if (model_choice=="cv.DMRnet" ) {
-        #cat(model_choice, "with cv indexed by gic\n")
+        cat("run", run, model_choice, "with cv indexed by gic\n")
         model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10),
                                   error=function(cond) {
                                     message("Numerical instability in model creation in CV (cv.DMRnet) detected. Will skip this 1-percent set. Original error:")
@@ -82,7 +85,7 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
         }
 
       } else  if (model_choice=="cvm.DMRnet" ) {
-        cat(model_choice, "with cv indexed by model dimension\n")
+        cat("run", run, model_choice, "with cv indexed by model dimension\n")
         model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10, indexation.mode="dimension"),
                                   error=function(cond) {
                                     message("Numerical instability in model creation in CV (cv.DMRnet) detected. Will skip this 1-percent set. Original error:")
@@ -95,7 +98,7 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
         }
 
       } else  if (model_choice=="cv.GLAMER") {
-        cat("GLAMER with cv indexed by GIC\n")
+        cat("run", run, "GLAMER with cv indexed by GIC\n")
         model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10, algorithm="glamer"),
                                   error=function(cond) {
                                     message("Numerical instability in model creation in CV (cv.glamer) detected. Will skip this 1-percent set. Original error:")
@@ -109,7 +112,7 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
 
 
       } else  if (model_choice=="cvm.GLAMER") {
-        cat("GLAMER with cv indexed by model dimension\n")
+        cat("run", run, "GLAMER with cv indexed by model dimension\n")
         model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10, algorithm="glamer", indexation.mode="dimension"),
                                   error=function(cond) {
                                     message("Numerical instability in model creation in CV (cv.glamer) detected. Will skip this 1-percent set. Original error:")
@@ -147,9 +150,12 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
     if (is.na(median(MSEs.1se)))
       stop("Median for df.1se model error is NA")
 
+    errors[[model_name]]<-MSEs
+    errors[[paste(model_name, ".1se", sep="")]]<-MSEs.1se
 
   }
 
+  write.csv(errors, paste(set_name, "errors.csv", sep="_"))   #the intention is too keep those results for future versions comparison
 
 }
 
@@ -160,9 +166,9 @@ model_choices<-c( "cv.GLAMER","cvm.GLAMER", "cv.DMRnet", "cvm.DMRnet")
 
 cat("running test for ", model_choices, "\n")
 
-cat(">>starting 0.04 percent 200 runs test")
+cat(">>starting 0.04 percent 200 runs test\n")
 gaussian(air_X, air_y, factor_columns=1:4, model_choices=model_choices, set_name="airbnb", train_percent=0.04, runs=200)
-cat(">>starting 0.02 percent 200 runs test")
+cat(">>starting 0.02 percent 200 runs test\n")
 gaussian(air_X, air_y, factor_columns=1:4, model_choices=model_choices, set_name="airbnb", train_percent=0.02, runs=200)
 
 cat("completed\n")
