@@ -25,7 +25,7 @@ cat("Starting blind testing\n")
 #first, define a gaussian function, which will *not* test model computation in each run
 #(because it fails on LAPACK-related bugs, as is the case with insurance dataset)
 #but rather will test the model prediction. It was what failed with CV in 0.3.1
-gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_percent) {
+gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_percent, runs) {
 
   errors<-list()
 
