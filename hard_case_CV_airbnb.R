@@ -166,7 +166,7 @@ model_choices<-c( "cvg.GLAMER","cv.GLAMER", "cvg.DMRnet", "cv.DMRnet")
 
 cat("running test for ", model_choices, "\n")
 
-cat(">>starting 0.04 percent 200 runs test\n")
-gaussian(air_X, air_y, factor_columns=1:4, model_choices=model_choices, set_name="airbnb", train_percent=0.04, runs=200)
+cat(">>starting 0.04 percent 50 runs test\n")
+gaussian(air_X, air_y, factor_columns=1:4, model_choices=model_choices, set_name="airbnb", train_percent=0.04, runs=50)
 
 cat("completed\n")
