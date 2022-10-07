@@ -1,3 +1,6 @@
+# DMRnet 0.3.2.9001
+
+- Fixing df.1se in GIC-indexed cross validation for Inf results for the smallest models in binomial family.
 
 # DMRnet 0.3.2
 
