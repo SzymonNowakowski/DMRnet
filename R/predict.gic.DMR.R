@@ -1,6 +1,6 @@
 #' @title predict.gic.DMR
 #'
-#' @description Make predictions from a \code{gic.DMR} object (for the model with minimal GIC).
+#' @description Makes predictions from a \code{gic.DMR} object (for the model with minimal GIC).
 #'
 #' @param object Fitted \code{gic.DMR} object.
 #'

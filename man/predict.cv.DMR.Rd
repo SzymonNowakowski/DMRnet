@@ -30,7 +30,7 @@
 Vector of predictions.
 }
 \description{
-Make predictions from a cv.DMR object (for the model with minimal cross-validated error /the default/ or the smallest model falling under the upper curve of a prediction error plus one standard deviation).
+Makes predictions from a cv.DMR object (for the model with minimal cross-validated error /the default/ or the smallest model falling under the upper curve of a prediction error plus one standard deviation).
 }
 \details{
 Similar to other \code{predict} methods, this function predicts fitted values from a fitted \code{cv.DMR} object.

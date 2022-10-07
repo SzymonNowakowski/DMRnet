@@ -1,6 +1,6 @@
 #' @title plot.cv.DMR
 #'
-#' @description Plot cross-validated error values from a \code{cv.DMR} object.
+#' @description Plots cross-validated error values from a \code{cv.DMR} object.
 #'
 #' @param x Fitted \code{cv.DMR} object.
 #'

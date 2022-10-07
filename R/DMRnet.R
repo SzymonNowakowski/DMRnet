@@ -1,6 +1,6 @@
 #' @title Delete or Merge Regressors net
 #'
-#' @description Fit a path of linear (\code{family="gaussian"}) or logistic (\code{family="binomial"}) regression models, where models are subsets of continuous predictors and partitions of levels of factors in \code{X}. Works even if p>=n (the number of observations is greater than the number of columns in the model matrix).
+#' @description Fits a path of linear (\code{family="gaussian"}) or logistic (\code{family="binomial"}) regression models, where models are subsets of continuous predictors and partitions of levels of factors in \code{X}. Works even if p>=n (the number of observations is greater than the number of columns in the model matrix).
 #'
 #' @param X Input data frame; each row is an observation vector; each column can be numerical or integer for a continuous predictor or a factor for a categorical predictor.
 #'
@@ -51,9 +51,9 @@
 #' @examples
 #' ## DMRnet for linear regression
 #' data(miete)
-#' ytr <- miete[1:500,1]
-#' Xtr <- miete[1:500,-1]
-#' Xte <- miete[501:1000,-1]
+#' ytr <- miete[1:200,1]
+#' Xtr <- miete[1:200,-1]
+#' Xte <- miete[201:250,-1]
 #' m1 <- DMRnet(Xtr, ytr)
 #' print(m1)
 #' plot(m1)
@@ -64,9 +64,9 @@
 #'
 #' ## DMRnet for logistic regression
 #' data(promoter)
-#' ytr <- factor(promoter[1:80,1])
-#' Xtr <- promoter[1:80,-1]
-#' Xte <- promoter[81:106,-1]
+#' ytr <- factor(promoter[1:70,1])
+#' Xtr <- promoter[1:70,-1]
+#' Xte <- promoter[71:106,-1]
 #' m2 <- DMRnet(Xtr, ytr, family = "binomial")
 #' print(m2)
 #' plot(m2)
@@ -77,9 +77,9 @@
 #'
 #' ## GLAMER for linear regression
 #' data(miete)
-#' ytr <- miete[1:500,1]
-#' Xtr <- miete[1:500,-1]
-#' Xte <- miete[501:1000,-1]
+#' ytr <- miete[1:200,1]
+#' Xtr <- miete[1:200,-1]
+#' Xte <- miete[201:250,-1]
 #' m1 <- DMRnet(Xtr, ytr, algorithm="glamer")
 #' print(m1)
 #' plot(m1)
@@ -90,9 +90,9 @@
 #'
 #' ## GLAMER for logistic regression
 #' data(promoter)
-#' ytr <- factor(promoter[1:80,1])
-#' Xtr <- promoter[1:80,-1]
-#' Xte <- promoter[81:106,-1]
+#' ytr <- factor(promoter[1:70,1])
+#' Xtr <- promoter[1:70,-1]
+#' Xte <- promoter[71:106,-1]
 #' m2 <- DMRnet(Xtr, ytr, family = "binomial", algorithm="glamer")
 #' print(m2)
 #' plot(m2)

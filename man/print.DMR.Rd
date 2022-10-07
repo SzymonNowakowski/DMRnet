@@ -15,7 +15,7 @@
 The summary is silently returned.
 }
 \description{
-Print a \code{DMR} object.
+Prints a \code{DMR} object.
 }
 \details{
 Print a summary of the \code{DMR} path at each step along the path.

@@ -1,5 +1,5 @@
 <!-- badges: start -->
-[![GitHub version](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/SzymonNowakowski/DMRnet/master/.version.json&style=flat&logo=github)](https://github.com/SzymonNowakowski/DMRnet)
+[![GitHub version](https://img.shields.io/github/r-package/v/SzymonNowakowski/DMRnet?color=yellowgreen&label=GitHub&logo=github](https://github.com/SzymonNowakowski/DMRnet)
 [![CRAN version](https://img.shields.io/cran/v/DMRnet?logo=R)](https://cran.r-project.org/package=DMRnet)
 [![downloads](https://cranlogs.r-pkg.org/badges/DMRnet)](https://cran.r-project.org/package=DMRnet)
 <!-- badges: end -->
@@ -9,17 +9,17 @@
 
 DMRnet (Delete or Merge Regressors) is a suit of algorithms for linear and logistic model selection with high-dimensional data (i.e. the number of regressors may exceed the number of observations). The predictors can be continuous or categorical. The selected model consists of a subset of numerical regressors and partitions of levels of factors. 
 
-For information on how to get started using DMRnet, see our [getting started vignette](https://cran.r-project.org/web/packages/DMRnet/vignettes/getting-started.html).
+For information on how to get started using DMRnet, see our [getting started vignette](https://cran.r-project.org/package=DMRnet/vignettes/getting-started.html).
 
 ## Installing `DMRnet` package
 
-To install the development package version (currently: 0.3.1.9002) please execute
+To install the development package version please execute
 ```
 library(devtools)
 devtools::install_github("SzymonNowakowski/DMRnet")
 ```
 
-Alternatively, to install the current stable CRAN version (currently: 0.3.1) please execute
+Alternatively, to install the current stable CRAN version please execute
 
 ```
 install.packages("DMRnet")

@@ -1,6 +1,6 @@
 #' @title Delete or Merge Regressors
 #'
-#' @description Fit a path of linear (\code{family="gaussian"}) or logistic (\code{family="binomial"}) regression models, where the number of parameters changes from 1 to p (p is the number of columns in the model matrix). Models are subsets of continuous predictors and partitions of levels of factors in \code{X}.
+#' @description Fits a path of linear (\code{family="gaussian"}) or logistic (\code{family="binomial"}) regression models, where the number of parameters changes from 1 to p (p is the number of columns in the model matrix). Models are subsets of continuous predictors and partitions of levels of factors in \code{X}.
 #'
 #' @param X Input data frame; each row is an observation vector; each column can be numerical or integer for a continuous predictor or a factor for a categorical predictor; DMR works only if p<n (n is the number of observations, p the number of columns in the model matrix), for p>=n see \code{\link{DMRnet}}.
 #'

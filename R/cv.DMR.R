@@ -1,6 +1,6 @@
 #' @title cross-validation for DMR
 #'
-#' @description Does k-fold cross-validation for \code{DMR} and returns a value for df.
+#' @description Executes k-fold cross-validation for \code{DMR} and returns a value for df.
 #'
 #' @param X Input data frame, of dimension n x p; \code{DMR} works only if p<n, for p>=n see \code{\link{DMRnet}}; each row is an observation vector. Columns can be numerical or integer for continuous predictors or factors for categorical predictors.
 #'

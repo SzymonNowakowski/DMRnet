@@ -12,7 +12,7 @@
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Plot gic values from a \code{gic.DMR} object.
+Plots gic values from a \code{gic.DMR} object.
 }
 \details{
 Produces a plot of Generalized Information Criterion for the entire sequence of models from the fitted \code{gic.DMR} object.

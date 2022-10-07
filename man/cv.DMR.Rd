@@ -40,7 +40,7 @@ An object with S3 class \code{"cv.DMR"} is  returned,  which  is  a  list  with 
 }
 }
 \description{
-Does k-fold cross-validation for \code{DMR} and returns a value for df.
+Executes k-fold cross-validation for \code{DMR} and returns a value for df.
 }
 \details{
 \code{cv.DMR} algorithm does cross-validation for \code{DMR} with \code{nfolds} folds. The df for the minimal estimated prediction error is returned.

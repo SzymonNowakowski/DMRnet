@@ -1,3 +1,3 @@
 .onAttach=function(libname,pkgname){
-  packageStartupMessage("Loaded DMRnet version ", as.character(packageDescription("DMRnet")[["Version"]]))
+  packageStartupMessage("Loaded DMRnet version ", as.character(utils::packageDescription("DMRnet")[["Version"]]))
 }

@@ -12,7 +12,7 @@
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Plot cross-validated error values from a \code{cv.DMR} object.
+Plots cross-validated error values from a \code{cv.DMR} object.
 }
 \details{
 Produces a plot of cross-validated error values for the entire sequence of models from the fitted \code{cv.DMR} object. The horizontal level indicating separation of one standard deviation from the minimum error is indicated with a blue dashed line. The df.min (the smallest model minimizing the cross-validated error) and df.1se (the smallest model falling under the blue dashed line) are marked with red and blue points, respectively.

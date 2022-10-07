@@ -55,7 +55,7 @@ An object with S3 class "cv.DMR" is  returned,  which  is  a  list  with  the  i
 }
 }
 \description{
-Does k-fold cross-validation for DMR and returns a value for df.
+Executes k-fold cross-validation for DMR and returns a value for df.
 }
 \details{
 cv.DMRnet algorithm does \code{nfold}-fold cross-validation for DMRnet. The df for the minimal estimated prediction error is returned.
