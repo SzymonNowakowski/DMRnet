@@ -25,7 +25,7 @@ plot.cv.DMR <- function(x, ...){
   graphics::text(x$df.min, min(stats::na.omit(x$cvm)), "df.min", pos=3, cex=0.7, col = "red")
 
   #1 SD line, arrow and text
-  y <- min(stats::na.omit(x$cvm)) + stats::sd(stats::na.omit(x$cvm))
+  y <- min(stats::na.omit(x$cvm)) + stats::sd(stats::na.omit(x$cvm[x$cvm!=Inf & x$cvm!=-Inf]))
   graphics::lines(c(length(x$cvm),1), c(y, y), lty="dashed", col = "blue")
   graphics::arrows(1, min(stats::na.omit(x$cvm)), 1, y, length=0.05, code=3)
   graphics::text(1, y/2+min(stats::na.omit(x$cvm))/2, "1SD", pos=4, cex=0.7)
