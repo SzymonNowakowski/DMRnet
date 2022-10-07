@@ -1,5 +1,5 @@
 <!-- badges: start -->
-[![GitHub version](https://img.shields.io/github/r-package/v/SzymonNowakowski/DMRnet?color=yellowgreen&label=GitHub&logo=github](https://github.com/SzymonNowakowski/DMRnet)
+[![GitHub version](https://img.shields.io/github/r-package/v/SzymonNowakowski/DMRnet?color=yellowgreen&label=GitHub&logo=github)](https://github.com/SzymonNowakowski/DMRnet)
 [![CRAN version](https://img.shields.io/cran/v/DMRnet?logo=R)](https://cran.r-project.org/package=DMRnet)
 [![downloads](https://cranlogs.r-pkg.org/badges/DMRnet)](https://cran.r-project.org/package=DMRnet)
 <!-- badges: end -->
