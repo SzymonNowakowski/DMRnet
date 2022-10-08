@@ -12,7 +12,7 @@
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Plot coefficients from a \code{DMR} object.
+Plots coefficients from a \code{DMR} object.
 }
 \details{
 Produces a coefficient profile plot of the coefficient paths for a fitted \code{DMR} object.

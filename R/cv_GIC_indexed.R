@@ -141,7 +141,7 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
         indMod <- kt[length(kt)]
         df.min <- model.full$df[indMod]
 
-        kt <- which(gic.full <= min(stats::na.omit(gic.full)) + stats::sd(stats::na.omit(gic.full)))
+        kt <- which(gic.full <= min(stats::na.omit(gic.full)) + stats::sd(stats::na.omit(gic.full[gic.full!=Inf & gic.full!=-Inf])))
         indMod <- kt[length(kt)]
         df.1se <- model.full$df[indMod]
 

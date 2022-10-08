@@ -1,6 +1,6 @@
 #' @title plot.DMR
 #'
-#' @description Plot coefficients from a \code{DMR} object.
+#' @description Plots coefficients from a \code{DMR} object.
 #'
 #' @param x Fitted \code{DMR} object.
 #'

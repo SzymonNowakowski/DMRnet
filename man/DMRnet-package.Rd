@@ -34,7 +34,7 @@ vignette("getting-started", package="DMRnet")
 
 }
 \references{
-Aleksandra Maj-Kańska, Piotr Pokarowski and Agnieszka Prochenka, 2015. Delete or merge regressors for linear model selection. Electronic Journal of Statistics 9(2): 1749-1778. \url{https://projecteuclid.org/euclid.ejs/1440507392}
+Aleksandra Maj-Kańska, Piotr Pokarowski and Agnieszka Prochenka, 2015. Delete or merge regressors for linear model selection. Electronic Journal of Statistics 9(2): 1749-1778. \doi{10.1214/15-EJS1050}
 
 Piotr Pokarowski and Jan Mielniczuk, 2015. Combined l1 and greedy l0 penalized least squares for linear model selection. Journal of Machine Learning Research 16(29): 961-992. \url{https://www.jmlr.org/papers/volume16/pokarowski15a/pokarowski15a.pdf}
 

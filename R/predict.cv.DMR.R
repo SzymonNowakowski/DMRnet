@@ -1,6 +1,6 @@
 #' @title predict.cv.DMR
 #'
-#' @description Make predictions from a cv.DMR object (for the model with minimal cross-validated error /the default/ or the smallest model falling under the upper curve of a prediction error plus one standard deviation).
+#' @description Makes predictions from a cv.DMR object (for the model with minimal cross-validated error /the default/ or the smallest model falling under the upper curve of a prediction error plus one standard deviation).
 #'
 #' @param object Fitted cv.DMR object.
 #'

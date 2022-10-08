@@ -39,7 +39,7 @@ An object with S3 class \code{"DMR"}, which  is  a  list  with  the  ingredients
 \item{interc}{If the intercept was fitted: for \code{DMR} always equal to \code{TRUE}.}
 }
 \description{
-Fit a path of linear (\code{family="gaussian"}) or logistic (\code{family="binomial"}) regression models, where the number of parameters changes from 1 to p (p is the number of columns in the model matrix). Models are subsets of continuous predictors and partitions of levels of factors in \code{X}.
+Fits a path of linear (\code{family="gaussian"}) or logistic (\code{family="binomial"}) regression models, where the number of parameters changes from 1 to p (p is the number of columns in the model matrix). Models are subsets of continuous predictors and partitions of levels of factors in \code{X}.
 }
 \details{
 \code{DMR} algorithm is based on a traditional stepwise method.

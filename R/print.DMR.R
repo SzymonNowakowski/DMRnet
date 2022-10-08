@@ -1,6 +1,6 @@
 #' @title print.DMR
 #'
-#' @description Print a \code{DMR} object.
+#' @description Prints a \code{DMR} object.
 #'
 #' @param x Fitted \code{DMR} object.
 #'

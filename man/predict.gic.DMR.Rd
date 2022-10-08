@@ -21,7 +21,7 @@
 Vector of predictions.
 }
 \description{
-Make predictions from a \code{gic.DMR} object (for the model with minimal GIC).
+Makes predictions from a \code{gic.DMR} object (for the model with minimal GIC).
 }
 \details{
 Similar to other \code{predict} methods, this function predicts fitted values from a fitted \code{gic.DMR} object for the model with minimal GIC.

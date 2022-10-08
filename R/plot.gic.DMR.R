@@ -1,6 +1,6 @@
 #' @title plot.gic.DMR
 #'
-#' @description Plot gic values from a \code{gic.DMR} object.
+#' @description Plots gic values from a \code{gic.DMR} object.
 #'
 #' @param x Fitted \code{gic.DMR} object.
 #'

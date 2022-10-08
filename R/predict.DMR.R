@@ -1,6 +1,6 @@
 #' @title predict.DMR
 #'
-#' @description Make predictions from a \code{DMR} object.
+#' @description Makes predictions from a \code{DMR} object.
 #'
 #' @param object Fitted \code{DMR} object.
 #'

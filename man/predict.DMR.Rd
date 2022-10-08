@@ -30,7 +30,7 @@
 Vector or matrix of predictions.
 }
 \description{
-Make predictions from a \code{DMR} object.
+Makes predictions from a \code{DMR} object.
 }
 \details{
 Similar to other \code{predict} methods, this function predicts fitted values from a fitted \code{DMR} object.

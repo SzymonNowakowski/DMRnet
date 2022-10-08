@@ -54,7 +54,7 @@ An object with S3 class \code{"DMR"}, which  is  a  list  with  the  ingredients
 \item{interc}{If the intercept was fitted: value of parameter \code{interc} is returned.}
 }
 \description{
-Fit a path of linear (\code{family="gaussian"}) or logistic (\code{family="binomial"}) regression models, where models are subsets of continuous predictors and partitions of levels of factors in \code{X}. Works even if p>=n (the number of observations is greater than the number of columns in the model matrix).
+Fits a path of linear (\code{family="gaussian"}) or logistic (\code{family="binomial"}) regression models, where models are subsets of continuous predictors and partitions of levels of factors in \code{X}. Works even if p>=n (the number of observations is greater than the number of columns in the model matrix).
 }
 \details{
 \code{DMRnet} algorithm is a generalization of \code{\link{DMR}} to high-dimensional data.
@@ -71,9 +71,9 @@ The final path of models is chosen by minimizing the likelihood of the models fo
 \examples{
 ## DMRnet for linear regression
 data(miete)
-ytr <- miete[1:500,1]
-Xtr <- miete[1:500,-1]
-Xte <- miete[501:1000,-1]
+ytr <- miete[1:200,1]
+Xtr <- miete[1:200,-1]
+Xte <- miete[201:250,-1]
 m1 <- DMRnet(Xtr, ytr)
 print(m1)
 plot(m1)
@@ -84,9 +84,9 @@ ypr <- predict(m1, newx = Xte, df = g$df.min)
 
 ## DMRnet for logistic regression
 data(promoter)
-ytr <- factor(promoter[1:80,1])
-Xtr <- promoter[1:80,-1]
-Xte <- promoter[81:106,-1]
+ytr <- factor(promoter[1:70,1])
+Xtr <- promoter[1:70,-1]
+Xte <- promoter[71:106,-1]
 m2 <- DMRnet(Xtr, ytr, family = "binomial")
 print(m2)
 plot(m2)
@@ -97,9 +97,9 @@ ypr <- predict(m2, newx = Xte, df = g$df.min)
 
 ## GLAMER for linear regression
 data(miete)
-ytr <- miete[1:500,1]
-Xtr <- miete[1:500,-1]
-Xte <- miete[501:1000,-1]
+ytr <- miete[1:200,1]
+Xtr <- miete[1:200,-1]
+Xte <- miete[201:250,-1]
 m1 <- DMRnet(Xtr, ytr, algorithm="glamer")
 print(m1)
 plot(m1)
@@ -110,9 +110,9 @@ ypr <- predict(m1, newx = Xte, df = g$df.min)
 
 ## GLAMER for logistic regression
 data(promoter)
-ytr <- factor(promoter[1:80,1])
-Xtr <- promoter[1:80,-1]
-Xte <- promoter[81:106,-1]
+ytr <- factor(promoter[1:70,1])
+Xtr <- promoter[1:70,-1]
+Xte <- promoter[71:106,-1]
 m2 <- DMRnet(Xtr, ytr, family = "binomial", algorithm="glamer")
 print(m2)
 plot(m2)
