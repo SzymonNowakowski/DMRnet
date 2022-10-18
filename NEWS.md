@@ -1,6 +1,7 @@
 # DMRnet 0.3.2.9001
 
-- Fixing df.1se in GIC-indexed cross validation for Inf results for the smallest models in binomial family.
+- Fixing df.1se in GIC-indexed cross validation for binomial GLAMER
+- Fixing incorrect loglik calculation for the first (largest) model in binomial family, for both GLAMER (-Inf) and DMRnet (incorrect)
 
 # DMRnet 0.3.2
 
