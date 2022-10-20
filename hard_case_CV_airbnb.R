@@ -1,6 +1,6 @@
 library(devtools)
 load_all()
-data(airbnb.train)
+load("data/CV_airbnb/airbnb.train.RData")
 
 cat("data loaded\n")
 
@@ -159,7 +159,7 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
 
 }
 
-data(airbnb)
+load("data_airbnb/airbnb.RData")   #TODO: the intention is to move that part into separate massive_airbnb.R tests later on
 cat("data loaded\n")
 
 model_choices<-c( "cvg.GLAMER","cv.GLAMER", "cvg.DMRnet", "cv.DMRnet")

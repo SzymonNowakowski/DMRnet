@@ -28,8 +28,8 @@ load_all()
 
 
 cat("glamer:\n")
-data(la_svd_Xtr)
-data(la_svd_ytr)
+load("data/LAPACK_SVD_insurance/la_svd_Xtr.RData")
+load("data/LAPACK_SVD_insurance/la_svd_ytr.RData")
 glamer <- DMRnet(Xtr, ytr, family = "gaussian", algorithm = "glamer")
 
 
@@ -42,7 +42,7 @@ d<-svd(crashes_svd)    #<--------------crashes
 
 ############## GLAMER with cv+sd had problems with SVD routine on the 5th CV run on 17th run of massive-insurance tests with a seed derived from "insUrance_"
 cat("glamer:\n")
-data("5_cv_MD")
+load("data/LAPACK_SVD_insurance/5_cv_MD.RData")
 mod <- DMRnet(Xtr, ytr, algorithm="glamer")   #Error in La.svd(x, nu, nv) : error code 1 from Lapack routine 'dgesdd'
 
   ################# ISOLATED CASE ###################
@@ -54,7 +54,7 @@ d<-svd(crashes_svd)    #<--------------crashes
 
 ############## GLAMER with cv+sd had problems with SVD routine on the 4th CV run on 7th run of massive-insurance tests with a seed derived from "insURance_" AFTER the fix in massive_insurance (commit 4eca99d)
 cat("glamer:\n")
-data("4_cv_MD")
+load("data/LAPACK_SVD_insurance/4_cv_MD.RData")
 mod <- DMRnet(Xtr, ytr, algorithm="glamer")   #Error in La.svd(x, nu, nv) : error code 1 from Lapack routine 'dgesdd'
 
   ################# ISOLATED CASE ###################

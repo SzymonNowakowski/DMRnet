@@ -7,7 +7,7 @@ load_all()
 
 ############## GLAMER returned NA model in 3rd run of massive-insurance tests with a seed derived from "insUrance_"
 cat("glamer, family gaussian:\n")
-data(Glamer_NaN)
+load("data/NA_insurance/Glamer_NaN.RData")
 mod <- DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, algorithm="glamer")
 if (is.na(sum(coef(mod, df=439)))) {    # has NA ?
   stop("Found NA values in a model returned from GLAMER/gaussian")
@@ -30,7 +30,7 @@ if (is.na(sum(coef(mod, df=439)))) {    # has NA ?
 #Execution halted
 #isolated case for DMRnet (CV not necessary here)
 cat("DMRnet, family gaussian:\n")
-data(DMRnet_NaN)
+load("data/NA_insurance/DMRnet_NaN.RData")
 mod <- DMRnet(X, y)
 if (is.na(sum(coef(mod, df=460)))) {    # has NA ?
   stop("Found NA values in a model returned from DMRnet/gaussian")

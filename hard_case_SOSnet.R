@@ -6,7 +6,7 @@ load_all()
 set.seed(strtoi(substr(digest("hard_case_SOSnet", "md5", serialize = FALSE),1,7),16))  #for reproducibility
 
 ######################## first put to test identified 5 hard columns ######################################################################
-data(thousand_rows_5vars_that_cause_problem_for_glmnet)
+load("data/SOSnet/thousand_rows_5vars_that_cause_problem_for_glmnet.RData")
 
 n<-nrow(Xtruncated)
 Xtruncated_normalized<- apply(Xtruncated, 2, function(x) sqrt(n/sum(x^2))*x)
@@ -35,7 +35,7 @@ dmrnet<-DMRnet(Xtruncated_normalized, ytruncated, nlambda = 20,  family = "gauss
 
 
 ######################## second, put to test the whole dataset ######################################################################
-data(data_hard_for_sosnet)
+load("data/SOSnet/data_hard_for_sosnet.RData")
 
 
 

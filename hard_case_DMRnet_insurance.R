@@ -1,7 +1,7 @@
 library(devtools)
 load_all()
-data(insXtr)
-data(insytr)
+load("data/DMRnet_insurance/insXtr.RData")
+load("data/DMRnet_insurance/insytr.RData")
 
 set.seed(0)    #to make the tests reproducible
 
