@@ -8,7 +8,7 @@ cat("data loaded\n")
 
 cat("random seed set\n")
 
-mod<-cv.DMRnet(data.train.percent.x, data.train.percent.y, algorithm="glamer", indexation.mode = "dimension")
+mod<-cv.DMRnet(data.train.percent.x, data.train.percent.y, algorithm="glamer", indexation.mode = "dimension", nlambda=20)
 #the problem in DMRnet v. 0.3.1 is that mod$df.min (which is the model dimension of the *best* model) is higher than
 #ncol(mod$dmr.fit$beta) (which is equal to the largest model available)
 

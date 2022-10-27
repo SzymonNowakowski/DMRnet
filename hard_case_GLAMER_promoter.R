@@ -28,10 +28,10 @@ cat("binomial dmrnet:\n")
 b_dmrnet <- DMRnet(X, y, family = "binomial")
 
 cat("binomial cvg.dmrnet:\n")
-b_cv.dmrnet  <- cv.DMRnet(X, y, family = "binomial")
+b_cv.dmrnet  <- cv.DMRnet(X, y, family = "binomial", nlambda=20)
 
 cat("binomial cvg.glamer:\n")
-b_cv.dmrnet  <- cv.DMRnet(X, y, family = "binomial", algorithm="glamer")
+b_cv.dmrnet  <- cv.DMRnet(X, y, family = "binomial", algorithm="glamer", nlambda=20)
 
 cat("binomial dmr would not pass, as p>n:\n")
 #b_dmr <- DMR(X, y, family = "binomial")
@@ -59,10 +59,10 @@ cat("gaussian dmrnet:\n")
 dmrnet <- DMRnet(X, y, family = "gaussian")
 
 cat("gaussian cvg.dmrnet:\n")
-cv.dmrnet  <- cv.DMRnet(X, y, family = "gaussian")
+cv.dmrnet  <- cv.DMRnet(X, y, family = "gaussian", nlambda=20)
 
 cat("gaussian cvg.glamer:\n")
-cv.dmrnet  <- cv.DMRnet(X, y, family = "gaussian", algorithm="glamer")
+cv.dmrnet  <- cv.DMRnet(X, y, family = "gaussian", algorithm="glamer", nlambda=20)
 
 cat("gaussian dmr would not pass, as p>n:\n")
 #dmr <- DMR(X, y, family = "gaussian")

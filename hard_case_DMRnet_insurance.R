@@ -22,7 +22,7 @@ dmrnet <- DMRnet(Xtr, ytr, family = "gaussian")        #fails in 0.2.0 - Error i
                                                                         #system is computationally singular: reciprocal condition number = 8.83141e-33
                                                        #fixed by regularizing rX with a very small positive diagonal matrix in DMRnet4lm_help
 cat("cv.dmrnet:\n")
-cv.dmrnet  <- cv.DMRnet(Xtr, ytr, family = "gaussian") #fails in 0.2.0 probably because of factor levels conflict between train and test sets - Error: Missing data (NA's) detected in X.  You must eliminate missing data (e.g., by removing cases, removing features, or imputation) before passing X to grpreg
+cv.dmrnet  <- cv.DMRnet(Xtr, ytr, family = "gaussian", nlambda=20) #fails in 0.2.0 probably because of factor levels conflict between train and test sets - Error: Missing data (NA's) detected in X.  You must eliminate missing data (e.g., by removing cases, removing features, or imputation) before passing X to grpreg
                                                        #fixed by the correct factor level management in CV and
                                                        #fixed by regularizing rX with a very small positive diagonal matrix in DMRnet4lm_help
 cat("dmr:\n")
@@ -63,7 +63,7 @@ b_dmrnet <- DMRnet(Xtr, ytr, family = "binomial")        #fails in 0.2.0 - Error
                                                          #fixed by PR#6
 
 cat("binomial cv.dmrnet:\n")
-b_cv.dmrnet  <- cv.DMRnet(Xtr, ytr, family = "binomial") #fails in 0.2.0 probably because of factor levels conflict between train and test sets - Error: Missing data (NA's) detected in X.  You must eliminate missing data (e.g., by removing cases, removing features, or imputation) before passing X to grpreg
+b_cv.dmrnet  <- cv.DMRnet(Xtr, ytr, family = "binomial", nlambda=20) #fails in 0.2.0 probably because of factor levels conflict between train and test sets - Error: Missing data (NA's) detected in X.  You must eliminate missing data (e.g., by removing cases, removing features, or imputation) before passing X to grpreg
                                                          #fixed by the correct factor level management in CV and
                                                          #fixed by PR#6
 
