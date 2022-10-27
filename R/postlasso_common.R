@@ -8,8 +8,8 @@ postlasso_common <- function(lambdas, n, betas) {
     # cases like this have been observed in high dimensional simulations (https://github.com/SzymonNowakowski/DMRnet/issues/39)
     #if it is so, we must add an artificial the-only-intercept lambda
     # it is a strictly technical add-on, i.e. it results in SS being calculated later that it includes a full model as the first component
-    #so even if interc=FALSE in SOSnet we proceed like this, the first row will be removed from bo anyway
-                  # in the last line of this function
+    #so even if interc=FALSE in SOSnet we proceed like this, the first row will be removed from bb anyway
+                  # just outside of this function in SOSnet
 
 
     betas <- cbind(c(1, rep(0, nrow(betas)-1)), betas)
@@ -33,8 +33,7 @@ postlasso_common <- function(lambdas, n, betas) {
   ii <- duplicated(t(bb_predictor_sets))    #detecting duplicated predictor sets
 
 
-  bb <- bb[-1, ii == FALSE, drop = FALSE]    #(3) removing duplicated predictor sets
-    #and removing the first row, which is Intercept
+  bb <- bb[, ii == FALSE, drop = FALSE]    #(3) removing duplicated predictor sets
 
   return(list(ii=ii, bb=bb))
 }
