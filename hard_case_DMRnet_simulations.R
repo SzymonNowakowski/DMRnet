@@ -99,9 +99,11 @@ all("binomial", "dimension", "glamer")         # ?
 all("binomial", "GIC", "glamer")               # ?
 
 #and finally a similarly caused error for SOSnet:
+print("diagonal SOSnet with intercept")
 DMRnet(diag(10), c(rep(0,5), rep(1,5)), interc=TRUE)   #it fails in 0.3.2.9001
                                                  #Error in bb[, i] : subscript out of bounds
 
+print("diagonal SOSnet without intercept")
 DMRnet(diag(10), c(rep(0,5), rep(1,5)), interc=FALSE)   #this doesmn't cause problems in 0.3.2.9001
 
 
