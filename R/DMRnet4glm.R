@@ -19,17 +19,13 @@ DMRnet4glm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda) {
       user.lambda <- lambda
     }
 
-    mL <- grpreg::grpreg(x.full[,-1, drop=FALSE], y, group=groups, penalty = "grLasso", family ="binomial", nlambda = nlambda, lambda = user.lambda)
+    mL <-  grpreg::grpreg(x.full[,-1, drop=FALSE], y, group=groups, penalty = "grLasso", family ="binomial", nlambda = nlambda, lambda = user.lambda)
 
-    out <- postlasso_common(mL$lambda, n, mL$beta)
-    ii <-  out$ii
-    bb <-  out$bb[-1,] # removing the first row, which is Intercept
+    bb <-  postlasso_common(mL$lambda, n, mL$beta)
+    fac <- postlasso_fac(bb, groups)   #fac must be computed on bb without intercept, it happens internally in postlasso_fac()
+    SS <-  postlasso_O_step_preparation(p, p.x, n, o, fac, interc=TRUE)
 
-    fac <- postlasso_fac(bb, groups)
-
-    SS <- postlasso_O_step_preparation(p, p.x, n, o, fac, ii, interc=TRUE)
-
-    mm <- lapply(1:ncol(SS), function(i) DMRnet4glm_help(SS[,i], X, y, fl, clust.method = clust.method, lam = lam))
+    mm <-  lapply(1:ncol(SS), function(i) DMRnet4glm_help(SS[,i], X, y, fl, clust.method = clust.method, lam = lam))
 
     return(wrap_up_binomial(mm, p, maxp, SS, fl, x.full, ord, n, levels.listed, mL, list(family = "binomial", clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda)))
 }

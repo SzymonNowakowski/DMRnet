@@ -35,5 +35,5 @@ postlasso_common <- function(lambdas, n, betas) {
 
   bb <- bb[, ii == FALSE, drop = FALSE]    #(3) removing duplicated predictor sets
 
-  return(list(ii=ii, bb=bb))
+  return(bb)
 }
