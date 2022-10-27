@@ -33,10 +33,10 @@
 #'
 #' @export
 predict.cv.DMR <- function(object, newx, type = "link", md="df.min", unknown.factor.levels="error", ...){
-  if (md=="df.1se") {# & !is.null(object$df.1se)) {
+  if (md=="df.1se" & !is.null(object$df.1se)) {
     out <- predict.DMR(object$dmr.fit, newx = as.data.frame(newx), df = object$df.1se, type = type, unknown.factor.levels=unknown.factor.levels)
-  #} else if (md=="df.1se") {   #object$df.1se is null
-  #  stop("Error: required the smallest model falling under the upper curve of a prediction error plus one standard deviation, but it is not set. Use size=`df.min` instead, for the model minimizing the cross validation error.")
+  } else if (md=="df.1se") {   #object$df.1se is null
+    stop("Error: required the smallest model falling under the upper curve of a prediction error plus one standard deviation, but it is not set. Use size=`df.min` instead, for the model minimizing the cross validation error.")
   } else if (md=="df.min") {
     out <- predict.DMR(object$dmr.fit, newx = as.data.frame(newx), df = object$df.min, type = type, unknown.factor.levels=unknown.factor.levels)
   } else{

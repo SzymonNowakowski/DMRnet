@@ -79,6 +79,11 @@ cv_MD_indexed <- function(X, y, nfolds, model_function, ...) {
 
         error_nfolds_length <- length(error[[nfolds]])  #this value needs to be retained because error will be redefined in the next line
         error <- sapply(1:length(error), function(i) error[[i]][(length(error[[i]]) - foldmin + 1) : length(error[[i]])])
+
+        if (foldmin == 1) {
+          error <- t(as.matrix(error))  #making it a horizontal one-row matrix
+        }
+
         error <- rowSums(error)/real_n
         #error stores classification errors for models sized foldmin -> 1
 
@@ -87,9 +92,13 @@ cv_MD_indexed <- function(X, y, nfolds, model_function, ...) {
         df.min <- model$df[error_nfolds_length - foldmin + kt[length(kt)]]   #model is a model computed in the last cross validation fold (==nfolds)
               #so in case there are differences in model lengths in cv folds, the model size in that particular model needs to be shifted
 
-        kt <- which(error <= min(stats::na.omit(error)) + stats::sd(stats::na.omit(error)))
-        df.1se <- model$df[error_nfolds_length - foldmin + kt[length(kt)]]
+        kt <- which(error <= min(stats::na.omit(error)) + stats::sd(stats::na.omit(error[error!=Inf & error!=-Inf])))
 
+        if (length(kt) == 0) {
+          df.1se <- NULL
+        } else {
+          df.1se <- model$df[error_nfolds_length - foldmin + kt[length(kt)]]
+        }
 
         out <- list(df.min = df.min, df.1se = df.1se, dmr.fit = model.full, cvm = error, foldid = foldid)
         return(out)

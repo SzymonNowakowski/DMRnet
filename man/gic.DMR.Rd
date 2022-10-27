@@ -4,7 +4,11 @@
 \alias{gic.DMR}
 \title{gic.DMR}
 \usage{
-gic.DMR(x, c = ifelse(x$arguments$family == "gaussian", 2.5, 2))
+gic.DMR(
+  x,
+  c = ifelse(x$arguments$family == "gaussian", constants()$RIC_gaussian_constant,
+    constants()$RIC_binomial_constant)
+)
 }
 \arguments{
 \item{x}{Fitted \code{DMR} object.}

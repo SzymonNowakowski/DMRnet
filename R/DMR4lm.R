@@ -1,67 +1,28 @@
 DMR4lm <- function(X, y, clust.method, lam){
 
-    n <- nrow(X)
-    if(is.null(colnames(X))) colnames(X) <- paste("x", 1:ncol(X), sep = "")
-    if(n != length(y)){
-              stop("Error: non-conforming data: nrow(X) not equal to length(y)")
-    }
-    ssd <- apply(X, 2, function(x) length(unique(x)))   #number of unique values in each column of X
-    if (ssd[1] == 1 & (inherits(X[,1], "numeric") | inherits(X[,1], "integer"))){  # removing the first column in case
-        # in case is a numeric constant in X
-        # i.e. in case it is an Intercept. Other than that, constant columns are NOT allowed
-       X <- X[,-1, drop = FALSE]   #drop=FALSE keeps the dimensions of X
-       ssd <- ssd[-1]
-    }
+    out <- prelasso_common(X, y)
+    X <-             out$X                #DMR specific
+    factor_columns<- out$factor_columns   #DMR specific
+    n <-             out$n
+    n.levels <-      out$n.levels   #DMR specific
+    n.factors <-     out$n.factors  #DMR specific
+    n.cont <-        out$n.cont     #DMR specific
+    names.cont <-    out$names.cont #DMR specific
+    levels.listed <- out$levels.listed
+    #fl <-            out$fl        #not needed in DMR
+    x.full <-        out$x.full     #DMR specific
+    p <-             out$p
+    p.x <-           out$p.x
+    p.fac <-         out$p.fac      #DMR specific
+    ord <-           out$ord
 
-    if(ncol(X) == 0) {
-      stop("Error: X has zero columns")
-    }
-    if(sum(ssd == 1) > 0) {   #checking if any other constant columns still  exist. if yes -> error
-      stop("Error: X has columns with sd = 0 apart from the intercept")
-    }
-    nn <- sapply(1:ncol(X), function(i) class(X[,i]))
-    names(nn) <- colnames(X)
-    nn[nn == "integer"] <- "numeric"
-    if(sum(nn != "numeric" & nn != "factor" ) > 0) {
-      stop("Error: wrong data type, columns should be one of types: integer, factor, numeric")
-    }
-    X <- X[, order(nn), drop = FALSE]
-    nn <- sort(nn)
-
-    factor_columns <- which(nn == "factor")
-    n.factors <- length(factor_columns)   #number of factors in X
-    if (n.factors > 0) {
-      X[,factor_columns]<-lapply(1:n.factors, function(i) factor(X[,factor_columns[i]]))   #recalculate factors to minimal possible set
-      levels.listed<-lapply(1:n.factors, function(i) levels(X[,factor_columns[i]]))
-      n.levels <- sapply(1:n.factors, function(i) length(levels.listed[[i]]))
-      p.fac <- sum(n.levels - 1)   #sum of factor dimensions. Again, for a factor with k levels it is taking (k-1) as a summand
-    } else{
-       p.fac <- 0
-       levels.listed<-c()
-    }
-    cont <- which(nn == "numeric")
-    n.cont <- length(cont)   #number of continuous columns in X
-    names.cont <- names(nn)[cont]
-    ord <- c()
-    if (n.cont > 0) {
-              if (n.factors > 0) {
-                  for (j in 1:n.cont) {
-                     ord[j] <- sum(n.levels[1:sum(nn[1:cont[j]] == "factor")] - 1) + j + 1
-                  }    #TODO: understand it better. For now, it is a sum of factor dimensions in columns preceding a continuous column, plus a continuous column index plus one (the intercept)
-              } else {
-                  ord <- 2:(n.cont + 1)   #For each continuous column, it is its index plus one (the intercept)
-              }
-    }
-
-    x.full <- stats::model.matrix(y~., data = data.frame(y=y, X, check.names = TRUE))
-
-    #x.full <- stats::model.matrix(y~., data = data.frame(y=y, X[,order(nn), drop = FALSE], check.names = TRUE))
     #important: x.full (and its successors, like Ro later) is ordered: first intercept, then factors (and their levels), then numeric column
-    p <- ncol(x.full)   # sum over all dimensions of X, e.g. for a factor with k levels it is taking (k-1) as a summand
+
     if (p >= n) {
       stop("Error: p >= n, DMR works only for p < n, use DMRnet instead")
     }
     m <- stats::lm.fit(x.full, y)
+
 
 
       #QR decompostion of the model matrix
@@ -144,10 +105,11 @@ DMR4lm <- function(X, y, clust.method, lam){
 
          } else {
            kt <- as.numeric(kt)
-           dod <- min(sp[[kt]][sp[[kt]] != 1])
+
+           spold <- sp[[kt]]
            sp[[kt]] <- stats::cutree(models[[kt]], h = heig[i])
            if(length(sp[[kt]][sp[[kt]] != 1]) > 0){
-                                       sp[[kt]][sp[[kt]] != 1] <- sp[[kt]][sp[[kt]] != 1] + dod - min(sp[[kt]][sp[[kt]] != 1])
+                                       sp[[kt]][sp[[kt]] != 1] <- sp[[kt]][sp[[kt]] != 1] + min(spold[spold != 1]) - min(sp[[kt]][sp[[kt]] != 1])
            }
            Z1[,kt] <- X[, factor_columns[kt]]
            levels(Z1[,kt]) <- sp[[kt]]
