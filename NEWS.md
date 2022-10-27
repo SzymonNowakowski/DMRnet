@@ -1,3 +1,8 @@
+
+# DMRnet 0.3.2.9004
+
+- candidate fix for warnings related to ([issue #33](https://github.com/SzymonNowakowski/DMRnet/issues/33))
+
 # DMRnet 0.3.2.9003
 
 - Setting a default `nlambda` value to 100 in `cv.DMRnet()` ([issue #41](https://github.com/SzymonNowakowski/DMRnet/issues/41))

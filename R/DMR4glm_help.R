@@ -95,10 +95,11 @@ DMR4glm_help <- function(X, y, clust.method, lam){
 
          } else {
            kt <- as.numeric(kt)
-           dod <- min(sp[[kt]][sp[[kt]] != 1])
+
+           spold <- sp[[kt]]
            sp[[kt]] <- stats::cutree(models[[kt]], h = heig[i])
            if(length(sp[[kt]][sp[[kt]] != 1]) > 0){
-                                       sp[[kt]][sp[[kt]] != 1] <- sp[[kt]][sp[[kt]] != 1] + dod - min(sp[[kt]][sp[[kt]] != 1])
+                                       sp[[kt]][sp[[kt]] != 1] <- sp[[kt]][sp[[kt]] != 1] + min(spold[spold != 1]) - min(sp[[kt]][sp[[kt]] != 1])
            }
            Z1[,kt] <- X[, faki[kt]]
            levels(Z1[,kt]) <- sp[[kt]]
