@@ -18,17 +18,13 @@ DMRnet4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
     }
 
 
-    mL <- grpreg::grpreg(x.full[,-1, drop=FALSE], y, group=groups, penalty = "grLasso", family ="gaussian", nlambda = nlambda, lambda = user.lambda)
+    mL <-  grpreg::grpreg(x.full[,-1, drop=FALSE], y, group=groups, penalty = "grLasso", family ="gaussian", nlambda = nlambda, lambda = user.lambda)
 
-    out <- postlasso_common(mL$lambda, n, mL$beta)
-    ii <-  out$ii
-    bb <-  out$bb[-1,] # removing the first row, which is Intercept
+    bb <-  postlasso_common(mL$lambda, n, mL$beta)
+    fac <- postlasso_fac(bb, groups)   #fac must be computed on bb without intercept, it happens internally in postlasso_fac()
+    SS <-  postlasso_O_step_preparation(p, p.x, n, o, fac, interc=TRUE)
 
-    fac <- postlasso_fac(bb, groups)
-
-    SS <- postlasso_O_step_preparation(p, p.x, n, o, fac, ii, interc=TRUE)
-
-    mm <- lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[,i], X, y, fl, clust.method, lam))  #note that it the original matrix X, not X.full that enters DMRnet4lm_help function
+    mm <-  lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[,i], X, y, fl, clust.method, lam))  #note that it the original matrix X, not X.full that enters DMRnet4lm_help function
 
     return(wrap_up_gaussian(mm, p, maxp, SS, fl, X, y, x.full, ord, n, levels.listed, mL, list(family = "gaussian", clust.method = clust.method, o = o, nlambda = nlambda, maxp = maxp, lambda = lambda)))
 }

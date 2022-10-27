@@ -23,14 +23,13 @@ SOSnet4glm <- function(X, y, o, nlambda, lam, interc, maxp, lambda){
 ###############LASSO#####################
           mL <- glmnet::glmnet(Xg, y, alpha = 1, intercept = interc, family = "binomial", nlambda = nlambda, lambda = user.lambda)
 ########################################
-          out <- postlasso_common(mL$lambda, n/2, coef(mL))
+          bb <- postlasso_common(mL$lambda, n/2, coef(mL))
           #the calculations were done for mL$beta in v. prior to 0.3.2.9002
           #now, instead of mL$beta (no intercept) I pass coef(mL) which include Intercept. It helps when checks on dfy variable are performed inside
           #also, I pass n/2 instead of n to make it eliminate models with too many variables as in original AP's code
-          bb <-  out$bb[-1,] #and removing the first row, which is Intercept
-          ii <-  out$ii
 
-          SS <- postlasso_O_step_preparation(p, p.x, n/2, o, bb, ii, interc=interc)  #instead of fac we pass bb and n/2
+          SS <- postlasso_O_step_preparation(p, p.x, n/2, o, bb[-1, ,drop=FALSE], interc=interc)  # instead of fac we pass bb but without the intercept
+                                                                                     # and n/2
 
           mm <- lapply(1:ncol(SS), function(i) SOSnet4glm_help(SS[,i], mL, X, y, lam = lam, interc = interc))
           maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$loglik[1,])))
