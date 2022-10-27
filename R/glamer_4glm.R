@@ -1,62 +1,15 @@
 glamer_4glm <- function(X, y, clust.method, nlambda, lam, maxp, lambda){
-  if (!inherits(y, "factor")){
-    stop("Error: y should be a factor")
-  }
-  lev <- levels(factor(y))
-  if (length(lev) != 2){
-    stop("Error: factor y should have 2 levels")
-  }
-  y <- ifelse(y == lev[2], 1, 0)
-  n <- nrow(X)
-  if(n != length(y)){
-    stop("Error: non-conforming data: nrow(X) not equal to length(y)")
-  }
-  ssd <- apply(X, 2, function(x) length(unique(x)))
-  if (ssd[1] == 1 & (inherits(X[,1], "numeric") | inherits(X[,1], "integer"))){   #removing the intercept from X, as it will be added later to X.full
-    X <- X[,-1, drop = FALSE]
-    ssd <- ssd[-1]
-  }
-  if(ncol(X) == 0){
-    stop("Error: X has zero columns")
-  }
-  if(sum(ssd == 1) > 0){
-    stop("Error: X has columns with sd = 0 apart from the intercept")
-  }
-  nn <- sapply(1:ncol(X), function(i) class(X[,i]))
-  if(is.null(colnames(X))) colnames(X) <- paste("x", 1:ncol(X), sep = "")
-  names(nn) <- colnames(X)
-  nn[nn == "integer"] <- "numeric"
-  p.x <- ncol(X)
-  if(sum(nn != "numeric" & nn != "factor" ) > 0){
-    stop("Error: wrong data type, columns should be one of types: integer, factor, numeric")
-  }
-  factor_columns <- which(nn == "factor")
-  n.factors <- length(factor_columns)
-  n.levels <- c()
-  if (n.factors > 0){
-    X[,factor_columns]<-lapply(1:n.factors, function(i) factor(X[,factor_columns[i]]))   #recalculate factors
-    levels.listed<-lapply(1:n.factors, function(i) levels(X[,factor_columns[i]]))
-    n.levels <- sapply(1:n.factors, function(i) length(levels.listed[[i]]))
-  } else
-    levels.listed<-c()
-  cont <- which(nn == "numeric")
-  n.cont <- length(cont)
-  ord <- c()
-  if(n.cont > 0 ){
-    if(n.factors > 0){
-      for (j in 1:n.cont){
-        ord[j] <- sum(n.levels[1:sum(nn[1:cont[j]] == "factor")] - 1) + j + 1
-      }
-    } else{
-      ord <- 2:(n.cont + 1)
-    }
-  }
-  X <- X[, order(nn), drop = FALSE]
-  nn <- sort(nn)
-  x.full <- stats::model.matrix(y~., data = data.frame(y=y, X, check.names = TRUE))
-  p <- ncol(x.full)
-  fl <- c(n.levels, rep(2, n.cont))
-  x.full <- apply(x.full, 2, function(x) sqrt(n/sum(x^2))*x)
+
+  y <- prelasso_binomial(y)
+
+  out <- prelasso_common(X, y)
+  n <-             out$n
+  levels.listed <- out$levels.listed
+  fl <-            out$fl
+  x.full <-        out$x.full_normalized
+  p <-             out$p
+  ord <-           out$ord
+  groups <-        out$groups
 
   if (is.null(lambda)) {
     user.lambda<-substitute()    #make user.lambda - paradoxically - not present in a call to grpreg
@@ -65,94 +18,19 @@ glamer_4glm <- function(X, y, clust.method, nlambda, lam, maxp, lambda){
     user.lambda <- lambda
   }
 
-  groups <- rep(1:p.x, fl-1)
-  #mL <- grpreg::grpreg(x.full[,-1], y, group=rep(1:p.x, fl-1) , penalty = "grLasso", family ="binomial", nlambda = nlambda, lambda = user.lambda)
-  #to keep the x.full as a matrix after the intercept column is removed in case of a single 2-level factor column in X, drop=FALSE must be provided in grpreg call below in x.full[,-1, drop=FALSE]
-  #otherwise x.full[,-1] would be reduced to a vector and grpreg would crash
   mL <- grpreg::grpreg(x.full[,-1, drop=FALSE], y, group=groups , penalty = "grLasso", family ="binomial", nlambda = nlambda, lambda = user.lambda)
-  RL <- mL$lambda
-  dfy <- apply(mL$beta, 2, function(x) sum(x!=0))
-  kt <- 1:length(RL)
-  lambdas_with_nonzero_beta_number_too_large <- which(dfy >= n)  #(1) removing predictor sets with more predictors than matrix rows
-  if (length(lambdas_with_nonzero_beta_number_too_large) > 0){
-    RL <- RL[-lambdas_with_nonzero_beta_number_too_large]  #removing them from lambdas
-    kt <- kt[-lambdas_with_nonzero_beta_number_too_large]  #and from lambda indices
-    dfy <- dfy[-lambdas_with_nonzero_beta_number_too_large]
-  }
-  lambdas_with_no_betas <- which(dfy == 0)     #(2) removing predictor sets with 0 predictors
-  if(length(lambdas_with_no_betas) > 0){
-    RL <- RL[-lambdas_with_no_betas]  #removing them from lambdas
-    kt <- kt[-lambdas_with_no_betas]  #and from lambda indices
-  }
-  bb <- as.matrix(abs(mL$beta[, kt]))   #bb is a matrix listing beta values (rows) respective to the net of lambda values (cols)
-                                  #also, regularizing those betas to make them STRICTLY >0
-                                  #(there have been cases of grpreg not observing the group constriant - vide hard_case_DMRnet_promoter test file in testing_branch)
-  bb_predictor_sets <- ifelse(bb > 0, 1, 0)          #bb_predictor_sets is a matrix listing predictor sets (0 or 1 for each predictor)  (rows) respective to the net of lambda values (cols)
-  ii <- duplicated(t(bb_predictor_sets))    #detecting duplicated predictor sets
 
-  fac <- apply(bb[-1,ii == FALSE, drop = FALSE], 2, function(x) tapply(x, factor(groups), function(z) sum(z^2)*sqrt(length(z))))
-  #(3) removing duplicated predictor sets
-  #fac is a matrix with normalized beta statistics relating to GROUPS of variables (rows) respective to non-duplicated lambdas (colums)
-  #nrow = #GROUPS of variables
-  #ncol = #active lambdas
-  if(is.null(dim(fac))){     #in case of a single k-level factor matrix in X, there is only one group and fac would be reduced to a vector. This line here helps to convert it back to a matrix
-    #by the way, a symmetric situation is not possible as grpreg does NOT accept a single lambda value nor nlambda=1, nlambda must be at least two
-    fac <- t(as.matrix(fac))
-  }
+  out <- postlasso_common(mL$lambda, n, mL$beta)
+  ii <-  out$ii
+  bb <-  out$bb
 
-  #first, note that sum(ii==FALSE) is a number of predictor sets and it may be smaller than nlambda because of (1), (2), (3)
-  SS <- sapply(1:sum(ii == FALSE), function(i) ifelse(fac[, i] > 0, 1, 0))
-  #nrow = #predictors
-  #ncol = #active lambdas
-  if(is.null(dim(SS))){   #for a single variable (a single k-level factor) SS is a vector
-    SS <- t(as.matrix(SS))  #change it into a matrix with one row - HORIZONTAL matrix is the effect
-  }
+  fac <- postlasso_fac(bb, groups)
 
-  #if (p >= n) SS <- SS[,-1]   #in original DMRnet code, this line serves to eliminate the first FULL model if p >=n, because it would cause problems in DMR later. However, this is not the case here in GLAMER
-                                #because the SS matrix is built in a different way and doesn't include the full model as the first column.
-
-  bb<-rbind(bb[1,ii==FALSE, drop=FALSE], sapply(1:sum(ii==FALSE), function(c) sapply(1:(nrow(bb)-1), function(r) bb[,ii==FALSE, drop=FALSE][1+r,c]+lam*(fac[groups[r], c]>0))))
-          #betas but for active lambdas only
-          #regularizing those betas that belong to groups > 0 to make DOUBLE SURE THEY ARE STRICTLY >0
-          #(there have been cases of grpreg not observing the group constraint - vide hard_case_DMRnet_promoter test file in testing_branch)
-
+  out <- postlasso_glamer(ii, bb, lam, fac, groups)
+  bb <-  out$bb
+  SS <-  out$SS
 
   mm <- lapply(1:ncol(SS), function(i) glamer_4glm_help(SS[,i], bb[,i], X, y, fl, clust.method = clust.method, lam = lam))
-  maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$loglik)))
-  loglik <- sapply(1:length(mm), function(i) c(rep(-Inf, maxl - length(mm[[i]]$loglik)), mm[[i]]$loglik))
 
-  ind <- apply(loglik, 1, which.max)  #in each row, which is the index of a model maximizing loglik
-
-  maxi <- min(p, maxp)
-  if (length(ind) > maxi){
-    idx <- (length(ind) - maxi):length(ind)
-  } else{
-    idx <- 1:length(ind)
-  }
-
-  shift<- function(i) {sum(loglik[, i]==-Inf)}
-  model_group <- function(i) {ind[i]}
-  model_index_within_group<- function(i) {i-shift(model_group(i))}
-
-  be <- sapply(idx, function(i) {
-    b_matrix<-mm[[model_group(i)]]$b;
-    if (is.null(dim(b_matrix))) {
-      b_matrix<-matrix(b_matrix);   #note this shouldn't be b_matrix<-t(as.matrix(b_matrix)) :   with other matrices that degenerated to HORIZONTAL vectors we want to have HORIZONTAL matrices
-      #in this case, however, we want a VERTICAL matrix
-      #in b_matrix[,model_index_within_group(i)] we take columns of b_matrix if b_matrix is a legitimate matrix
-      #when it is degenerate (a vector), we want that taking the full first column (as model_index_within_group(i) == 1 in those cases) takes this whole vector
-    }
-    part2beta_glm_help(b = b_matrix[,model_index_within_group(i)], S = SS[,model_group(i)], fl=fl)
-  })
-
-  rownames(be) <- colnames(x.full)
-  if(length(ord) > 0){
-    ind1 <- c(1:p)
-    ind1[-ord] = 1:(p - length(ord))
-    ind1[ord] = (p - length(ord) + 1):p
-    be = be[ind1,]
-  }
-  fit <- list(beta = be, df = length(idx):1, loglik = loglik[cbind(idx, ind[idx])], n = n, levels.listed = levels.listed, lambda = mL$lambda, arguments = list(family = "binomial", clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp), interc = TRUE)
-  class(fit) = "DMR"
-  return(fit)
+  return(wrap_up_binomial(mm, p, maxp, SS, fl, x.full, ord, n, levels.listed, mL, list(family = "binomial", clust.method = clust.method, nlambda = nlambda, maxp = maxp, lambda=lambda)))
 }

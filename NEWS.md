@@ -1,3 +1,11 @@
+
+# DMRnet 0.3.2.9002
+
+- fixing problems when few or no models are available in cross validation
+- fixing a few other minor long-standing issues in GIC-indexed cross validation
+- fixing problems when few or no models are available after `grpreg` ([issue #39](https://github.com/SzymonNowakowski/DMRnet/issues/39))
+- refactoring the code to distribute the no-models fix from gaussian DMRnet into binomial family DMRnet and both SOSnets and glamers
+
 # DMRnet 0.3.2.9001
 
 - Fixing df.1se in GIC-indexed cross validation for binomial GLAMER
