@@ -26,7 +26,7 @@ SOSnet4lm <- function(X, y, o, nlambda, interc, maxp, lambda){
           out <- postlasso_common(mL$lambda, n, coef(mL))
           #the calculations were done for mL$beta in v. prior to 0.3.2.9002
           #now, instead of mL$beta (no intercept) I pass coef(mL) which include Intercept. It helps when checks on dfy variable are performed inside
-          bb <-  out$bb
+          bb <-  out$bb[-1,] #and removing the first row, which is Intercept
           ii <-  out$ii
 
           SS <- postlasso_O_step_preparation(p, p.x, n, o, bb, ii, interc=interc)  #instead of fac we pass bb

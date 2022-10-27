@@ -27,7 +27,7 @@ SOSnet4glm <- function(X, y, o, nlambda, lam, interc, maxp, lambda){
           #the calculations were done for mL$beta in v. prior to 0.3.2.9002
           #now, instead of mL$beta (no intercept) I pass coef(mL) which include Intercept. It helps when checks on dfy variable are performed inside
           #also, I pass n/2 instead of n to make it eliminate models with too many variables as in original AP's code
-          bb <-  out$bb
+          bb <-  out$bb[-1,] #and removing the first row, which is Intercept
           ii <-  out$ii
 
           SS <- postlasso_O_step_preparation(p, p.x, n/2, o, bb, ii, interc=interc)  #instead of fac we pass bb and n/2
