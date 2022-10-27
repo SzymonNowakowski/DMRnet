@@ -1,5 +1,6 @@
-postlasso_O_step_preparation <- function(p, p.x, n, o, fac, ii, interc) {
+postlasso_O_step_preparation <- function(p, p.x, n, o, fac, interc) {
 
+  ncol <- ncol(fac)
   # O - order step, the additional step in SOSnet (hence the name, sOs-net) and DMRnet, but not in glamer
 
   # called from SOSnet and DMRnet
@@ -7,14 +8,14 @@ postlasso_O_step_preparation <- function(p, p.x, n, o, fac, ii, interc) {
   B <- apply(fac, 2, function(x) stats::quantile(x[x!=0], seq(0, 1, length = (o + 1))[-(o + 1)]))
   B[is.na(B)] <- 0
   S <- sapply(1:o, function(j){
-    out <- sapply(1:sum(ii == FALSE), function(i) ifelse(fac[, i] >= B[j,i], 1, 0))
+    out <- sapply(1:ncol, function(i) ifelse(fac[, i] >= B[j,i], 1, 0))
     # the largest (the first) lambda is the-only-intercept lambda. All other betas are 0.
     # even if it failed to be computed this way in glmnet or grpreg, an artificial lambda like this was added in postlasso_common() function
 
     # In this way, the o-based quantiles are all-zero and this: 0==fac[, i]>=B[j,i]==0 is TRUE, so a column with value 1 in all rows is returned
     # this is a bit tricky, but this line (and condition `>=` above) indeed determines the first column of SS to be a column with value 1 in all rows (the full model)
   })
-  SS <- matrix(S, p.x, sum(ii == FALSE)*o)
+  SS <- matrix(S, p.x, ncol*o)
   SS <- t(unique(t(SS)))
 
   if (ncol(SS) == 1) {
