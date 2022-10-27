@@ -23,7 +23,7 @@ DMRnet4glm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda) {
 
     out <- postlasso_common(mL$lambda, n, mL$beta)
     ii <-  out$ii
-    bb <-  out$bb
+    bb <-  out$bb[-1,] # removing the first row, which is Intercept
 
     fac <- postlasso_fac(bb, groups)
 
