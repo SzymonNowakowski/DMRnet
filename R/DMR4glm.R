@@ -1,75 +1,35 @@
 DMR4glm <- function(X, y, clust.method, lam){
-    if (!inherits(y, "factor")){
-       stop("Error: y should be a factor")
-    }
-    lev <- levels(factor(y))
-    if (length(lev) != 2){
-       stop("Error: factor y should have 2 levels")
-    }
-    y <- ifelse(y == lev[2], 1, 0)
-    n <- nrow(X)
-    if(is.null(colnames(X))) colnames(X) <- paste("x", 1:ncol(X), sep = "")
-    if(n != length(y)){
-              stop("Error: non-conforming data: nrow(X) not equal to length(y)")
-    }
-    ssd <- apply(X, 2, function(x) length(unique(x)))
-    if (ssd[1] == 1 & (inherits(X[,1], "numeric") | inherits(X[,1], "integer"))){
-       X <- X[,-1, drop = FALSE]
-       ssd <- ssd[-1]
-    }
-    if(ncol(X) == 0){
-              stop("Error: X has zero columns")
-    }
-    if(sum(ssd == 1) > 0){
-               stop("Error: X has columns with sd = 0 apart from the intercept")
-    }
-    nn <- sapply(1:ncol(X), function(i) class(X[,i]))
-    names(nn) <- colnames(X)
-    nn[nn == "integer"] <- "numeric"
-    if(sum(nn != "numeric" & nn != "factor" ) > 0){
-              stop("Error: wrong data type, columns should be one of types: integer, factor, numeric")
+
+    y <- prelasso_binomial(y)
+
+    out <- prelasso_common(X, y)
+    X <-             out$X                #DMR specific
+    factor_columns<- out$factor_columns   #DMR specific
+    n <-             out$n
+    n.levels <-      out$n.levels   #DMR specific
+    n.factors <-     out$n.factors  #DMR specific
+    n.cont <-        out$n.cont     #DMR specific
+    names.cont <-    out$names.cont #DMR specific
+    levels.listed <- out$levels.listed
+    #fl <-            out$fl        #not needed in DMR
+    x.full <-        out$x.full     #DMR specific
+    p <-             out$p
+    p.x <-           out$p.x
+    p.fac <-         out$p.fac      #DMR specific
+    ord <-           out$ord
+
+    #important: x.full (and its successors, like Ro later) is ordered: first intercept, then factors (and their levels), then numeric column
+
+    if (p >= n){
+        stop("Error: p >= n, DMR works only for p < n, use DMRnet instead")
     }
 
-    X <- X[, order(nn), drop = FALSE]
-    nn <- sort(nn)
-
-    factor_columns <- which(nn == "factor")
-    n.factors <- length(factor_columns)
-    if (n.factors > 0) {
-        X[,factor_columns]<-lapply(1:n.factors, function(i) factor(X[,factor_columns[i]]))   #recalculate factors to minimal possible set
-        levels.listed<-lapply(1:n.factors, function(i) levels(X[,factor_columns[i]]))
-        n.levels <- sapply(1:n.factors, function(i) length(levels.listed[[i]]))
-        p.fac <- sum(n.levels - 1)   #sum of factor dimensions. Again, for a factor with k levels it is taking (k-1) as a summand
-    } else{
-        p.fac <- 0
-        levels.listed<-c()
-    }
-    cont <- which(nn == "numeric")
-    n.cont <- length(cont)
-    namCont <- names(nn)[cont]
-    ord <- c()
-    if(n.cont > 0 ){
-              if(n.factors > 0){
-                  for (j in 1:n.cont){
-                     ord[j] <- sum(n.levels[1:sum(nn[1:cont[j]] == "factor")] - 1) + j + 1
-                  }
-              } else{
-                               ord <- 2:(n.cont + 1)
-              }
-    }
-
-
-    x.full <- stats::model.matrix(y~., data = data.frame(y=y, X, check.names = TRUE))
-
-    #x.full <- stats::model.matrix(y~., data = data.frame(y=y, X[,order(nn), drop = FALSE], check.names = TRUE))
-    p <- ncol(x.full)
-    if (p > n){
-        stop("Error: p > n, DMR works only for p < n, use DMRnet instead")
-    }
     lmin <- lam*length(y)*2
     lmax <- lmin*1000
     RL <- exp(seq(log(lmax), log(lmin), length.out = 20))
+###############LASSO#####################
     m <- glmnet::glmnet(x.full, y, lambda = RL, alpha = 0, family = "binomial")  #SzN per explanation of PP, this is regularized with ridge penalty (alpha=0) to help with computations of singular cases, but not to sparsify the betas as lasso penalty could
+###########################################
     be <- c(m$a0[20], m$beta[-1,20])
 
     zb <- exp(x.full%*%be)

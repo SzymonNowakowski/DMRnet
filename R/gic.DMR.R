@@ -21,11 +21,12 @@
 #' m <- DMR(X, y)
 #' (g <- gic.DMR(m, c = 2.5))
 #' @export gic.DMR
-gic.DMR <- function(x, c = ifelse(x$arguments$family == "gaussian", 2.5, 2)){
+gic.DMR <- function(x, c = ifelse(x$arguments$family == "gaussian", constants()$RIC_gaussian_constant, constants()$RIC_binomial_constant)){
         p <- nrow(x$beta)
         n <- x$n
         if (names(x)[3] == "rss"){
-           gic <- x$rss + (x$rss[1]/(n - length(x$rss)))*x$df*c*log(p)
+           s2 <- (x$rss[1]/(n - length(x$rss)))
+           gic <- x$rss + s2*x$df*c*log(p)
         } else{
            gic <- -2*x$loglik + x$df*c*log(p)
         }

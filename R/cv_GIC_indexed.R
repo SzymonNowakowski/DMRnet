@@ -39,12 +39,17 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                 len_err <- sapply(err, length)
                 foldmin <- min(len_err)
                 ERR <- sapply(1:nfolds, function(i) err[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
+                if (foldmin == 1) {
+                  ERR<-t(as.matrix((ERR)))  #making it a horizontal one-row matrix
+                }
                 #err <- rowMeans(ERR); kt <- which(err == min(err)); df.min <- dmr$df[kt[length(kt)]]; plot(err, type="o")
 
                 p1 <- model.full$df[1]
                 s2 <- model.full$rss[1]/(n-p1)
-                Const <- exp(seq(log(2/50),log(2*50), length=80))
-                laGIC <- Const*log(p1)*s2
+                p <- nrow(model.full$beta)
+                RIC_constant <- constants()$RIC_gaussian_constant
+                Const <- exp(seq(log(RIC_constant/50),log(RIC_constant*50), length=81))
+                laGIC <- Const*log(p)*s2
                 RSS <- sapply(1:nfolds, function(i) rss[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
                 #MD <- sapply(1:nfolds, function(i)  md[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
                 IND <- apply( RSS, 2, function(r) sapply( laGIC, function(la) which.min(r+la*length(r):1) ) )
@@ -112,12 +117,14 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                         #err <- rowMeans(ERR); kt <- which(err == min(err)); df.min <- dmr$df[kt[length(kt)]]; plot(err, type="o")
 
 
+                        if (foldmin == 1) {
+                          ERR<-t(as.matrix((ERR)))  #making it a horizontal one-row matrix
+                        }
 
-
-
-                        p1 <- model.full$df[1]
-                        Const <- exp(seq(log(2/50),log(2*50), length=80))
-                        laGIC <- Const*log(p1)
+                        p <- nrow(model.full$beta)
+                        RIC_constant <- constants()$RIC_binomial_constant
+                        Const <- exp(seq(log(RIC_constant/50),log(RIC_constant*50), length=81))
+                        laGIC <- Const*log(p)
                         LOGLIK <- sapply(1:nfolds, function(i) loglik[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
                         #MD <- sapply(1:nfolds, function(i)  md[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
                         IND <- apply( LOGLIK, 2, function(ll) sapply( laGIC, function(la) which.min(ll+la*length(ll):1) ) )
@@ -142,8 +149,12 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
         df.min <- model.full$df[indMod]
 
         kt <- which(gic.full <= min(stats::na.omit(gic.full)) + stats::sd(stats::na.omit(gic.full[gic.full!=Inf & gic.full!=-Inf])))
-        indMod <- kt[length(kt)]
-        df.1se <- model.full$df[indMod]
+        if (length(kt) == 0) {
+          df.1se <- NULL
+        } else {
+          indMod <- kt[length(kt)]
+          df.1se <- model.full$df[indMod]
+        }
 
         out <- list(df.min = df.min, df.1se = df.1se, dmr.fit = model.full, cvm = gic.full, foldid = foldid)
         return(out)
