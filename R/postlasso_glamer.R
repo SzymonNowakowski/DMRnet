@@ -1,8 +1,7 @@
 postlasso_glamer <- function(bb, lam, fac, groups) {
 
-
   #first, note that sum(ii==FALSE) is a number of predictor sets and it may be smaller than nlambda because of (1), (2), (3)
-  SS <- sapply(1:ncol(bb), function(i) ifelse(fac[, i] > 0, 1, 0))
+  SS <- sapply(1:ncol(fac), function(i) ifelse(fac[, i] > 0, 1, 0))
   #nrow = #predictors
   #ncol = #active lambdas
   if(is.null(dim(SS))){   #for a single variable (a single k-level factor) SS is a vector
