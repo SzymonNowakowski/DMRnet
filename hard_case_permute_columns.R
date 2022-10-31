@@ -9,7 +9,7 @@ stopper <- FALSE
 
 
 
-######### SCENARIO A SOSnet no intercept, matrix with interecept
+######### SCENARIO A SOSnet no intercept, matrix with intercept
 
 cat("Sosnet\n")
 X <- matrix(rnorm(50*15), ncol=15)
@@ -18,7 +18,7 @@ b_vector <- sample(1:10,15, replace=TRUE)
 y <- X %*% matrix(b_vector)
 
 
-mod <- DMRnet(X, y, interc=FALSE)   #SOSnet in fact - no factor columns
+mod <- DMRnet(X, y, interc=FALSE)   #SOSnet gets called - no factor columns
 pred <- predict(mod, newx=X, df=14)
 MSEA <- sum((y - pred)^2)
 cat("Scenario A: ", MSEA, "\n")
@@ -26,41 +26,38 @@ cat("Scenario A: ", MSEA, "\n")
 
 ######### SCENARIO B SOSnet no intercept, matrix no interecept
 
-cat("Sosnet\n")
 X <- matrix(rnorm(50*15), ncol=15)
 b_vector <- sample(1:10,15, replace=TRUE)
 y <- X %*% matrix(b_vector)
 
 
-mod <- DMRnet(X, y, interc=FALSE)   #SOSnet in fact - no factor columns
+mod <- DMRnet(X, y, interc=FALSE)   #SOSnet gets called - no factor columns
 pred <- predict(mod, newx=X, df=15)
 MSEB <- sum((y - pred)^2)
 cat("Scenario B: ", MSEB, "\n")
 
-######### SCENARIO C SOSnet with intercept, matrix with interecept
+######### SCENARIO C SOSnet with intercept, matrix with intercept
 
-cat("Sosnet\n")
 X <- matrix(rnorm(50*15), ncol=15)
 X[,1] <- 1.0    #constant
 b_vector <- sample(1:10,15, replace=TRUE)
 y <- X %*% matrix(b_vector)
 
 
-mod <- DMRnet(X, y, interc=TRUE)   #SOSnet in fact - no factor columns
+mod <- DMRnet(X, y, interc=TRUE)   #SOSnet gets called - no factor columns
 pred <- predict(mod, newx=X, df=15)
 MSEC <- sum((y - pred)^2)
 cat("Scenario C: ", MSEA, "\n")
 
 
-######### SCENARIO B SOSnet with intercept, matrix no interecept
+######### SCENARIO D SOSnet with intercept, matrix no intercept
 
-cat("Sosnet\n")
 X <- matrix(rnorm(50*15), ncol=15)
 b_vector <- sample(1:10,15, replace=TRUE)
 y <- X %*% matrix(b_vector)
 
 
-mod <- DMRnet(X, y, interc=TRUE)   #SOSnet in fact - no factor columns
+mod <- DMRnet(X, y, interc=TRUE)   #SOSnet gets called - no factor columns
 pred <- predict(mod, newx=X, df=16)
 MSED <- sum((y - pred)^2)
 cat("Scenario D: ", MSEB, "\n")
@@ -68,8 +65,8 @@ cat("Scenario D: ", MSEB, "\n")
 
 
 if (stopper)
-  if (MSEA / MSEB > 1000.0 | MSEA > 1e-10 | MSEB > 1e-10)
-    stop(paste("Incorrect computation for permuted columns: MSE in scenario A =", MSEA, "while MSE in scenario B =", MSEB))
+  if ( MSEA > 1e-10 | MSEB > 1e-10 | MSEC > 1e-10 | MSED > 1e-10)
+    stop("Incorrect computation with/without intercept in SOSnet")
 
 
 
