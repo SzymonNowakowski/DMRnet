@@ -21,5 +21,5 @@ prelasso_cont_columns <- function(X, y) {
 
   nn[nn == "integer"] <- "numeric"
   p.x <- ncol(X)
-  return(list(n=n, nn=nn, p.x=p.x))
+  return(list(X=X, n=n, nn=nn, p.x=p.x))
 }

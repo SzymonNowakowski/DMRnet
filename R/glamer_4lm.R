@@ -8,6 +8,7 @@ glamer_4lm <- function(X, y, clust.method, nlambda, lam, maxp, lambda){
   p <-             out$p
   ord <-           out$ord
   groups <-        out$groups
+  X <-             out$X
 
   if (is.null(lambda)) {
     user.lambda<-substitute()    #make user.lambda - paradoxically - not present in a call to grpreg
