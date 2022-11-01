@@ -62,7 +62,7 @@ SOSnet4lm <- function(X, y, o, nlambda, interc, maxp, lambda){
              be = sapply(idx[-length(idx)], function(i) {
               Xs <- X[, mm[[iid[i]]]$ind[1:(length(iid) - i)], drop = FALSE]
               mnk <- stats::lm.fit(as.matrix(cbind(1, Xs)), y)
-              out <- rep(0, p + 1)
+              out <- rep(0, p)   #p is already with intercept
               out[c(1, mm[[iid[i]]]$ind[1:(length(iid) - i)] + 1)] <- mnk$coef
               return(out)
             })
