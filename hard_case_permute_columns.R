@@ -19,7 +19,7 @@ y <- X %*% matrix(b_vector)
 
 
 mod <- DMRnet(X, y, interc=FALSE)   #SOSnet gets called - no factor columns
-pred <- predict(mod, newx=X, df=14)
+#pred <- predict(mod, newx=X, df=14)
 MSEA <- sum((y - pred)^2)
 cat("Scenario A: ", MSEA, "\n")
 
@@ -58,6 +58,9 @@ y <- X %*% matrix(b_vector)
 
 
 mod <- DMRnet(X, y, interc=TRUE)   #SOSnet gets called - no factor columns
+#Warning message:
+#  In cbind(be, c(mnk$coef, rep(0, ncol(X)))) :
+#  number of rows of result is not a multiple of vector length (arg 2)
 pred <- predict(mod, newx=X, df=16)
 MSED <- sum((y - pred)^2)
 cat("Scenario D: ", MSEB, "\n")
