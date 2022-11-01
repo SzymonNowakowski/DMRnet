@@ -31,16 +31,10 @@ prelasso_common <- function(X, y, nn) {
   n.cont <- length(cont)
   names.cont <- names(nn)[cont]
 
-  ord <- c()
-  if(n.cont > 0 ){
-    if(n.factors > 0){
-      for (j in 1:n.cont){
-        ord[j] <- sum(n.levels[1:sum(nn[1:cont[j]] == "factor")] - 1) + j + 1
-      }
-    } else{
-      ord <- 2:(n.cont + 1)
-    }
-  }
+  fl <- c(n.levels, rep(2, n.cont))
+  ord <- c(1, order(rep(order(nn), fl-1))+1)   # this is a reverse permutation for reshuffling betas in the end in wrap_up()
+                                    # including the Intercept
+                                    #the reason fl is applied AFTER the first order is that fl is calculated for ordered columns
 
   X <- X[, order(nn), drop = FALSE]  # for DMR it is important that it happens early on, before factor_columns is computed
                                      # OR: compute factor_columsn once more
@@ -49,7 +43,7 @@ prelasso_common <- function(X, y, nn) {
 
   x.full <- stats::model.matrix(y~., data = data.frame(y=y, X, check.names = TRUE))
   p <- ncol(x.full)   # sum over all dimensions of X, e.g. for a factor with k levels it is taking (k-1) as a summand
-  fl <- c(n.levels, rep(2, n.cont))
+
   x.full_normalized <- apply(x.full, 2, function(x) sqrt(n/sum(x^2))*x)
 
   groups <- rep(1:p.x, fl-1)

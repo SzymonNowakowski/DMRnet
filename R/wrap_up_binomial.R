@@ -30,12 +30,9 @@ wrap_up_binomial <- function(mm, p, maxp, SS, fl, x.full, ord, n, levels.listed,
   })
 
   rownames(be) <- colnames(x.full)
-  if(length(ord) > 0){
-    ind1 <- c(1:p)
-    ind1[-ord] = 1:(p - length(ord))
-    ind1[ord] = (p - length(ord) + 1):p
-    be = be[ind1,]
-  }
+
+  be <- be[ord,]  #reordering betas to reflect the original matrix X
+
   fit <- list(beta = be, df = length(idx):1, loglik = loglik[cbind(idx, ind[idx])], n = n, levels.listed = levels.listed, lambda = mL$lambda, arguments=arguments, interc = TRUE)
   class(fit) = "DMR"
   return(fit)

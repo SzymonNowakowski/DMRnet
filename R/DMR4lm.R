@@ -143,14 +143,11 @@ DMR4lm <- function(X, y, clust.method, lam){
    m$coef[is.na(m$coef)] <- min_value / 1000.0 #setting a very small (close to 0) value for the variables exceeding design matrix rank
                     #consult the comment in part2beta_help() for longer explanation
 
-   b = cbind(b, c(m$coef, rep(0, length(heig) - 1)))
-   rss = c(rss, sum(m$res^2))
-   if(length(ord) > 0){
-                  ind <- c(1:p)
-                  ind[-ord] = 1:(p - length(ord))
-                  ind[ord] = (p - length(ord) + 1):p
-                  b = b[ind,]
-   }
+   b <- cbind(b, c(m$coef, rep(0, length(heig) - 1)))
+   rss <- c(rss, sum(m$res^2))
+
+   b <- b[ord,]  #reordering betas to reflect the original matrix X
+
    fit <- list(beta = b, df = p:1, rss = rss, n = n, levels.listed = levels.listed, lambda=numeric(0), arguments = list(family = "binomial", clust.method = clust.method), interc = TRUE)
    class(fit) = "DMR"
    return(fit)
