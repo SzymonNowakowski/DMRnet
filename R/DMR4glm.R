@@ -9,7 +9,7 @@ DMR4glm <- function(X, y, clust.method, lam){
     n.levels <-      out$n.levels   #DMR specific
     n.factors <-     out$n.factors  #DMR specific
     n.cont <-        out$n.cont     #DMR specific
-    names.cont <-    out$names.cont #DMR specific
+    namCont <-       out$names.cont #DMR specific
     levels.listed <- out$levels.listed
     #fl <-            out$fl        #not needed in DMR
     x.full <-        out$x.full     #DMR specific
