@@ -5,13 +5,12 @@ SOSnet4lm <- function(X, y, o, nlambda, interc, maxp, lambda){
           n <-             out$n
           nn <-            out$nn
           p <-             out$p.x + interc     #  in SOSnet p is p.x but maybe with intercept added.
-          p.x <-           out$p.x              #  p.x is always without intercept.
+          p.x <-           out$p.x              #  p.x is always without intercept
+          Xg <-            apply(out$X, 2, function(x) sqrt(n/sum(x^2))*x)
 
           if(sum(nn != "numeric") > 0){
             stop("Error: wrong data type, columns should be one of types: integer, numeric")
           }
-
-          Xg <- apply(X, 2, function(x) sqrt(n/sum(x^2))*x)
 
           if (is.null(lambda)) {
             user.lambda<-NULL    #make user.lambda NULL in a call to glmnet

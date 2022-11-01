@@ -19,9 +19,9 @@ clusters_4lm_help <- function(S, betas_with_intercept, X, y, clust.method, lam){
   } else{
     p.fac <- 0
   }
-  cont <- which(nn == "numeric")
-  n.cont <- length(cont)
-  namCont <- names(nn)[cont]
+  continous_columns <- which(nn == "numeric")
+  n.cont <- length(continous_columns)
+  namCont <- names(nn)[continous_columns]
   #QR decompostion of the model matrix
   # qX <- qr.Q(m$qr)
   # rX <- qr.R(m$qr)

@@ -9,6 +9,7 @@ DMRnet4lm <- function(X, y, clust.method, o, nlambda, lam, maxp, lambda){
     p.x <-           out$p.x
     ord <-           out$ord
     groups <-        out$groups
+    X <-             out$X
 
     if (is.null(lambda)) {
       user.lambda<-substitute()    #make user.lambda - paradoxically - not present in a call to grpreg

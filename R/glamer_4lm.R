@@ -8,6 +8,7 @@ glamer_4lm <- function(X, y, clust.method, nlambda, lam, maxp, lambda){
   p <-             out$p
   ord <-           out$ord
   groups <-        out$groups
+  X <-             out$X
 
   if (is.null(lambda)) {
     user.lambda<-substitute()    #make user.lambda - paradoxically - not present in a call to grpreg
@@ -24,7 +25,7 @@ glamer_4lm <- function(X, y, clust.method, nlambda, lam, maxp, lambda){
   bb <-  out$bb
   SS <-  out$SS
 
-  mm <-  lapply(1:ncol(SS), function(i) glamer_4lm_help(SS[,i], bb[,i], mL, X, y, fl, clust.method, lam = lam))
+  mm <-  lapply(1:ncol(SS), function(i) glamer_4lm_help(SS[,i], bb[,i], X, y, fl, clust.method, lam = lam))
 
   return(wrap_up_gaussian(mm, p, maxp, SS, fl, X, y, x.full, ord, n, levels.listed, mL, list(family = "gaussian", clust.method = clust.method, nlambda = nlambda, maxp = maxp, lambda=lambda)))
 }

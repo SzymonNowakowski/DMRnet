@@ -6,6 +6,7 @@ prelasso_common <- function(X, y, nn) {
   n <-             out$n
   nn <-            out$nn
   p.x <-           out$p.x
+  X <-             out$X
 
   if(is.null(colnames(X))) colnames(X) <- paste("x", 1:ncol(X), sep = "")
   names(nn) <- colnames(X)
@@ -13,9 +14,6 @@ prelasso_common <- function(X, y, nn) {
   if(sum(nn != "numeric" & nn != "factor" ) > 0){
     stop("Error: wrong data type, columns should be one of types: integer, factor, numeric")
   }
-
-  X <- X[, order(nn), drop = FALSE]  #for DMR it is important that it happens early on, before factor_columns is computed
-  nn <- sort(nn)       # I am assuming the sort IS STABLE
 
   factor_columns <- which(nn == "factor")
   n.factors <- length(factor_columns)
@@ -43,6 +41,11 @@ prelasso_common <- function(X, y, nn) {
       ord <- 2:(n.cont + 1)
     }
   }
+
+  X <- X[, order(nn), drop = FALSE]  # for DMR it is important that it happens early on, before factor_columns is computed
+                                     # OR: compute factor_columsn once more
+  nn <- sort(nn)       # I am assuming the sort IS STABLE
+  factor_columns <- which(nn == "factor")       #recalculated for the sake of DMR
 
   x.full <- stats::model.matrix(y~., data = data.frame(y=y, X, check.names = TRUE))
   p <- ncol(x.full)   # sum over all dimensions of X, e.g. for a factor with k levels it is taking (k-1) as a summand

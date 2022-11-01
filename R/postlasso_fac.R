@@ -1,8 +1,7 @@
 postlasso_fac <- function(bb, groups) {
 
-  bb <- bb[-1, ,drop=FALSE]   #fac must be computed on bb without intercept
-
-  fac <- apply(bb, 2, function(x) tapply(x, factor(groups), function(z) sum(z^2)*sqrt(length(z))))
+ #fac must be computed on bb without intercept
+  fac <- apply(bb[-1, ,drop=FALSE], 2, function(x) tapply(x, factor(groups), function(z) sum(z^2)*sqrt(length(z))))
 
 #fac is a matrix with normalized beta statistics relating to GROUPS of variables (rows) respective to non-duplicated lambdas (colums)
 #nrow = #GROUPS of variables
