@@ -1,7 +1,13 @@
 
+# DMRnet 0.3.2.9005
+
+- Updating documentation to reflect that for inference the matrix must be provided without the intercept column
+- Fixing incorrect inference for columns out of first-factors-then-numerics sequence
+- Refactoring the code to distribute the no-models fix from gaussian `DMRnet` into binomial family `DMRnet` and both `SOSnet`s and `GLAMER`s
+
 # DMRnet 0.3.2.9004
 
-- candidate fix for warnings related to ([issue #33](https://github.com/SzymonNowakowski/DMRnet/issues/33))
+- Candidate fix for warnings related to ([issue #33](https://github.com/SzymonNowakowski/DMRnet/issues/33))
 
 # DMRnet 0.3.2.9003
 
@@ -12,7 +18,6 @@
 - Fixing problems when few or no models are available in cross validation
 - Fixing a few other minor long-standing issues in GIC-indexed cross validation
 - Fixing problems when few or no models are available after `grpreg` ([issue #39](https://github.com/SzymonNowakowski/DMRnet/issues/39))
-- Refactoring the code to distribute the no-models fix from gaussian `DMRnet` into binomial family `DMRnet` and both `SOSnet`s and `GLAMER`s
 
 # DMRnet 0.3.2.9001
 

@@ -4,7 +4,7 @@
 #'
 #' @param object Fitted \code{DMR} object.
 #'
-#' @param newx Data frame of new values for \code{X} at which predictions are to be made.
+#' @param newx Data frame of new values for \code{X} at which predictions are to be made. The intercept column should NOT be passed in a call to \code{predict}.
 #'
 #' @param df Number of parameters in the model for which predictions are required. Default is the entire sequence of models for df=1 to df=p.
 #'
