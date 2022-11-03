@@ -4,7 +4,7 @@
 #'
 #' @param object Fitted \code{gic.DMR} object.
 #'
-#' @param newx Data frame of new values for \code{X} at which predictions are to be made.
+#' @param newx Data frame of new values for \code{X} at which predictions are to be made. The intercept column should NOT be passed in a call to \code{predict}.
 #'
 #' @param type One of: \code{"link"}, \code{"response"}, \code{"class"}. For \code{family="gaussian"} for all values of \code{type} it gives the fitted values. For \code{family="binomial"} and \code{type="link"} it returns the linear predictors, for \code{type="response"} it returns the fitted probabilities and for \code{type="class"} it produces the class labels corresponding to the maximum probability.
 #'
