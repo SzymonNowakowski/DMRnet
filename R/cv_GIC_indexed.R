@@ -46,7 +46,11 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
 
                 p1 <- model.full$df[1]
                 s2 <- model.full$rss[1]/(n-p1)
-                p <- nrow(model.full$beta)
+
+                p <- ncol(model.full$beta)
+                if (is.null(p))
+                  p <- length(model.full$beta)
+
                 RIC_constant <- constants()$RIC_gaussian_constant
                 Const <- exp(seq(log(RIC_constant/50),log(RIC_constant*50), length=81))
                 laGIC <- Const*log(p)*s2
@@ -121,7 +125,10 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                           ERR<-t(as.matrix((ERR)))  #making it a horizontal one-row matrix
                         }
 
-                        p <- nrow(model.full$beta)
+                        p <- ncol(model.full$beta)
+                        if (is.null(p))
+                          p <- length(model.full$beta)
+
                         RIC_constant <- constants()$RIC_binomial_constant
                         Const <- exp(seq(log(RIC_constant/50),log(RIC_constant*50), length=81))
                         laGIC <- Const*log(p)
