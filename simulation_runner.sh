@@ -1,5 +1,5 @@
 #!/bin/bash
-max=8
+max=7
 for beta in 1 2 3 4 5 6; do
   for snr in 1 2 3 4 5 6 7; do
     while [ `ps axu | grep R/bin/exec/R |wc -l` -gt $max ] ; do
