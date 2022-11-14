@@ -24,7 +24,7 @@ SOSnet4lm <- function(X, y, o, nlambda, interc, maxp, lambda){
 ###############LASSO#####################
           mL <- glmnet::glmnet(Xg, y, alpha = 1, intercept = interc, family = "gaussian", nlambda = nlambda, lambda = user.lambda)
 ########################################
-          bb <- postlasso_common(mL$lambda, n, coef(mL))
+          bb <- postlasso_common(mL$lambda, n, glmnet::coef.glmnet(mL))
           #the calculations were done for mL$beta in v. prior to 0.3.2.9002
           #now, instead of mL$beta (no intercept) I pass coef(mL) which include Intercept. It helps when checks on dfy variable are performed inside
 
