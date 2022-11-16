@@ -1,9 +1,11 @@
 
+# DMRnet 0.3.3.9001
+
 # DMRnet 0.3.3
 
 - Updating documentation to reflect that for inference the matrix must be provided without the intercept column
 - Fixing incorrect inference for columns not in first-factors-then-numerics sequence
-- Candidate fix for warnings related to ([issue #33](https://github.com/SzymonNowakowski/DMRnet/issues/33))
+- Candidate fix for warnings related to [issue #33](https://github.com/SzymonNowakowski/DMRnet/issues/33)
 - Setting a default `nlambda` value to 100 in `cv.DMRnet()` ([issue #41](https://github.com/SzymonNowakowski/DMRnet/issues/41))
 - Fixing problems when few or no models are available in cross validation
 - Fixing problems when few or no models are available after `grpreg` ([issue #39](https://github.com/SzymonNowakowski/DMRnet/issues/39))
