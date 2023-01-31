@@ -92,11 +92,17 @@ all("gaussian", "GIC", "DMRnet")
 all("gaussian", "dimension", "glamer")         # ?
 all("gaussian", "GIC", "glamer")               # ?
 
+all("gaussian", "dimension", "PDMR")         # ?
+all("gaussian", "GIC", "PDMR")               # ?
+
 all("binomial", "dimension", "DMRnet")         # it is not causing problems in 0.3.2.9001
 all("binomial", "GIC", "DMRnet")               # it is not causing problems in 0.3.2.9001
 
 all("binomial", "dimension", "glamer")         # ?
 all("binomial", "GIC", "glamer")               # ?
+
+all("binomial", "dimension", "PDMR")         # ?
+all("binomial", "GIC", "PDMR")               # ?
 
 #and finally a similarly caused error for SOSnet:
 print("diagonal SOSnet with intercept")
