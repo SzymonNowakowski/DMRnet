@@ -108,19 +108,6 @@ plot(g)
 coef(m1, df = g$df.min)
 ypr <- predict(m1, newx = Xte, df = g$df.min)
 
-## PDMR for logistic regression
-data(promoter)
-ytr <- factor(promoter[1:70,1])
-Xtr <- promoter[1:70,-1]
-Xte <- promoter[71:106,-1]
-m2 <- DMRnet(Xtr, ytr, family = "binomial", algorithm="PDMR")
-print(m2)
-plot(m2)
-g <- gic.DMR(m2, c = 2)
-plot(g)
-coef(m2, df = g$df.min)
-ypr <- predict(m2, newx = Xte, df = g$df.min)
-
 }
 \seealso{
 \code{\link{print.DMR}} for printing, \code{\link{plot.DMR}} for plotting, \code{\link{coef.DMR}} for extracting coefficients and \code{\link{predict.DMR}} for prediction.
