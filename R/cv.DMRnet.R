@@ -24,7 +24,7 @@
 #'
 #' @param indexation.mode How the cross validation algorithm should index the models for internal quality comparisons; one of: \code{"GIC"} (the default) for GIC-indexed cross validation, \code{"dimension"}, for model dimension-indexed cross validation.
 #'
-#' @param algorithm The algorithm to be used to merge levels; one of: \code{"DMRnet"} (the default), \code{"glamer"}.
+#' @param algorithm The algorithm to be used to merge levels; one of: \code{"DMRnet"} (the default), \code{"glamer"}, \code{"PDMR"}.
 #'
 #' @details cv.DMRnet algorithm does \code{nfold}-fold cross-validation for DMRnet. The df for the minimal estimated prediction error is returned.
 #'

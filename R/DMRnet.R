@@ -22,7 +22,7 @@
 #'
 #' @param lambda Explicitly provided net of lambda values for the group lasso screening step, described in Details. If provided, it overrides the value of \code{nlambda} parameter.
 #'
-#' @param algorithm The algorithm to be used to merge levels; one of: \code{"DMRnet"} (the default), \code{"glamer"}.
+#' @param algorithm The algorithm to be used to merge levels; one of: \code{"DMRnet"} (the default), \code{"glamer"}, \code{"PDMR"}.
 #'
 #' @details \code{DMRnet} algorithm is a generalization of \code{\link{DMR}} to high-dimensional data.
 #' It uses a screening step in order to decrease the problem to p<n and then uses \code{DMR} subsequently.
@@ -75,12 +75,12 @@
 #' coef(m2, df = g$df.min)
 #' ypr <- predict(m2, newx = Xte, df = g$df.min)
 #'
-#' ## GLAMER for linear regression
+#' ## PDMR for linear regression
 #' data(miete)
 #' ytr <- miete[1:200,1]
 #' Xtr <- miete[1:200,-1]
 #' Xte <- miete[201:250,-1]
-#' m1 <- DMRnet(Xtr, ytr, algorithm="glamer")
+#' m1 <- DMRnet(Xtr, ytr, algorithm="PDMR")
 #' print(m1)
 #' plot(m1)
 #' g <- gic.DMR(m1, c = 2.5)
@@ -88,12 +88,12 @@
 #' coef(m1, df = g$df.min)
 #' ypr <- predict(m1, newx = Xte, df = g$df.min)
 #'
-#' ## GLAMER for logistic regression
+#' ## PDMR for logistic regression
 #' data(promoter)
 #' ytr <- factor(promoter[1:70,1])
 #' Xtr <- promoter[1:70,-1]
 #' Xte <- promoter[71:106,-1]
-#' m2 <- DMRnet(Xtr, ytr, family = "binomial", algorithm="glamer")
+#' m2 <- DMRnet(Xtr, ytr, family = "binomial", algorithm="PDMR")
 #' print(m2)
 #' plot(m2)
 #' g <- gic.DMR(m2, c = 2)
@@ -103,7 +103,10 @@
 #'
 #' @export DMRnet
 
-DMRnet <- function(X, y, family = "gaussian", clust.method = "complete", o = 5, nlambda = 100, lam = 10^(-7), interc = TRUE, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4)), lambda = NULL, algorithm="DMRnet"){
+DMRnet <- function(X, y, family = "gaussian", clust.method = "complete", o = 5, nlambda = 100, lam = 10^(-7), interc = TRUE, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4)), lambda = NULL, algorithm="DMRnet") {
+
+    wrong_algo <- "Error: wrong algorithm, should be one of: DMRnet, glamer, PDMR"
+
     X <- data.frame(X, check.names = TRUE, stringsAsFactors = TRUE)
     typeofcols <- sapply(1:ncol(X),function(i) class(X[,i]))
     if(sum(unlist(typeofcols) == "ordered") > 0) stop("Error: there is an ordered factor in the data frame, change it to factor")
@@ -114,9 +117,9 @@ DMRnet <- function(X, y, family = "gaussian", clust.method = "complete", o = 5, 
        } else{
                 if (algorithm == "DMRnet") {
                     return(DMRnet4lm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
-                } else if (algorithm == "glamer") {
+                } else if (algorithm %in% c("glamer", "PDMR")) {
                     return(glamer_4lm(X, y, clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
-                } else stop("Error: wrong algorithm, should be one of: DMRnet, glamer")
+                } else stop(wrong_algo)
        }
     } else{
        if (family == "binomial"){
@@ -125,9 +128,9 @@ DMRnet <- function(X, y, family = "gaussian", clust.method = "complete", o = 5, 
           } else{
               if (algorithm == "DMRnet") {
                   return(DMRnet4glm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
-              } else if (algorithm == "glamer") {
+              } else if (algorithm %in% c("glamer", "PDMR")) {
                   return(glamer_4glm(X, y, clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
-              } else stop("Error: wrong algorithm, should be one of: DMRnet, glamer")
+              } else stop(wrong_algo)
 
           }
        }

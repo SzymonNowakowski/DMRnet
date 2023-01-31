@@ -1,5 +1,7 @@
 
-# DMRnet 0.3.3.9001
+# DMRnet 0.3.4
+
+- PDMR added
 
 # DMRnet 0.3.3
 

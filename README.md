@@ -30,12 +30,6 @@ After that, you can load the installed package into memory with a call to `libra
 
 ## Features
 
-### GLAMER added
-
-GLAMER was added in 0.3.1 version of the package. GLAMER stands for Group LAsso MERger and it is a new (simplified in relation to DMRnet) algorithm for which we prove partition selection consistency. It is the first result of that kind for high dimensional scenario. The relevant paper with algorithm description is the following: [Szymon Nowakowski, Piotr Pokarowski and Wojciech Rejchel, 2021. “Group Lasso Merger for Sparse Prediction with High-Dimensional Categorical Data.” arXiv:2112.11114](https://arxiv.org/abs/2112.11114)
-
-To use GLAMER pass `algorithm="glamer"` in a call to `DMRnet()` or cross validation routine `cv.DMRnet()`. GLAMER is not supported in `DMR`.
-
 ### Two cross validation routines
 
 A new cross validation routine was introduced to improve the computed model quality. It indexes models by GIC. The method was proposed and first implemented for *gaussian* family by Piotr Pokarowski. Since 0.3.1 version of the package it has been built into `DMRnet` for both *gaussian* and *binomial* families. 

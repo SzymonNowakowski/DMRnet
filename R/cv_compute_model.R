@@ -13,7 +13,7 @@ cv_compute_model<-function(model_function, Xtr, ytr, Xte, yte, real_n, lambda.fu
 
   model <- model_function(Xtr, ytr, ..., lambda = lambda.full)
 
-  ###SzN remove from test the data with factors not present in training
+  ### remove from test the data with factors not present in training
   nn <- sapply(1:ncol(Xte), function(i) class(Xte[,i]))
   factor_columns <- which(nn == "factor")
   n.factors <- length(factor_columns)
