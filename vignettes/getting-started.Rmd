@@ -37,14 +37,15 @@ The selected model consists of a subset of numerical regressors and partitions o
 The available model selection algorithms are the following:
 
 - `DMRnet` is the default and the most comprehensive model selection algorithm in the package, it can be used both for $p<n$ and $p \geq n$ scenarios. It first executes a screening step in order to reduce the problem to $p<n$ and then uses `DMR` subsequently.
-- `GLAMER` is a model selection algorithm that can be used both for $p<n$ and $p \geq n$ scenarios. In comparison to `DMRnet`, the step of reordering variables based on their t-statistics is skipped. This is the first partition selection algorithm in literature for which a partition selection consistency has been proven for high dimensional scenario [Nowakowski *et al.*, 2021].
+- `GLAMER` stands for Group LAsso MERger and it is a new (simplified in relation to DMRnet) model selection algorithm that can be used both for $p<n$ and $p \geq n$ scenarios. In comparison to `DMRnet`, the step of reordering variables based on their t-statistics is skipped. This is the first partition selection algorithm in literature for which a partition selection consistency has been proven for high dimensional scenario [Nowakowski *et al.*, 2021].
+- `PDMR` stands for Plain DMR and it is a threshold parameter agnostic variant of GLAMER algorithm. It can be used both for $p<n$ and $p \geq n$ scenarios. [Nowakowski *et al.*, 2022].
 - `DMR` [Maj-Kańska *et al.*, 2015] is a model selection algorithm that can be used for $p<n$ scenario only.
 - `SOSnet` [Pokarowski and Mielniczuk, 2015, Pokarowski *et al.*, 2022] is a model selection algorithm that is used both for $p<n$ and $p \geq n$ scenarios for continuous-only regressors (with no categorical variables and, consequently, no partition selection). 
 
 Algorithm-wise, the package user has the following choices:
 
 - The user can select `DMRnet` algorithm by calling `DMRnet()` or `cv.DMRnet()` functions.
-- The user can select `GLAMER` algorithm by calling `DMRnet()` or `cv.DMRnet()` functions and passing `algorithm="glamer"` parameter.
+- The user can select `GLAMER` or `PDMR` algorithms by calling `DMRnet()` or `cv.DMRnet()` functions and passing `algorithm="glamer"` or `algorithm="PDMR"` parameter, respectively.
 - The user can select `DMR` algorithm by calling `DMR()` or `cv.DMR()` functions.
 - The `SOSnet` algorithm is automatically chosen if `DMRnet()` or `cv.DMRnet()` functions were called with an input consisting of continuous-only regressors.
 
@@ -189,12 +190,13 @@ Please note that 1 is the value of a target class in the `predict` output.
 
 # References
 
-1. Szymon Nowakowski, Piotr Pokarowski and Wojciech Rejchel. 2021. *Group Lasso Merger for Sparse Prediction with High-Dimensional Categorical Data.* arXiv [stat.ME]. <https://arxiv.org/abs/2112.11114>
-1. Aleksandra Maj-Kańska, Piotr Pokarowski and Agnieszka Prochenka, 2015. *Delete or merge regressors for linear model selection.* Electronic Journal of Statistics 9(2): 1749-1778. <doi:10.1214/15-EJS1050>
-2. Piotr Pokarowski and Jan Mielniczuk, 2015. *Combined l1 and greedy l0 penalized least squares for linear model selection.* Journal of Machine Learning Research 16(29): 961-992. <https://www.jmlr.org/papers/volume16/pokarowski15a/pokarowski15a.pdf>
-4. Piotr Pokarowski, Wojciech Rejchel, Agnieszka Sołtys, Michał Frej and Jan Mielniczuk, 2022. *Improving Lasso for model selection and prediction.* Scandinavian Journal of Statistics, 49(2): 831–863. <doi:10.1111/sjos.12546>
-5. Ludwig Fahrmeir, Rita Künstler, Iris Pigeot, Gerhard Tutz, 2004. Statistik: der Weg zur Datenanalyse. 5. Auflage, Berlin: Springer-Verlag.
-6. Dean P. Foster and Edward I. George, 1994. *The Risk Inflation Criterion for Multiple Regression.* The Annals of Statistics 22 (4): 1947–75.
+1. Szymon Nowakowski, Piotr Pokarowski, Wojciech Rejchel and Agnieszka Sołtys. 2022. *Improving Group Lasso for high-dimensional categorical data.* arXiv [stat.ME]. <https://doi.org/10.48550/arXiv.2210.14021>
+2. Szymon Nowakowski, Piotr Pokarowski and Wojciech Rejchel. 2021. *Group Lasso Merger for Sparse Prediction with High-Dimensional Categorical Data.* arXiv [stat.ME]. <https://doi.org/10.48550/arXiv.2112.11114>
+3. Aleksandra Maj-Kańska, Piotr Pokarowski and Agnieszka Prochenka, 2015. *Delete or merge regressors for linear model selection.* Electronic Journal of Statistics 9(2): 1749-1778. <doi:10.1214/15-EJS1050>
+4. Piotr Pokarowski and Jan Mielniczuk, 2015. *Combined l1 and greedy l0 penalized least squares for linear model selection.* Journal of Machine Learning Research 16(29): 961-992. <https://www.jmlr.org/papers/volume16/pokarowski15a/pokarowski15a.pdf>
+5. Piotr Pokarowski, Wojciech Rejchel, Agnieszka Sołtys, Michał Frej and Jan Mielniczuk, 2022. *Improving Lasso for model selection and prediction.* Scandinavian Journal of Statistics, 49(2): 831–863. <doi:10.1111/sjos.12546>
+6. Ludwig Fahrmeir, Rita Künstler, Iris Pigeot, Gerhard Tutz, 2004. Statistik: der Weg zur Datenanalyse. 5. Auflage, Berlin: Springer-Verlag.
+7. Dean P. Foster and Edward I. George, 1994. *The Risk Inflation Criterion for Multiple Regression.* The Annals of Statistics 22 (4): 1947–75.
 
 
 

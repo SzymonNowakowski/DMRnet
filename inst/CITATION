@@ -1,9 +1,7 @@
-citHeader("To cite DMRnet in publications use:")
-
-citEntry(entry="Article",
-	 author = personList(as.person("Aleksandra Maj-Kańska"),
-	 	  	     as.person("Piotr Pokarowski"),
-	 	  	     as.person("Agnieszka Prochenka")),
+bibentry(bibtype="Article",
+	       author = c(person("Aleksandra","Maj-Kańska"),
+	 	  	     person("Piotr","Pokarowski"),
+	 	  	     person("Agnieszka","Prochenka")),
          title = "Delete or merge regressors for linear model selection",
          journal = "Electronic Journal of Statistics",
          year = "2015",
@@ -11,6 +9,8 @@ citEntry(entry="Article",
          number = "2",
          pages = "1749-1778",
          doi = "10.1214/15-EJS1050",
+         header="To cite DMRnet in publications use:",
          textVersion = "Aleksandra Maj-Kańska, Piotr Pokarowski and Agnieszka Prochenka, 2015. Delete or merge regressors for linear model selection. Electronic Journal of Statistics 9(2): 1749-1778. doi:10.1214/15-EJS1050")
+
 
 

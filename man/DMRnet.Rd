@@ -39,7 +39,7 @@ DMRnet(
 
 \item{lambda}{Explicitly provided net of lambda values for the group lasso screening step, described in Details. If provided, it overrides the value of \code{nlambda} parameter.}
 
-\item{algorithm}{The algorithm to be used to merge levels; one of: \code{"DMRnet"} (the default), \code{"glamer"}.}
+\item{algorithm}{The algorithm to be used to merge levels; one of: \code{"DMRnet"} (the default), \code{"glamer"}, \code{"PDMR"}.}
 }
 \value{
 An object with S3 class \code{"DMR"}, which  is  a  list  with  the  ingredients:
@@ -95,12 +95,12 @@ plot(g)
 coef(m2, df = g$df.min)
 ypr <- predict(m2, newx = Xte, df = g$df.min)
 
-## GLAMER for linear regression
+## PDMR for linear regression
 data(miete)
 ytr <- miete[1:200,1]
 Xtr <- miete[1:200,-1]
 Xte <- miete[201:250,-1]
-m1 <- DMRnet(Xtr, ytr, algorithm="glamer")
+m1 <- DMRnet(Xtr, ytr, algorithm="PDMR")
 print(m1)
 plot(m1)
 g <- gic.DMR(m1, c = 2.5)
@@ -108,12 +108,12 @@ plot(g)
 coef(m1, df = g$df.min)
 ypr <- predict(m1, newx = Xte, df = g$df.min)
 
-## GLAMER for logistic regression
+## PDMR for logistic regression
 data(promoter)
 ytr <- factor(promoter[1:70,1])
 Xtr <- promoter[1:70,-1]
 Xte <- promoter[71:106,-1]
-m2 <- DMRnet(Xtr, ytr, family = "binomial", algorithm="glamer")
+m2 <- DMRnet(Xtr, ytr, family = "binomial", algorithm="PDMR")
 print(m2)
 plot(m2)
 g <- gic.DMR(m2, c = 2)
