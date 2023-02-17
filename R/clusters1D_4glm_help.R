@@ -1,4 +1,4 @@
-clusters_4glm_help <- function(S, betas_with_intercept, X, y, clust.method, lam){
+clusters1D_4glm_help <- function(S, betas_with_intercept, X, y, clust.method, lam){
 
   X <- X[, S==1, drop = FALSE]
   betas_with_intercept <- betas_with_intercept[betas_with_intercept>0]
@@ -34,17 +34,17 @@ clusters_4glm_help <- function(S, betas_with_intercept, X, y, clust.method, lam)
   # S <- solve(Kan + diag(rep(2*lam, p)))
   # Var <- S%*%Kan%*%S
   if (n.factors > 0){
-    Wmats <- lapply(1:n.factors, function(i) {
+    points <- lapply(1:n.factors, function(i) {
       i1 <- ifelse(i == 1, 1, sum(n.levels[1:(i - 1)]-1) +1)
       i2 <- sum(n.levels[1:i]-1)
-      out <- glamer_stats(c(0,betas[i1:i2]))   #appending 0 as a beta for the constrained level. Each factor has one level constrained to have beta==0
-      rownames(out) <- colnames(out) <- levels(X[,faki[i]])
+      out <- c(0,betas[i1:i2])   #appending 0 as a beta for the constrained level. Each factor has one level constrained to have beta==0
+      names(out) <- levels(X[,faki[i]])
       return(out)
     })
     #cutting dendrograms
-    models <- lapply(Wmats, function(x) stats::hclust(stats::as.dist(t(x)), method = clust.method, members = NULL))
+    models <- lapply(points, function(x) hclust_1d_sort(x))   #the only clustering method supported is single and it gets overriden here
     heig <- lapply(1:n.factors, function(x){
-      out <- models[[x]]$height
+      out <- models[[x]]$he
       names(out)<- rep(x, length(out))
       out
     })

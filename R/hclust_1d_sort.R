@@ -1,0 +1,85 @@
+
+hclust_1d_sort <- function(points, method="single") {
+###################################################################################
+###### a routine for efficient hierarchical clustering of 1D points ###############
+###################################################################################
+
+  # points is real valued vector
+  if(!is.numeric(points)) {
+    stop("points argument must be a numeric vector")
+  }
+
+  if (method != "single") {
+    stop("method argument must be single. Only that is currently supported by hclust_1d_sort")
+  }
+
+  order_points <- order(points)
+
+  # construction of a distance vector
+  if (length(points) >= 2) {
+
+    count <- length(points)
+
+    left_seq <- seq_len(count-2)
+    right_seq <- seq(2, len=count-2)
+
+    left_indexes  <- order_points[c(left_seq, count-1)]     # indicates a lower index in a given interval
+    right_indexes <- order_points[c(right_seq, count)]   # indicates a higher index in a given interval
+    distances <- points[right_indexes] - points[left_indexes]      # lengths of an interval
+
+    left_ids <- c(0, left_seq)    # 0 means "no id to the left"
+    right_ids <- c(right_seq, 0)  # 0 means "no id to the right"
+    left_merges  <- -left_indexes      # minus as in original hclust implementation
+    right_merges <- -right_indexes     # to indicate merge with singletons
+
+
+  } else {   #at most 1 value in v
+    distances <- numeric(0)
+  }
+
+
+  order_distances <- order(distances)
+  id_seq <- seq_along(distances)   #we compute the id sequence
+
+
+  merge <- matrix(nrow=length(points)-1, ncol=2)
+  height <- rep(0, length(points)-1)
+
+  for (stage in seq_along(distances)) {
+
+    id <- id_seq[order_distances[stage]]
+    left_id <- left_ids[id]
+    right_id <- right_ids[id]
+
+    merge[stage, ] <- c(left_merges[id], right_merges[id])
+    height[stage] <- distances[order_distances[stage]]
+
+    #cat("height =", minimum$key, ";", points[left], "..", points[right], "\n")
+
+    if (left_id > 0) {
+
+      right_ids[left_id]    <- right_id
+      right_merges[left_id] <- stage
+
+
+    }
+    if (right_id > 0) {
+
+      left_ids[right_id]    <- left_id
+      left_merges[right_id] <- stage
+
+
+    }
+  }
+
+  if (is.null(names(points))) {
+    labels <- points
+  } else {
+    labels <- names(points)
+  }
+
+  ret <- list(merge=merge, height=height, order=order_points, labels=labels, call=match.call(), method=method)
+  class(ret) <- "hclust"
+
+  return(ret)
+}

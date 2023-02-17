@@ -1,6 +1,8 @@
 
 # DMRnet 0.3.4.9000
 
+- hierarchical clustering based on segmentation of 1D points for PDMR and GLAMER 
+
 # DMRnet 0.3.4
 
 - PDMR added

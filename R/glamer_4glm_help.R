@@ -7,6 +7,6 @@ glamer_4glm_help <- function(S, betas_with_intercept, X, y, fl, clust.method, la
     b = c(m$coef, rep(0,sum(fl-1)))   #SzN:that line is in accordance with DMRnet 4lm version and to avoid crashes in adult dataset in GLAMER
     return(list(b = b, loglik = loglik))
   }
-  mfin <- clusters_4glm_help(S, betas_with_intercept, X, y, clust.method, lam)
+  mfin <- clusters1D_4glm_help(S, betas_with_intercept, X, y, clust.method, lam)
   return(mfin)
 }
