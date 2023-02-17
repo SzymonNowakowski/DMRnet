@@ -42,8 +42,8 @@ hclust_1d_sort <- function(points, method="single") {
   id_seq <- seq_along(distances)   #we compute the id sequence
 
 
-  merge <- matrix(nrow=length(points)-1, ncol=2)
-  height <- rep(0, length(points)-1)
+  merge <- matrix(nrow=count - 1, ncol=2)
+  height <- rep(0, count - 1)
 
   for (stage in id_seq) {   #id_seq == seq_along(distances)
             #to be precise: from the semantic POV, this line should read
