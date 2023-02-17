@@ -45,7 +45,13 @@ hclust_1d_sort <- function(points, method="single") {
   merge <- matrix(nrow=length(points)-1, ncol=2)
   height <- rep(0, length(points)-1)
 
-  for (stage in seq_along(distances)) {
+  for (stage in id_seq) {   #id_seq == seq_along(distances)
+            #to be precise: from the semantic POV, this line should read
+            #for (stage in seq_along(distances))
+            #but it just so happens, that the two are equivalent and
+            #id_seq has already been computed above
+            #so from the efficiency POV: the current version
+                                    #is slightly more efficient
 
     id <- id_seq[order_distances[stage]]
     left_id <- left_ids[id]
