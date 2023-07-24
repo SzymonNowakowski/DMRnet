@@ -2,6 +2,7 @@
 # DMRnet 0.3.4.9002
 
 - work started on group selection with no partition selection
+- updated `.onAttach` with citation info
 
 # DMRnet 0.3.4.9001
 

@@ -9,7 +9,7 @@ bibentry(bibtype="Article",
          number = "2",
          pages = "1749-1778",
          doi = "10.1214/15-EJS1050",
-         header="To cite DMRnet in publications use:",
+         header="To acknowledge our work please cite DMRnet in publications as:",
          textVersion = "Aleksandra Maj-Kańska, Piotr Pokarowski and Agnieszka Prochenka, 2015. Delete or merge regressors for linear model selection. Electronic Journal of Statistics 9(2): 1749-1778. doi:10.1214/15-EJS1050")
 
 
