@@ -38,14 +38,14 @@ The available model selection algorithms are the following:
 
 - `DMRnet` is the default and the most comprehensive model selection algorithm in the package, it can be used both for $p<n$ and $p \geq n$ scenarios. It first executes a screening step in order to reduce the problem to $p<n$ and then uses `DMR` subsequently.
 - `GLAMER` stands for Group LAsso MERger and it is a new (simplified in relation to DMRnet) model selection algorithm that can be used both for $p<n$ and $p \geq n$ scenarios. In comparison to `DMRnet`, the step of reordering variables based on their t-statistics is skipped. This is the first partition selection algorithm in literature for which a partition selection consistency has been proven for high dimensional scenario [Nowakowski *et al.*, 2021].
-- `PDMR` stands for Plain DMR and it is a threshold parameter agnostic variant of GLAMER algorithm. It can be used both for $p<n$ and $p \geq n$ scenarios. [Nowakowski *et al.*, 2022].
+- `PDMR` stands for Plain DMR and it is a threshold parameter agnostic variant of GLAMER algorithm [Nowakowski *et al.*, 2022]. It can be used both for $p<n$ and $p \geq n$ scenarios. 
 - `DMR` [Maj-Kańska *et al.*, 2015] is a model selection algorithm that can be used for $p<n$ scenario only.
 - `SOSnet` [Pokarowski and Mielniczuk, 2015, Pokarowski *et al.*, 2022] is a model selection algorithm that is used both for $p<n$ and $p \geq n$ scenarios for continuous-only regressors (with no categorical variables and, consequently, no partition selection). 
 
 Algorithm-wise, the package user has the following choices:
 
 - The user can select `DMRnet` algorithm by calling `DMRnet()` or `cv.DMRnet()` functions.
-- The user can select `GLAMER` or `PDMR` algorithms by calling `DMRnet()` or `cv.DMRnet()` functions and passing `algorithm="glamer"` or `algorithm="PDMR"` parameter, respectively.
+- The user can select `GLAMER` or `PDMR` algorithms by calling `DMRnet()` or `cv.DMRnet()` functions and passing `algorithm="glamer"` or `algorithm="PDMR"` argument, respectively.
 - The user can select `DMR` algorithm by calling `DMR()` or `cv.DMR()` functions.
 - The `SOSnet` algorithm is automatically chosen if `DMRnet()` or `cv.DMRnet()` functions were called with an input consisting of continuous-only regressors.
 

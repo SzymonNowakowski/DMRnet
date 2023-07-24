@@ -88,19 +88,6 @@
 #' coef(m1, df = g$df.min)
 #' ypr <- predict(m1, newx = Xte, df = g$df.min)
 #'
-#' ## PDMR for logistic regression
-#' data(promoter)
-#' ytr <- factor(promoter[1:70,1])
-#' Xtr <- promoter[1:70,-1]
-#' Xte <- promoter[71:106,-1]
-#' m2 <- DMRnet(Xtr, ytr, family = "binomial", algorithm="PDMR")
-#' print(m2)
-#' plot(m2)
-#' g <- gic.DMR(m2, c = 2)
-#' plot(g)
-#' coef(m2, df = g$df.min)
-#' ypr <- predict(m2, newx = Xte, df = g$df.min)
-#'
 #' @export DMRnet
 
 DMRnet <- function(X, y, family = "gaussian", clust.method = "complete", o = 5, nlambda = 100, lam = 10^(-7), interc = TRUE, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4)), lambda = NULL, algorithm="DMRnet") {
