@@ -42,7 +42,7 @@ clusters1D_4glm_help <- function(S, betas_with_intercept, X, y, clust.method, la
       return(out)
     })
     #cutting dendrograms
-    models <- lapply(points, function(x) hclust_1d_sort(x))   #the only clustering method supported is single and it gets overriden here
+    models <- lapply(points, function(x) hclust1d::hclust1d(x, method = clust.method))
     heig <- lapply(1:n.factors, function(x){
       out <- models[[x]]$he
       names(out)<- rep(x, length(out))
