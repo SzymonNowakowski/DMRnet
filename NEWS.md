@@ -1,7 +1,7 @@
 
 # DMRnet 0.3.4.9003
 
-- Work started on the group selection algorithm
+- Work started on a group selection algorithm
 
 # DMRnet 0.3.4.9002
 
