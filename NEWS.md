@@ -1,4 +1,8 @@
 
+# DMRnet 0.3.4.9003
+
+- Work started on the group selection algorithm
+
 # DMRnet 0.3.4.9002
 
 - GLAMER implemented as a net version respective to its $\tau$ parameter [issue #57](https://github.com/SzymonNowakowski/DMRnet/issues/57)
