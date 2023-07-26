@@ -109,7 +109,7 @@ Generally speaking, matrix rank in real world scenarios is more a numerical conc
 
 ### Weight parameterization
 
-This remains to be introduced to GLAMER and DMRnet algorithms in future versions.
+This remains to be introduced to PDMR, GLAMER and DMRnet algorithms in future versions.
 
 ## Purpose of the `testing_branch`
 
@@ -240,3 +240,4 @@ To this end the following test cases were identified:
  numerical instabilities with QR calculations.
 
 - `hard_case_CV_airbnb.R` - a problem in model-dimension indexed CV resulting in mismatching model dimension in rare cases of different number of predictors in-between folds during the cross validation. The side effect of this bug has been larger than optimal models returned in case of this mismatch. In the extreme (even rarer) cases the returned model dimension exceeded the number of a computed `dmr.fit` models, which in effect led to incorrect `predict()` behavior. Fixed in [PR#34](https://github.com/SzymonNowakowski/DMRnet/pull/34) and [PR#35](https://github.com/SzymonNowakowski/DMRnet/pull/35).
+

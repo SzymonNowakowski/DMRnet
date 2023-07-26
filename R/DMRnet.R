@@ -8,8 +8,6 @@
 #'
 #' @param family Response type; one of: \code{"gaussian"}, \code{"binomial"}.
 #'
-#' @param clust.method Clustering method used for partitioning levels of factors; see function \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html}{hclust} in package \pkg{stats} for details. \code{clust.method="complete"} is the default.
-#'
 #' @param o Parameter of the group lasso screening step, described in Details, the default value is 5.
 #'
 #' @param nlambda Parameter of the group lasso screening step, described in Details, the default value is 100.
@@ -23,6 +21,8 @@
 #' @param lambda Explicitly provided net of lambda values for the group lasso screening step, described in Details. If provided, it overrides the value of \code{nlambda} parameter.
 #'
 #' @param algorithm The algorithm to be used to merge levels; one of: \code{"DMRnet"} (the default), \code{"glamer"}, \code{"PDMR"}.
+#'
+#' @param clust.method Clustering method used for partitioning levels of factors; see function \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html}{hclust} in package \pkg{stats} for details. \code{clust.method="complete"} is the default for all algorithms except \code{algorithm="glamer"}, for which \code{clust.method="single"} is the default.
 #'
 #' @details \code{DMRnet} algorithm is a generalization of \code{\link{DMR}} to high-dimensional data.
 #' It uses a screening step in order to decrease the problem to p<n and then uses \code{DMR} subsequently.
@@ -90,7 +90,7 @@
 #'
 #' @export DMRnet
 
-DMRnet <- function(X, y, family = "gaussian", clust.method = "complete", o = 5, nlambda = 100, lam = 10^(-7), interc = TRUE, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4)), lambda = NULL, algorithm="DMRnet") {
+DMRnet <- function(X, y, family = "gaussian", o = 5, nlambda = 100, lam = 10^(-7), interc = TRUE, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4)), lambda = NULL, algorithm="DMRnet", clust.method = ifelse(algorithm == "glamer", "single", "complete")) {
 
     wrong_algo <- "Error: wrong algorithm, should be one of: DMRnet, glamer, PDMR"
 

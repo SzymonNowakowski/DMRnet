@@ -1,16 +1,24 @@
-bibentry(bibtype="Article",
-	       author = c(person("Aleksandra","Maj-Kańska"),
-	 	  	     person("Piotr","Pokarowski"),
-	 	  	     person("Agnieszka","Prochenka")),
-         title = "Delete or merge regressors for linear model selection",
-         journal = "Electronic Journal of Statistics",
-         year = "2015",
-         volume = "9",
-         number = "2",
-         pages = "1749-1778",
-         doi = "10.1214/15-EJS1050",
-         header="To cite DMRnet in publications use:",
-         textVersion = "Aleksandra Maj-Kańska, Piotr Pokarowski and Agnieszka Prochenka, 2015. Delete or merge regressors for linear model selection. Electronic Journal of Statistics 9(2): 1749-1778. doi:10.1214/15-EJS1050")
+bibentry(bibtype="inproceedings",
+	       author = c(
+	              person("Szymon","Nowakowski"),
+	 	  	        person("Piotr","Pokarowski"),
+	 	  	        person("Wojciech","Rejchel"),
+	 	  	        person("Agnieszka","Sołtys")),
+	 	  	 editor = c(
+  	 	  	     person(family = "Mikyška", given="Jiří"),
+               person(family = "de Mulatier", given="Clélia"),
+               person(family = "Paszynski", given="Maciej"),
+               person(family = "Krzhizhanovskaya", given="Valeria V."),
+               person(family = "Dongarra", given="Jack J."),
+               person(family = "Sloot", given="Peter M.A.")),
+	 	  	 title = "Improving Group Lasso for High-Dimensional Categorical Data",
+         booktitle="Computational Science - ICCS 2023",
+         year = "2023",
+         publisher="Springer Nature Switzerland",
+         pages = "455-470",
+         doi = "10.1007/978-3-031-36021-3_47",
+         header="To acknowledge our work please cite DMRnet in publications as:",
+         textVersion = "Szymon Nowakowski, Piotr Pokarowski, Wojciech Rejchel, Agnieszka Sołtys, 2023. Improving Group Lasso for High-Dimensional Categorical Data. In: Computational Science – ICCS 2023. Lecture Notes in Computer Science, vol 14074, p. 455-470. Springer, Cham. doi:10.1007/978-3-031-36021-3_47")
 
 
 
