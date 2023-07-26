@@ -8,8 +8,6 @@
 #'
 #' @param family Response type; one of: \code{"gaussian"}, \code{"binomial"}.
 #'
-#' @param clust.method Clustering method used for partitioning levels of factors; see function \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html}{hclust} in package \pkg{stats} for details. \code{clust.method="complete"} is the default.
-#'
 #' @param o Parameter of the group lasso screening step, described in \code{\link{DMRnet}}.
 #'
 #' @param nlambda Parameter of the group lasso screening step, described in \code{\link{DMRnet}}. The default value is 100.
@@ -25,6 +23,8 @@
 #' @param indexation.mode How the cross validation algorithm should index the models for internal quality comparisons; one of: \code{"GIC"} (the default) for GIC-indexed cross validation, \code{"dimension"}, for model dimension-indexed cross validation.
 #'
 #' @param algorithm The algorithm to be used to merge levels; one of: \code{"DMRnet"} (the default), \code{"glamer"}, \code{"PDMR"}.
+#'
+#' @param clust.method Clustering method used for partitioning levels of factors; see function \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html}{hclust} in package \pkg{stats} for details. \code{clust.method="complete"} is the default for all algorithms except \code{algorithm="glamer"}, for which \code{clust.method="single"} is the default.
 #'
 #' @details cv.DMRnet algorithm does \code{nfold}-fold cross-validation for DMRnet. The df for the minimal estimated prediction error is returned.
 #'
@@ -54,7 +54,7 @@
 #'
 #' @export cv.DMRnet
 
-cv.DMRnet <- function(X, y, family = "gaussian", clust.method = 'complete', o = 5, nlambda = 100, lam = 10^(-7), interc = TRUE, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4)), nfolds = 10, indexation.mode = "GIC", algorithm="DMRnet"){
+cv.DMRnet <- function(X, y, family = "gaussian", o = 5, nlambda = 100, lam = 10^(-7), interc = TRUE, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4)), nfolds = 10, indexation.mode = "GIC", algorithm="DMRnet", clust.method = ifelse(algorithm == "glamer", "single", "complete")){
 
        return(cv_indexation.mode_distribute(X, y, nfolds, indexation.mode, DMRnet, family=family, clust.method=clust.method, o=o, nlambda=nlambda, lam=lam, interc=interc, maxp=maxp, algorithm=algorithm))
         #this way of calling (i.e. var=var) passes the variable names into the ellipsis, otherwise no variable names would be present in the list(...)

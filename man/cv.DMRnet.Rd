@@ -8,7 +8,6 @@ cv.DMRnet(
   X,
   y,
   family = "gaussian",
-  clust.method = "complete",
   o = 5,
   nlambda = 100,
   lam = 10^(-7),
@@ -16,7 +15,8 @@ cv.DMRnet(
   maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4)),
   nfolds = 10,
   indexation.mode = "GIC",
-  algorithm = "DMRnet"
+  algorithm = "DMRnet",
+  clust.method = ifelse(algorithm == "glamer", "single", "complete")
 )
 }
 \arguments{
@@ -25,8 +25,6 @@ cv.DMRnet(
 \item{y}{Response variable. Numerical for \code{family="gaussian"} or a factor with two levels for \code{family="binomial"}. For \code{family="binomial"} the last level in alphabetical order is the target class.}
 
 \item{family}{Response type; one of: \code{"gaussian"}, \code{"binomial"}.}
-
-\item{clust.method}{Clustering method used for partitioning levels of factors; see function \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html}{hclust} in package \pkg{stats} for details. \code{clust.method="complete"} is the default.}
 
 \item{o}{Parameter of the group lasso screening step, described in \code{\link{DMRnet}}.}
 
@@ -43,6 +41,8 @@ cv.DMRnet(
 \item{indexation.mode}{How the cross validation algorithm should index the models for internal quality comparisons; one of: \code{"GIC"} (the default) for GIC-indexed cross validation, \code{"dimension"}, for model dimension-indexed cross validation.}
 
 \item{algorithm}{The algorithm to be used to merge levels; one of: \code{"DMRnet"} (the default), \code{"glamer"}, \code{"PDMR"}.}
+
+\item{clust.method}{Clustering method used for partitioning levels of factors; see function \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html}{hclust} in package \pkg{stats} for details. \code{clust.method="complete"} is the default for all algorithms except \code{algorithm="glamer"}, for which \code{clust.method="single"} is the default.}
 }
 \value{
 An object with S3 class "cv.DMR" is  returned,  which  is  a  list  with  the  ingredients  of  the  cross-validation fit.

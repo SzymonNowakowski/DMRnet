@@ -109,4 +109,4 @@ Generally speaking, matrix rank in real world scenarios is more a numerical conc
 
 ### Weight parameterization
 
-This remains to be introduced to GLAMER and DMRnet algorithms in future versions.
+This remains to be introduced to PDMR, GLAMER and DMRnet algorithms in future versions.
