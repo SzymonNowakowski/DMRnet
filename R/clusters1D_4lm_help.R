@@ -97,29 +97,34 @@ clusters1D_4lm_help <- function(S, betas_with_intercept, X, y, clust.method, lam
         jj <- which(namCont == kt)
         a[p.fac + jj + 1] <- 1
 
-      } else {
-        kt <- as.numeric(kt)
+      } else {    #this routine fails for equal heights, however it is fairly complex...
+        kt <- as.numeric(kt)   #kt = number of a factor
 
-        spold <- sp[[kt]]
+        spold <- sp[[kt]]    #spold = clusters on the previous height for this factor
 
         sp[[kt]] <- stats::cutree(models[[kt]], h = heig[i])
-
         if(length(sp[[kt]][sp[[kt]] != 1]) > 0){
           sp[[kt]][sp[[kt]] != 1] <- sp[[kt]][sp[[kt]] != 1] + min(spold[spold != 1]) - min(sp[[kt]][sp[[kt]] != 1])
         }
-        for (ii in which(spold != sp[[kt]])) {
+
+        for (ii in min(which(spold != sp[[kt]]))) {
           suma <- ifelse(kt == 1, 0, sum(n.levels[1:(kt-1)] - 1))
-          if(sp[[kt]][ii] == 1){
-            a[suma + ii] <- 1
+          if(sp[[kt]][ii] == 1){    #adding this to intercept
+            a[suma + ii ] <- 1
           } else {
             a[suma + ii] <- 1
             a[suma + min(which(sp[[kt]] == sp[[kt]][ii]))] <- -1
           }
-          if (kt < length(sp)) for( x in (kt+1):length(sp)){ if (length(sp[[x]][sp[[x]]!=1]) > 0 ) sp[[x]][sp[[x]]!= 1] = sp[[x]][sp[[x]]!=1] - 1}
+          if (kt < length(sp))
+            for( x in (kt+1):length(sp)) {
+              if (length(sp[[x]][sp[[x]]!=1]) > 0 )
+                sp[[x]][sp[[x]] != 1] <- sp[[x]][sp[[x]] !=1 ] - 1
+            }
           nl <- nl - 1
         }
       }
       A <- cbind(A, a)
+
       be <- c(0, 2:(p-i+2))
       bb <- c()
       if(n.factors > 0){

@@ -5,9 +5,9 @@ artificial_clustering <- function(points) {
  l_infty <- max(abs(points))
 
  ret <- list()
- ret$height <- rep(l_infty, length(points)-1)
+ ret$height <- rep(l_infty, length(points)-1) + (1e-10)*seq_along(points[-1])
  ret$order_points <- seq_along(points)
- ret$labels <- points
+ ret$labels <- names(points)
  ret$method <- "artificial"
  ret$dist.method <- "zero_distance"
 

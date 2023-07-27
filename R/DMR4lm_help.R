@@ -94,7 +94,7 @@ DMR4lm_help <- function(X, y, clust.method, lam){
            if(length(sp[[kt]][sp[[kt]] != 1]) > 0){
                                        sp[[kt]][sp[[kt]] != 1] <- sp[[kt]][sp[[kt]] != 1] + min(spold[spold != 1]) - min(sp[[kt]][sp[[kt]] != 1])
            }
-           for (ii in which(spold != sp[[kt]])) {
+           for (ii in min(which(spold != sp[[kt]]))) {
              suma <- ifelse(kt == 1, 0, sum(n.levels[1:(kt-1)] - 1))
              if(sp[[kt]][ii] == 1){
                a[suma + ii] <- 1

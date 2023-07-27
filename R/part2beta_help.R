@@ -41,7 +41,7 @@ part2beta_help <- function(b, S, X, y, fl) {
   ZZ <- stats::model.matrix(y~., data = Z)
   m <- stats::lm.fit(ZZ, y)
 
-  m$coef[is.na(m$coef)] <- min(abs(m$coef[!is.na(m$coef)])) / 1000.0   #the problem identifified in insurance dataset is that
+  m$coef[is.na(m$coef)] <- min(abs(m$coef[!is.na(m$coef)])) / 1000.0   #the problem identified in insurance dataset is that
             #the ZZ matrix may not be full.rank, hence NA result for some variables.
             #as a fix - setting a very small (close to 0) value for the superflous variables
             #this fix takes care of DMRnet calculation for gaussian families, too
