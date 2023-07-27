@@ -16,7 +16,7 @@ set.seed(0)   #2 generates an error
 
 ######### SCENARIO A SOSnet binomial no intercept, matrix no interecept
 
-cat("Sosnet\n")
+cat("Sosnet binomial\n")
 X <- matrix(rnorm(500*15), ncol=15)
 b_vector <- sample(1:10,15, replace=TRUE)
 y <- X %*% matrix(b_vector)
@@ -53,7 +53,7 @@ if (stopper)
 
 ######### SCENARIO A DMR binomial
 
-cat("DMR\n")
+cat("DMR binomial\n")
 X <- matrix(sample(1:4,7500, replace=TRUE), ncol=15)
 for (i in 1:13)
   X[,i] <- rnorm(500)
@@ -87,7 +87,7 @@ if (stopper)
 
 ######### SCENARIO A DMRnet binomial
 
-cat("DMRnet\n")
+cat("DMRnet binomial\n")
 X <- X[,c(3:15, 1, 2)]
 
 mod <- DMRnet(X, y, family="binomial")
@@ -114,7 +114,7 @@ if (stopper)
 
 ######### SCENARIO A GLAMER binomial
 
-cat("GLAMER\n")
+cat("GLAMER binomial\n")
 X <- X[,c(3:15, 1, 2)]
 
 mod <- DMRnet(X, y, algorithm="glamer", family="binomial")
@@ -140,7 +140,7 @@ if (stopper)
 
 ######### SCENARIO A PDMR binomial
 
-cat("PDMR\n")
+cat("PDMR binomial\n")
 X <- X[,c(3:15, 1, 2)]
 
 mod <- DMRnet(X, y, algorithm="PDMR", family="binomial")
@@ -172,7 +172,7 @@ if (stopper)
 
 ######### SCENARIO A DMRnet binomial p>n
 
-cat("DMRnet p>n\n")
+cat("DMRnet binomial p>n\n")
 X <- matrix(sample(1:4,150, replace=TRUE), ncol=15)
 for (i in 1:13)
   X[,i] <- rnorm(10)
@@ -208,7 +208,7 @@ if (stopper)
 
 ######### SCENARIO A GLAMER binomial p>n
 
-cat("GLAMER p>n\n")
+cat("GLAMER binomial p>n\n")
 X <- X[,c(3:15, 1, 2)]
 
 mod <- DMRnet(X, y, algorithm="glamer", family="binomial")
@@ -234,7 +234,7 @@ if (stopper)
 
 ######### SCENARIO A PDMR binomial p>n
 
-cat("PDMR p>n\n")
+cat("PDMR binomial p>n\n")
 X <- X[,c(3:15, 1, 2)]
 
 mod <- DMRnet(X, y, algorithm="PDMR", family="binomial")
@@ -288,7 +288,7 @@ y <- X %*% matrix(b_vector)
 mod <- DMRnet(X, y, interc=TRUE)   #SOSnet gets called - no factor columns
 pred <- predict(mod, newx=X, df=16)
 MSEB <- mean((y - pred)^2)
-cat("Scenario D: ", MSEB, "\n")
+cat("Scenario B: ", MSEB, "\n")
 
 if (stopper)
   if (MSEA > 1e-10 | MSEB > 1e-10)
@@ -304,7 +304,7 @@ if (stopper)
 
 ######### SCENARIO A DMR gaussian
 
-cat("DMR\n")
+cat("DMR gaussian\n")
 X <- matrix(sample(1:4,7500, replace=TRUE), ncol=15)
 for (i in 1:13)
   X[,i] <- rnorm(500)
@@ -336,7 +336,7 @@ if (stopper)
 
 ######### SCENARIO A DMRnet gaussian
 
-cat("DMRnet\n")
+cat("DMRnet gaussian\n")
 X <- X[,c(3:15, 1, 2)]
 
 mod <- DMRnet(X, y)
@@ -363,7 +363,7 @@ if (stopper)
 
 ######### SCENARIO A GLAMER gaussian
 
-cat("GLAMER\n")
+cat("GLAMER gaussian\n")
 X <- X[,c(3:15, 1, 2)]
 
 mod <- DMRnet(X, y, algorithm="glamer")
@@ -388,7 +388,7 @@ if (stopper)
 
 ######### SCENARIO A PDMR gaussian
 
-cat("PDMR\n")
+cat("PDMR gaussian\n")
 X <- X[,c(3:15, 1, 2)]
 
 mod <- DMRnet(X, y, algorithm="PDMR")
@@ -421,7 +421,7 @@ if (stopper)
 
 ######### SCENARIO A DMRnet gaussian p>n
 
-cat("DMRnet p>n\n")
+cat("DMRnet gaussian p>n\n")
 X <- matrix(sample(1:4,150, replace=TRUE), ncol=15)
 for (i in 1:13)
   X[,i] <- rnorm(10)
@@ -449,14 +449,14 @@ cat("Scenario B: ", MSEB, "\n")
 
 
 if (stopper)
-  if (MSEA != MSEB | MSEA > 1e-0 | MSEB > 1e-0)
+  if (MSEA != MSEB | MSEA > 1e-10 | MSEB > 1e-10)
     stop(paste("Incorrect computation for permuted columns: MSE in scenario A =", MSEA, "while MSE in scenario B =", MSEB))
 
 
 
 ######### SCENARIO A GLAMER gaussian p>n
 
-cat("GLAMER p>n\n")
+cat("GLAMER gaussian p>n\n")
 X <- X[,c(3:15, 1, 2)]
 
 mod <- DMRnet(X, y, algorithm="glamer")
@@ -476,13 +476,13 @@ cat("Scenario B: ", MSEB, "\n")
 
 
 if (stopper)
-  if ((MSEA - MSEB) > 1e-10 | MSEA > 1e-0 | MSEB > 1e-0)
+  if (abs(MSEA - MSEB) > 1e-10 )
     stop(paste("Incorrect computation for permuted columns: MSE in scenario A =", MSEA, "while MSE in scenario B =", MSEB))
 
 
 ######### SCENARIO A PDMR gaussian p>n
 
-cat("PDMR p>n\n")
+cat("PDMR gaussian p>n\n")
 X <- X[,c(3:15, 1, 2)]
 
 mod <- DMRnet(X, y, algorithm="PDMR")
@@ -502,7 +502,7 @@ cat("Scenario B: ", MSEB, "\n")
 
 
 if (stopper)
-  if ((MSEA - MSEB) > 1e-10 | MSEA > 1e-0 | MSEB > 1e-0)
+  if (abs(MSEA - MSEB) > 1e-10)
     stop(paste("Incorrect computation for permuted columns: MSE in scenario A =", MSEA, "while MSE in scenario B =", MSEB))
 
 
