@@ -67,9 +67,9 @@ clusters1D_4lm_help <- function(S, betas_with_intercept, X, y, clust.method, lam
     names(heig.add) <- colnames(x.full)[(p.fac + 2):p]
     heig <- c(heig, heig.add)
   }
-  heig <- sort(unique_preserving_names(heig))
+  heig <- sort(heig)
   len <- length(heig)
-  print(heig)
+
   #fitting models on the path
   sp <- list()
   form <- c()
@@ -131,6 +131,7 @@ clusters1D_4lm_help <- function(S, betas_with_intercept, X, y, clust.method, lam
       b=cbind(b, c(1, be[bb]))
     }
   }
+
   A[1,] <- rep(0, p-1)
   m <- stats::lm.fit(x.full, y)  #it is in top of the related DMRnet function, in GLAMER moved here close to the end
   #######################REGULARIZING THE RESULT########################################

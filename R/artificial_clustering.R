@@ -15,7 +15,7 @@ artificial_clustering <- function(points) {
  ret$merge <- matrix(0, ncol=2, nrow=length(points)-1)
  ret$merge[1, ] <- c(-1, -2)
  for (i in seq_along(points[-c(1, 2)])) {
-   ret_merge[i+1, ] <- c(i, -(i+2))
+   ret$merge[i+1, ] <- c(i, -(i+2))
  }
 
  return(ret)

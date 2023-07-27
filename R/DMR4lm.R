@@ -71,7 +71,7 @@ DMR4lm <- function(X, y, clust.method, lam){
         heig <- c(heig, heig.add)
     }
 
-    heig <- sort(unique_preserving_names(heig))
+    heig <- sort(heig)
 
     len <- length(heig)
     #fitting models on the path
