@@ -3,6 +3,8 @@ rm simrun
 rm hc_*
 rm mass_???
 rm ms??
+rm *.ps
+rm *.pdf
 
 Rscript hard_case_CV_airbnb.R &> hc_Ca &
 Rscript hard_case_DMRnet_insurance.R &> hc_Di &
