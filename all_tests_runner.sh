@@ -20,4 +20,4 @@ Rscript massive_antigua.R &> mass_ant &
 Rscript massive_insurance.R &> mass_ins &
 Rscript massive_promoter.R &> mass_pro &
 
-./simmulation_runner.sh &> simrun &
+./simulation_runner.sh &> simrun &
