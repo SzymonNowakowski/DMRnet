@@ -20,7 +20,7 @@
 #'
 #' @param lambda Explicitly provided net of lambda values for the group lasso screening step, described in Details. If provided, it overrides the value of \code{nlambda} parameter.
 #'
-#' @param algorithm The algorithm to be used to merge levels; one of: \code{"DMRnet"} (the default), \code{"glamer"}, \code{"PDMR"}.
+#' @param algorithm The algorithm to be used; for partition selection (merging levels) use one of: \code{"DMRnet"} (the default), \code{"glamer"} or \code{"PDMR"}. Alternatively, use \code{"var_sel"} for variable (group) selection with no partition selection.
 #'
 #' @param clust.method Clustering method used for partitioning levels of factors; see function \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html}{hclust} in package \pkg{stats} for details. \code{clust.method="complete"} is the default for all algorithms except \code{algorithm="glamer"}, for which \code{clust.method="single"} is the default.
 #'
@@ -92,7 +92,7 @@
 
 DMRnet <- function(X, y, family = "gaussian", o = 5, nlambda = 100, lam = 10^(-7), interc = TRUE, maxp = ifelse(family == "gaussian", ceiling(length(y)/2), ceiling(length(y)/4)), lambda = NULL, algorithm="DMRnet", clust.method = ifelse(algorithm == "glamer", "single", "complete")) {
 
-    wrong_algo <- "Error: wrong algorithm, should be one of: DMRnet, glamer, PDMR"
+    wrong_algo <- "Error: wrong algorithm, should be one of: DMRnet, glamer, PDMR, var_sel"
 
     X <- data.frame(X, check.names = TRUE, stringsAsFactors = TRUE)
     typeofcols <- sapply(1:ncol(X),function(i) class(X[,i]))
@@ -106,6 +106,8 @@ DMRnet <- function(X, y, family = "gaussian", o = 5, nlambda = 100, lam = 10^(-7
                     return(DMRnet4lm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
                 } else if (algorithm %in% c("glamer", "PDMR")) {
                     return(glamer_4lm(X, y, clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
+                } else if (algorithm == "var_sel") {
+                  return(glamer_4lm(X, y, clust.method = "artificial_clustering", nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
                 } else stop(wrong_algo)
        }
     } else{
@@ -117,6 +119,8 @@ DMRnet <- function(X, y, family = "gaussian", o = 5, nlambda = 100, lam = 10^(-7
                   return(DMRnet4glm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
               } else if (algorithm %in% c("glamer", "PDMR")) {
                   return(glamer_4glm(X, y, clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
+              } else if (algorithm == "var_sel") {
+                return(glamer_4lm(X, y, clust.method = "artificial_clustering", nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
               } else stop(wrong_algo)
 
           }

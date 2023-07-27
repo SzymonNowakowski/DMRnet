@@ -38,7 +38,11 @@ clusters1D_4lm_help <- function(S, betas_with_intercept, X, y, clust.method, lam
       return(out)
     })
     #cutting dendrograms
-    models <- lapply(points, function(x) hclust1d::hclust1d(x, method = clust.method))
+    if (clust.method == "artificial_clustering") {
+      models <- lapply(points, function(x) artificial_clustering(x))
+    } else {
+      models <- lapply(points, function(x) hclust1d::hclust1d(x, method = clust.method))
+    }
     heig <- lapply(1:n.factors, function(x){
       out <- models[[x]]$he
       names(out)<- rep(x, length(out))
@@ -58,11 +62,11 @@ clusters1D_4lm_help <- function(S, betas_with_intercept, X, y, clust.method, lam
     # } else {
     #   heig.add <- ((Ro[(p.fac + 2):p,]%*%z)^2)/(sigma*(apply(Ro[(p.fac + 2):p, ], 1, function(y) t(y)%*%y)))
     # }
-    heig.add <- betas_with_intercept[(p.fac + 2):p]^2   #heights for continuous columns are just the betas squared
+    heig.add <- betas_with_intercept[(p.fac + 2):p]   #heights for continuous columns are just the betas (NOT squared!)
     names(heig.add) <- colnames(x.full)[(p.fac + 2):p]
     heig <- c(heig, heig.add)
   }
-  heig <- sort(heig)
+  heig <- sort(unique(heig))
   len <- length(heig)
   #fitting models on the path
   sp <- list()

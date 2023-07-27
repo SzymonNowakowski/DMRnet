@@ -52,7 +52,6 @@ DMR4glm_help <- function(X, y, clust.method, lam){
         heig <- c()
         models <- list()
     }
-    len <- length(heig)
     heig <- c(0,heig)
     names(heig)[1] = "full"
     if ((p.fac + 1) < p){
@@ -60,7 +59,7 @@ DMR4glm_help <- function(X, y, clust.method, lam){
         names(heig.add) <- colnames(x.full)[(p.fac + 2):p]
         heig <- c(heig, heig.add)
     }
-    heig <- sort(heig)
+    heig <- sort(unique(heig))
     len <- length(heig)
     #fitting models on the path
     Z1 <- Z2 <- c()

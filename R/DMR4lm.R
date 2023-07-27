@@ -58,7 +58,6 @@ DMR4lm <- function(X, y, clust.method, lam){
         models <- list()
     }
 
-    len <- length(heig)
     heig <- c(0,heig)
     names(heig)[1] = "full"
 
@@ -72,7 +71,7 @@ DMR4lm <- function(X, y, clust.method, lam){
         heig <- c(heig, heig.add)
     }
 
-    heig <- sort(heig)
+    heig <- sort(unique(heig))
 
     len <- length(heig)
     #fitting models on the path
