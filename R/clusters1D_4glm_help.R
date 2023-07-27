@@ -57,7 +57,7 @@ clusters1D_4glm_help <- function(S, betas_with_intercept, X, y, clust.method, la
     heig <- c()
     models <- list()
   }
-  len <- length(heig)
+
   heig <- c(0,heig)
   names(heig)[1] = "full"
   if ((p.fac + 1) < p){
@@ -65,7 +65,7 @@ clusters1D_4glm_help <- function(S, betas_with_intercept, X, y, clust.method, la
     names(heig.add) <- colnames(x.full)[(p.fac + 2):p]
     heig <- c(heig, heig.add)
   }
-  heig <- sort(unique(heig))
+  heig <- sort(unique_preserving_names(heig))
   len <- length(heig)
   #fitting models on the path
   #Z1 <- Z2 <- c()

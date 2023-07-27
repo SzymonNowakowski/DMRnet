@@ -43,6 +43,7 @@ clusters1D_4lm_help <- function(S, betas_with_intercept, X, y, clust.method, lam
     } else {
       models <- lapply(points, function(x) hclust1d::hclust1d(x, method = clust.method))
     }
+
     heig <- lapply(1:n.factors, function(x){
       out <- models[[x]]$he
       names(out)<- rep(x, length(out))
@@ -53,7 +54,7 @@ clusters1D_4lm_help <- function(S, betas_with_intercept, X, y, clust.method, lam
     heig <- c()
     models <- list()
   }
-  len <- length(heig)
+
   heig <- c(0,heig)
   names(heig)[1] = "full"
   if ((p.fac + 1) < p){    #continous columns handling
@@ -66,8 +67,9 @@ clusters1D_4lm_help <- function(S, betas_with_intercept, X, y, clust.method, lam
     names(heig.add) <- colnames(x.full)[(p.fac + 2):p]
     heig <- c(heig, heig.add)
   }
-  heig <- sort(unique(heig))
+  heig <- sort(unique_preserving_names(heig))
   len <- length(heig)
+  print(heig)
   #fitting models on the path
   sp <- list()
   form <- c()
