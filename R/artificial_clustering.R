@@ -2,7 +2,6 @@ artificial_clustering <- function(points) {
   #points is at least 2-element vector
 
   # it will mimic hclust results, but it will put all points into the same cluster with height equal to max(abs(points))
-
  l_infty <- max(abs(points))
 
  ret <- list()
@@ -17,6 +16,7 @@ artificial_clustering <- function(points) {
  for (i in seq_along(points[-c(1, 2)])) {
    ret$merge[i+1, ] <- c(i, -(i+2))
  }
+ class(ret) <- "hclust"
 
  return(ret)
 }

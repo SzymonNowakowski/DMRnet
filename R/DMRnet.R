@@ -107,7 +107,7 @@ DMRnet <- function(X, y, family = "gaussian", o = 5, nlambda = 100, lam = 10^(-7
                 } else if (algorithm %in% c("glamer", "PDMR")) {
                     return(glamer_4lm(X, y, clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
                 } else if (algorithm == "var_sel") {
-                  return(glamer_4lm(X, y, clust.method = "artificial_clustering", nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
+                  return(glamer_4lm(X, y, clust.method = "variable_selection", nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
                 } else stop(wrong_algo)
        }
     } else{
@@ -120,7 +120,7 @@ DMRnet <- function(X, y, family = "gaussian", o = 5, nlambda = 100, lam = 10^(-7
               } else if (algorithm %in% c("glamer", "PDMR")) {
                   return(glamer_4glm(X, y, clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
               } else if (algorithm == "var_sel") {
-                return(glamer_4lm(X, y, clust.method = "artificial_clustering", nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
+                return(glamer_4glm(X, y, clust.method = "variable_selection", nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
               } else stop(wrong_algo)
 
           }

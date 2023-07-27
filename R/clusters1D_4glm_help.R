@@ -114,8 +114,8 @@ clusters1D_4glm_help <- function(S, betas_with_intercept, X, y, clust.method, la
           sp[[kt]][sp[[kt]] != 1] <- sp[[kt]][sp[[kt]] != 1] + min(spold[spold != 1]) - min(sp[[kt]][sp[[kt]] != 1])
         }
         Z1[,kt] <- X[, faki[kt]]
-        levels(Z1[,kt]) <- sp[[kt]]
-        Z1[,kt] <- factor(Z1[,kt])
+        levels(Z1[,kt]) <- sp[[kt]]    #overriding levels and possibly concatenating some levels (they become)
+        Z1[,kt] <- factor(Z1[,kt])     #recalculating levels, duplicated levels get removed
         if (kt < length(sp)) for( x in (kt+1):length(sp)){ if (length(sp[[x]][sp[[x]]!=1]) > 0 ) sp[[x]][sp[[x]]!= 1] = sp[[x]][sp[[x]]!=1] - 1}
         nl <- nl - 1
       }

@@ -5,7 +5,7 @@ prelasso_binomial <- function(y) {
   # SOSnet4glm
   # DMR4glm
 
-    if (!inherits(y, "factor")){
+  if (!inherits(y, "factor")){
     stop("Error: y should be a factor")
   }
   lev <- levels(factor(y))
