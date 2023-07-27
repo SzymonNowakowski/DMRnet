@@ -122,7 +122,8 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
 
         if (length(model.percent)==2) {
           next
-        } else  if (model_choice=="cvg.PDMR") {
+        }
+      } else if (model_choice=="cvg.PDMR") {
           cat("run", run, "PDMR with cv indexed by GIC\n")
           model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10, algorithm="PDMR"),
                                     error=function(cond) {
@@ -136,7 +137,7 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
           }
 
 
-        } else  if (model_choice=="cv.PDMR") {
+      } else if (model_choice=="cv.PDMR") {
           cat("run", run, "PDMR with cv indexed by model dimension\n")
           model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10, algorithm="PDMR", indexation.mode="dimension"),
                                     error=function(cond) {
