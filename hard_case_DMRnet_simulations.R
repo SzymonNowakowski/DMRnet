@@ -110,7 +110,7 @@ DMRnet(diag(10), c(rep(0,5), rep(1,5)), interc=TRUE)   #it fails in 0.3.2.9001
                                                  #Error in bb[, i] : subscript out of bounds
 
 print("diagonal SOSnet without intercept")
-DMRnet(diag(10), c(rep(0,5), rep(1,5)), interc=FALSE)   #this doesmn't cause problems in 0.3.2.9001
+DMRnet(diag(10), c(rep(0,5), rep(1,5)), interc=FALSE)   #this doesn't cause problems in 0.3.2.9001
 
 
 print("completed")

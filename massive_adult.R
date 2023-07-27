@@ -8,8 +8,8 @@ load_all()
 set.seed(strtoi(substr(digest("adult", "md5", serialize = FALSE),1,7),16))
 
 
-adult.train<-read.csv("data_adult/adult.data", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
-adult.test<-read.csv("data_adult/adult.test", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
+adult.train<-read.csv("https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
+adult.test<-read.csv("https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.test", header=FALSE, comment.char="|", stringsAsFactors = TRUE)
 
 colnames <- c('age', #
               'workclass', #
@@ -68,7 +68,7 @@ runs<-200
 postscript("result_adult.ps", horizontal=TRUE,onefile=FALSE)
 par(mfrow=c(2,4))
 
-for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet")) {
+for (model_choice in c( "cv+sd.PDMR", "gic.PDMR", "cvg.DMRnet", "gic.DMRnet")) {
   mes<-dfs<-rep(0,runs)
   run<-1
 
@@ -110,28 +110,28 @@ for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet"
       }
       model <- cv.DMRnet(adult.train.1percent.x, adult.train.1percent.y, family="binomial", indexation.mode = "GIC")
 
-    } else if (model_choice=="gic.GLAMER") {
+    } else if (model_choice=="gic.PDMR") {
       index=3
       if (run==1) {
-        cat("GLAMER method\n")
+        cat("PDMR method\n")
       }
-      model <- DMRnet(adult.train.1percent.x, adult.train.1percent.y, algorithm="glamer", family="binomial")
+      model <- DMRnet(adult.train.1percent.x, adult.train.1percent.y, algorithm="PDMR", family="binomial")
 
-      gic <- gic.DMR(model, c = 2)   #we are using existing gic calculation which is compatible with GLAMER models
+      gic <- gic.DMR(model, c = 2)   #we are using existing gic calculation which is compatible with PDMR models
 
-    }  else  if (model_choice=="cv+sd.GLAMER") {
+    }  else  if (model_choice=="cv+sd.PDMR") {
       index=2
       if (run==1) {
-        cat("GLAMER with cv+sd\n")
+        cat("PDMR with cv+sd\n")
       }
-      model<-cv.DMRnet(adult.train.1percent.x, adult.train.1percent.y, family="binomial", indexation.mode = "dimension", algorithm="glamer")
+      model<-cv.DMRnet(adult.train.1percent.x, adult.train.1percent.y, family="binomial", indexation.mode = "dimension", algorithm="PDMR")
 
     } else
       stop("Uknown method")
 
 
 
-    if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
+    if (model_choice=="gic.DMRnet" | model_choice=="gic.PDMR") {
       #cat(model_choice, "pred\n")
       prediction<- predict(model, newx=adult.test.1percent.x, df = gic$df.min, type="class", unknown.factor.levels="NA")
       prediction1<- predict(gic, newx=adult.test.1percent.x, type="class", unknown.factor.levels="NA")
@@ -141,9 +141,9 @@ for (model_choice in c( "cv+sd.GLAMER", "gic.GLAMER", "cvg.DMRnet", "gic.DMRnet"
       #cat(model_choice, "pred\n")
       prediction<- predict(model, newx=adult.test.1percent.x, type="class", unknown.factor.levels="NA")
       df<-model$df.min
-    } else  if (model_choice=="cv+sd.GLAMER") {
+    } else  if (model_choice=="cv+sd.PDMR") {
       #cat(model_choice, "pred\n")
-      prediction<- predict(model, newx=adult.test.1percent.x, type="class", md="df.1se", unknown.factor.levels="NA")  #the very first test case of cv+sd.GLAMER fails because of unknown factor levels, if not set to "NA"
+      prediction<- predict(model, newx=adult.test.1percent.x, type="class", md="df.1se", unknown.factor.levels="NA")  #the very first test case of cv+sd.PDMR fails because of unknown factor levels, if not set to "NA"
       df<-model$df.1se
     } else
       stop("Uknown method")

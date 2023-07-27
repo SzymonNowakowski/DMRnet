@@ -6,7 +6,7 @@ library(vioplot)
 library(digest)
 load_all()
 
-set.seed(strtoi(substr(digest("promoter", "md5", serialize = FALSE),1,7),16))   #making all that I can to reproduce previous results of version 0.2.0+glamer from summer 2021 (part of preparation for AAAI'22)
+set.seed(strtoi(substr(digest("promoter", "md5", serialize = FALSE),1,7),16))   #making all that I can to reproduce previous results of version 0.2.0 from summer 2021 (part of preparation for AAAI'22)
 
 data("promoter")
 promoter.expected.errors<-read.csv("data_promoter/promoter_errors.csv")
@@ -19,7 +19,7 @@ runs<-200
 postscript("result_promoter.ps", horizontal=TRUE, onefile=FALSE)
 par(mfrow=c(2,4))
 
-for (model_choice in c("cv+sd.GLAMER",  "gic.GLAMER","cvg.DMRnet", "gic.DMRnet")) {
+for (model_choice in c("cv+sd.PDMR",  "gic.PDMR","cvg.DMRnet", "gic.DMRnet")) {
   mes<-dfs<-rep(0,runs)
   run<-1
 
@@ -60,26 +60,26 @@ for (model_choice in c("cv+sd.GLAMER",  "gic.GLAMER","cvg.DMRnet", "gic.DMRnet")
       }
       model <- cv.DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, family="binomial", indexation.mode = "GIC")
 
-    } else if (model_choice=="gic.GLAMER") {
+    } else if (model_choice=="gic.PDMR") {
       index=3
       if (run==1) {
-        cat("GLAMER method\n")
+        cat("PDMR method\n")
       }
-      model <- DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, algorithm="glamer", family="binomial")
+      model <- DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, algorithm="PDMR", family="binomial")
 
-      gic <- gic.DMR(model, c = 2)   #we are using existing gic calculation which is compatible with GLAMER models
+      gic <- gic.DMR(model, c = 2)   #we are using existing gic calculation which is compatible with PDMR models
 
-    }  else  if (model_choice=="cv+sd.GLAMER") {
+    }  else  if (model_choice=="cv+sd.PDMR") {
       index=2
       if (run==1) {
-        cat("GLAMER with cv+sd\n")
+        cat("PDMR with cv+sd\n")
       }
-      model<-cv.DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, family="binomial", indexation.mode = "dimension", algorithm="glamer")
+      model<-cv.DMRnet(promoter.train.70percent.x, promoter.train.70percent.y, family="binomial", indexation.mode = "dimension", algorithm="PDMR")
 
     } else
       stop("Uknown method")
 
-    if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
+    if (model_choice=="gic.DMRnet" | model_choice=="gic.PDMR") {
       #cat(model_choice, "pred\n")
       prediction<- predict(model, newx=promoter.test.70percent.x, df = gic$df.min, type="class")
       prediction1<- predict(gic, newx=promoter.test.70percent.x, type="class")
@@ -89,7 +89,7 @@ for (model_choice in c("cv+sd.GLAMER",  "gic.GLAMER","cvg.DMRnet", "gic.DMRnet")
       #cat(model_choice, "pred\n")
       prediction<- predict(model, newx=promoter.test.70percent.x, type="class")
       df<-model$df.min
-    } else  if (model_choice=="cv+sd.GLAMER") {
+    } else  if (model_choice=="cv+sd.PDMR") {
       #cat(model_choice, "pred\n")
       prediction<- predict(model, newx=promoter.test.70percent.x, type="class", md="df.1se")
       df<-model$df.1se

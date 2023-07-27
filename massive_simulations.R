@@ -112,15 +112,21 @@ for (actual_beta in beta_choice) {
       theme <- theme <- paste(denot, snr, rho)
       seed <- strtoi(substr(digest(theme, "md5", serialize = FALSE),1,7),16)
       set.seed(seed)
+      alg_list <- c("cvg.PDMR", "cv_sd.PDMR", "cvg.DMRnet")
+      exp_list <- c("cvg.glamer", "cv_sd.glamer", "cvg.DMRnet")
 
-      for (alg in c("cvg.glamer", "cv_sd.glamer", "cvg.DMRnet")) {
+      for (alg_no in 1:3) {
+        alg <- alg_list[alg_no]
+
         cat("alg:", alg, "in", theme, "\n")
 
         filename <- paste(denot, "snr", as.character(round(snr,3)), "rho", as.character(rho), alg, sep="_")
+        exp_filename <- paste(denot, "snr", as.character(round(snr,3)), "rho", as.character(rho), exp_list[alg_no], sep="_")
 
         filename_with_ext<-paste(filename,"csv",sep=".")
+        exp_filename_with_ext<-paste(exp_filename,"csv",sep=".")
 
-        expected_results<-read.table(paste("data_simulations/0.2.0/",filename_with_ext, sep=""), header=TRUE, sep=",")
+        expected_results<-read.table(paste("data_simulations/0.2.0/", exp_filename_with_ext, sep=""), header=TRUE, sep=",")
         rownames(expected_results)<-expected_results$X
         expected_results<-expected_results[-1]
 
@@ -140,7 +146,7 @@ for (actual_beta in beta_choice) {
 
             ##### 2. Fitting methods
 
-            MOD <- cv.DMRnet(XX, y, nlambda=100, nfolds=10, algorithm = substr(alg, nchar(alg)-5, nchar(alg)), indexation.mode = (if(substr(alg,1,3)=="cvg") "GIC" else "dimension" ))
+            MOD <- cv.DMRnet(XX, y, nlambda=100, nfolds=10, algorithm = ifelse(substr(alg, nchar(alg)-3, nchar(alg))=="PDMR", "PDMR", "DMRnet"), indexation.mode = (if(substr(alg,1,3)=="cvg") "GIC" else "dimension" ))
             md0 <- if(substr(alg,1,3)=="cvg") MOD$df.min else MOD$df.1se
 
             ##### 3. Prediction error estimation

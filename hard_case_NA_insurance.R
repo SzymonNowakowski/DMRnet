@@ -4,18 +4,19 @@ load_all()
 
 ############ These problem cases are extracted from insurance dataset:
 
+############ Starting with DMRnet package version 0.3.4.9002 PDMR has functionality as GLAMER in previous versions
 
 ############## GLAMER returned NA model in 3rd run of massive-insurance tests with a seed derived from "insUrance_"
-cat("glamer, family gaussian:\n")
+cat("PDMR, family gaussian:\n")
 load("data/NA_insurance/Glamer_NaN.RData")
-mod <- DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, algorithm="glamer")
+mod <- DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, algorithm="PDMR")
 if (is.na(sum(coef(mod, df=439)))) {    # has NA ?
   stop("Found NA values in a model returned from GLAMER/gaussian")
 }    #FIXED by PR#27
 
 y <- factor(insurance.train.10percent.y>mean(insurance.train.10percent.y))
-cat("glamer, family binomial:\n")
-mod <- DMRnet(insurance.train.10percent.x, y, algorithm="glamer", family="binomial")
+cat("PDMR, family binomial:\n")
+mod <- DMRnet(insurance.train.10percent.x, y, algorithm="PDMR", family="binomial")
 if (is.na(sum(coef(mod, df=439)))) {    # has NA ?
   stop("Found NA values in a model returned from GLAMER/binomial")
 }

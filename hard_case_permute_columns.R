@@ -137,6 +137,32 @@ if (stopper)
   if (errorA!=errorB | errorA > 1e-10 | errorB > 1e-10)
     stop(paste("Incorrect computation for permuted columns: error in scenario A =", errorA, "while error in scenario B =", errorB))
 
+
+######### SCENARIO A PDMR binomial
+
+cat("PDMR\n")
+X <- X[,c(3:15, 1, 2)]
+
+mod <- DMRnet(X, y, algorithm="PDMR", family="binomial")
+pred <- predict(mod, newx=X, df=7, type="class")                        #WHY df=2 for 2 x 2-factor columns???
+errorA <- mean(as.integer(y) != (as.integer(pred)+1))
+cat("Scenario A: ", errorA, "\n")
+
+
+######### SCENARIO B PDMR binomial
+
+X <- X[,c(14, 15, 1:13)]
+
+mod <- DMRnet(X, y, algorithm="PDMR", family="binomial")
+pred <- predict(mod, newx=X, df=7, type="class")                   #WHY df=2 for 2 x 2-factor columns???
+errorB <- mean(as.integer(y) != (as.integer(pred)+1))
+cat("Scenario B: ", errorB, "\n")
+
+
+if (stopper)
+  if (errorA!=errorB | errorA > 1e-10 | errorB > 1e-10)
+    stop(paste("Incorrect computation for permuted columns: error in scenario A =", errorA, "while error in scenario B =", errorB))
+
 #########################################################################################
 ###### Permutation of factor/numeric columns - binomial with p>n ########################
 #########################################################################################
@@ -206,6 +232,31 @@ if (stopper)
     stop(paste("Incorrect computation for permuted columns: error in scenario A =", errorA, "while error in scenario B =", errorB))
 
 
+######### SCENARIO A PDMR binomial p>n
+
+cat("PDMR p>n\n")
+X <- X[,c(3:15, 1, 2)]
+
+mod <- DMRnet(X, y, algorithm="PDMR", family="binomial")
+pred <- predict(mod, newx=X, df=4, type="class")                        #WHY df=2 for 2 x 2-factor columns???
+errorA <- mean(as.integer(y) != (as.integer(pred)+1))
+cat("Scenario A: ", errorA, "\n")
+
+
+######### SCENARIO B PDMR binomial p>n
+
+X <- X[,c(14, 15, 1:13)]
+
+mod <- DMRnet(X, y, algorithm="PDMR", family="binomial")
+pred <- predict(mod, newx=X, df=4, type="class")                   #WHY df=2 for 2 x 2-factor columns???
+errorB <- mean(as.integer(y) != (as.integer(pred)+1))
+cat("Scenario B: ", errorB, "\n")
+
+
+if (stopper)
+  if (errorA!=errorB | errorA > 1e-10 | errorB > 1e-10)
+    stop(paste("Incorrect computation for permuted columns: error in scenario A =", errorA, "while error in scenario B =", errorB))
+
 
 
 
@@ -271,7 +322,7 @@ cat("Scenario A: ", MSEA, "\n")
 
 ######### SCENARIO B DMR gaussian
 
-X <- X[,c(3:15, 1, 2)]
+X <- X[,c(14, 15, 1:13)]
 
 mod <- DMR(X, y)
 pred <- predict(mod, newx=X, df=7)
@@ -296,7 +347,7 @@ cat("Scenario A: ", MSEA, "\n")
 
 ######### SCENARIO B DMRnet gaussian
 
-X <- X[,c(3:15, 1, 2)]
+X <- X[,c(14, 15, 1:13)]
 
 mod <- DMRnet(X, y)
 pred <- predict(mod, newx=X, df=7)
@@ -323,9 +374,34 @@ cat("Scenario A: ", MSEA, "\n")
 
 ######### SCENARIO B GLAMER gaussian
 
-X <- X[,c(3:15, 1, 2)]
+X <- X[,c(14, 15, 1:13)]
 
 mod <- DMRnet(X, y, algorithm="glamer")
+pred <- predict(mod, newx=X, df=7)
+MSEB <- mean((y - pred)^2)
+cat("Scenario B: ", MSEB, "\n")
+
+
+if (stopper)
+  if (MSEA != MSEB | MSEA > 1e-10 | MSEB > 1e-10)
+    stop(paste("Incorrect computation for permuted columns: MSE in scenario A =", MSEA, "while MSE in scenario B =", MSEB))
+
+######### SCENARIO A PDMR gaussian
+
+cat("PDMR\n")
+X <- X[,c(3:15, 1, 2)]
+
+mod <- DMRnet(X, y, algorithm="PDMR")
+pred <- predict(mod, newx=X, df=7)
+MSEA <- mean((y - pred)^2)
+cat("Scenario A: ", MSEA, "\n")
+
+
+######### SCENARIO B PDMR gaussian
+
+X <- X[,c(14, 15, 1:13)]
+
+mod <- DMRnet(X, y, algorithm="PDMR")
 pred <- predict(mod, newx=X, df=7)
 MSEB <- mean((y - pred)^2)
 cat("Scenario B: ", MSEB, "\n")
@@ -364,7 +440,7 @@ cat("Scenario A: ", MSEA, "\n")
 
 ######### SCENARIO B DMRnet gaussian p>n
 
-X <- X[,c(3:15, 1, 2)]
+X <- X[,c(14, 15, 1:13)]
 
 mod <- DMRnet(X, y)
 pred <- predict(mod, newx=X, df=6)
@@ -391,7 +467,7 @@ cat("Scenario A: ", MSEA, "\n")
 
 ######### SCENARIO B GLAMER gaussian p>n
 
-X <- X[,c(3:15, 1, 2)]
+X <- X[,c(14, 15, 1:13)]
 
 mod <- DMRnet(X, y, algorithm="glamer")
 pred <- predict(mod, newx=X, df=6)
@@ -400,7 +476,33 @@ cat("Scenario B: ", MSEB, "\n")
 
 
 if (stopper)
-  if ((MSEA - MSEB) > 1e-10)
+  if ((MSEA - MSEB) > 1e-10 | MSEA > 1e-0 | MSEB > 1e-0)
+    stop(paste("Incorrect computation for permuted columns: MSE in scenario A =", MSEA, "while MSE in scenario B =", MSEB))
+
+
+######### SCENARIO A PDMR gaussian p>n
+
+cat("PDMR p>n\n")
+X <- X[,c(3:15, 1, 2)]
+
+mod <- DMRnet(X, y, algorithm="PDMR")
+pred <- predict(mod, newx=X, df=6)
+MSEA <- mean((y - pred)^2)                #the MSE tends to be > 1.0 in PDMR
+cat("Scenario A: ", MSEA, "\n")
+
+
+######### SCENARIO B PDMR gaussian p>n
+
+X <- X[,c(14, 15, 1:13)]
+
+mod <- DMRnet(X, y, algorithm="PDMR")
+pred <- predict(mod, newx=X, df=6)
+MSEB <- mean((y - pred)^2)                #the MSE tends to be > 1.0 in PDMR
+cat("Scenario B: ", MSEB, "\n")
+
+
+if (stopper)
+  if ((MSEA - MSEB) > 1e-10 | MSEA > 1e-0 | MSEB > 1e-0)
     stop(paste("Incorrect computation for permuted columns: MSE in scenario A =", MSEA, "while MSE in scenario B =", MSEB))
 
 

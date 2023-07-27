@@ -151,8 +151,8 @@ The first purpose is testing agreement of the results obtained for the new versi
    The resulting model dimension and prediction error data was retained. 
    It creates opportunity to compare the expected distibutions of model dimension and prediction error 
    with the actual distributions for new package versions
-   (we would expect to get the same results with the new 
-   versions of the package as were obtained in the summer of 2021 with v. 0.2.0).
+   (we would expect to get the same results with the new PDMR algorithm in package
+   versions >= 0.3.5 as were obtained with GLAMER in the summer of 2021 with v. 0.2.0).
    
    Care was taken to reproduce exactly the same results, as an example: the new calculations in new package versions
    were started from the same seed values. However, calculations in v. 0.2.0 were much less stable and required
@@ -202,8 +202,8 @@ The first purpose is testing agreement of the results obtained for the new versi
    The resulting model dimension and prediction error data was retained. 
    It creates opportunity to compare the expected distibutions of model dimension and prediction error 
    with the actual distributions for new package versions
-   (we would expect to get the same results with the new 
-   versions of the package as were obtained in the beginning of 2022 with v. 0.2.0).
+   (we would expect to get the same results with the new PDMR algorithm in package
+   versions >= 0.3.5 as were obtained with GLAMER in the beginning of 2022 with v. 0.2.0).
    
    ![High Dimensional Simulations](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_high_dimensional_simulation.svg)
        
@@ -221,7 +221,7 @@ To this end the following test cases were identified:
  [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
  Please consult the comments in the file for more detailed information.
 
-- `hard_case_LAPACK_SVD_insurance.R` - the outstanding (not fixed) cases of GLAMER and DMRnet computation 
+- `hard_case_LAPACK_SVD_insurance.R` - the outstanding (not fixed) cases of PDMR and DMRnet computation 
  failure resulting from 
  [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672) with
  data isolated from 

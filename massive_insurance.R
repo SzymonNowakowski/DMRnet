@@ -7,7 +7,7 @@ load_all()
 return_seed<-function(text, letter) { strtoi(substr(digest(paste("insurance_", text, "_orig", letter, ".R", sep=""), "md5", serialize = FALSE),1,7),16)}
 
 
-run_list_glamer <- c("cv+sd.GLAMER","gic.GLAMER")
+run_list_PDMR <- c("cv+sd.PDMR","gic.PDMR")
 run_list_dmrnet <- c("cvg.DMRnet", "gic.DMRnet")
 insurance.expected.errors<-read.csv("data_insurance/insurance_orig_total_errors.csv")
 insurance.expected.df<-read.csv("data_insurance/insurance_orig_total_model_sizes.csv")
@@ -29,9 +29,9 @@ cat("insurance data loaded\n")
 results_mes<-results_dfs<-matrix(nrow=200, ncol=4)
 
 for (mega_run in 1:4) {
-  for (part in c("glamer", "DMRnet")) {
-    if (part == "glamer") {
-      run_list<-run_list_glamer
+  for (part in c("PDMR", "DMRnet")) {
+    if (part == "PDMR") {
+      run_list<-run_list_PDMR
     } else{
       run_list<-run_list_dmrnet
     }
@@ -86,26 +86,26 @@ for (mega_run in 1:4) {
           }
           model <- cv.DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", indexation.mode = "GIC")
 
-        } else if (model_choice=="gic.GLAMER") {
+        } else if (model_choice=="gic.PDMR") {
           index=3
           if (run==1) {
-            cat("GLAMER method\n")
+            cat("PDMR method\n")
           }
-          model <- DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, algorithm="glamer", family="gaussian")
+          model <- DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, algorithm="PDMR", family="gaussian")
 
-          gic <- gic.DMR(model, c = 2)   #we are using existing gic calculation which is compatible with GLAMER models
+          gic <- gic.DMR(model, c = 2)   #we are using existing gic calculation which is compatible with PDMR models
 
-        }  else  if (model_choice=="cv+sd.GLAMER") {
+        }  else  if (model_choice=="cv+sd.PDMR") {
           index=2
           if (run==1) {
-            cat("GLAMER with cv+sd\n")
+            cat("PDMR with cv+sd\n")
           }
-          model<-cv.DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", indexation.mode = "dimension", algorithm="glamer")
+          model<-cv.DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", indexation.mode = "dimension", algorithm="PDMR")
 
         } else
           stop("Uknown method")
 
-        if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
+        if (model_choice=="gic.DMRnet" | model_choice=="gic.PDMR") {
           #cat(model_choice, "pred\n")
           prediction<- predict(model, newx=insurance.test.10percent.x, df = gic$df.min, type="class", unknown.factor.levels="NA")
           prediction1<- predict(gic, newx=insurance.test.10percent.x, type="class", unknown.factor.levels="NA")
@@ -115,9 +115,9 @@ for (mega_run in 1:4) {
           #cat(model_choice, "pred\n")
           prediction<- predict(model, newx=insurance.test.10percent.x, type="class", unknown.factor.levels="NA")
           df<-model$df.min
-        } else  if (model_choice=="cv+sd.GLAMER") {
+        } else  if (model_choice=="cv+sd.PDMR") {
           #cat(model_choice, "pred\n")
-          prediction<- predict(model, newx=insurance.test.10percent.x, type="class", md="df.1se", unknown.factor.levels="NA")  #the very first test case of cv+sd.GLAMER fails because of unknown factor levels, if not set to "NA"
+          prediction<- predict(model, newx=insurance.test.10percent.x, type="class", md="df.1se", unknown.factor.levels="NA")  #the very first test case of cv+sd.PDMR fails because of unknown factor levels, if not set to "NA"
           df<-model$df.1se
         } else
           stop("Uknown method")
@@ -146,7 +146,7 @@ postscript("result_insurance.ps", horizontal=TRUE,onefile=FALSE)
 par(mfrow=c(2,4))
 
 for (model_index in 1:4) {
-  model_choice <- c("cv+sd.GLAMER","gic.GLAMER",  "cvg.DMRnet", "gic.DMRnet") [model_index]
+  model_choice <- c("cv+sd.PDMR","gic.PDMR",  "cvg.DMRnet", "gic.DMRnet") [model_index]
   index <- model_index + 1 # a number of the corresponding expected result in a result filename
   vioplot(list(actual=results_mes[,model_index], expected=insurance.expected.errors[[index]][1:40]), ylab="Error", main=model_choice)
   vioplot(list(actual=results_dfs[,model_index], expected=insurance.expected.df[[index]][1:40]), ylab="Model Dimension", main=model_choice)

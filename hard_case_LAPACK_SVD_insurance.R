@@ -17,6 +17,8 @@ load_all()
 
 ############## GLAMER with cv+sd failed on 48th run of massive-insurance tests with a seed derived from "insurance_"
 
+############ Starting with DMRnet package version 0.3.4.9002 PDMR has functionality as GLAMER in previous versions
+############ Nevertheless we test all combinations
 
   ############ The cause was that grpreg failed with error in Lapack:
   #########Error in La.svd(x, nu, nv) : error code 1 from Lapack routine 'dgesdd'
@@ -27,10 +29,10 @@ load_all()
   ######################################### I want to keep it for further evaluation and incpection
 
 
-cat("glamer:\n")
+cat("PDMR:\n")
 load("data/LAPACK_SVD_insurance/la_svd_Xtr.RData")
 load("data/LAPACK_SVD_insurance/la_svd_ytr.RData")
-glamer <- DMRnet(Xtr, ytr, family = "gaussian", algorithm = "glamer")
+PDMR <- DMRnet(Xtr, ytr, family = "gaussian", algorithm = "PDMR")
 
 
   ################# ISOLATED CASE ###################
@@ -41,9 +43,9 @@ d<-svd(crashes_svd)    #<--------------crashes
 
 
 ############## GLAMER with cv+sd had problems with SVD routine on the 5th CV run on 17th run of massive-insurance tests with a seed derived from "insUrance_"
-cat("glamer:\n")
+cat("PDMR:\n")
 load("data/LAPACK_SVD_insurance/5_cv_MD.RData")
-mod <- DMRnet(Xtr, ytr, algorithm="glamer")   #Error in La.svd(x, nu, nv) : error code 1 from Lapack routine 'dgesdd'
+mod <- DMRnet(Xtr, ytr, algorithm="PDMR")   #Error in La.svd(x, nu, nv) : error code 1 from Lapack routine 'dgesdd'
 
   ################# ISOLATED CASE ###################
 cat("isolated_case:\n")
@@ -53,9 +55,9 @@ d<-svd(crashes_svd)    #<--------------crashes
 
 
 ############## GLAMER with cv+sd had problems with SVD routine on the 4th CV run on 7th run of massive-insurance tests with a seed derived from "insURance_" AFTER the fix in massive_insurance (commit 4eca99d)
-cat("glamer:\n")
+cat("PDMR:\n")
 load("data/LAPACK_SVD_insurance/4_cv_MD.RData")
-mod <- DMRnet(Xtr, ytr, algorithm="glamer")   #Error in La.svd(x, nu, nv) : error code 1 from Lapack routine 'dgesdd'
+mod <- DMRnet(Xtr, ytr, algorithm="PDMR")   #Error in La.svd(x, nu, nv) : error code 1 from Lapack routine 'dgesdd'
 
   ################# ISOLATED CASE ###################
 cat("isolated_case:\n")

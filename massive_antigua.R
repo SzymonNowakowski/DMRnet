@@ -4,9 +4,9 @@ library(vioplot)
 library(digest)
 load_all()
 
-set.seed(strtoi(substr(digest("antigua", "md5", serialize = FALSE),1,7),16))   #making all that I can to reproduce previous results of version 0.2.0+glamer from summer 2021 (part of preparation for AAAI'22)
+set.seed(strtoi(substr(digest("antigua", "md5", serialize = FALSE),1,7),16))   #making all that I can to reproduce previous results of version 0.2.0 from summer 2021 (part of preparation for AAAI'22)
 
-run_list <- c("cv+sd.GLAMER","gic.GLAMER",  "cvg.DMRnet", "gic.DMRnet")
+run_list <- c("cv+sd.PDMR","gic.PDMR",  "cvg.DMRnet", "gic.DMRnet")
 antigua.expected.errors<-read.csv("data_antigua/antigua_errors.csv")
 antigua.expected.df<-read.csv("data_antigua/antigua_model_sizes.csv")
 
@@ -75,26 +75,26 @@ for (model_choice in c( run_list )) {
       }
       model <- cv.DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, family="gaussian", indexation.mode = "GIC")
 
-    } else if (model_choice=="gic.GLAMER") {
+    } else if (model_choice=="gic.PDMR") {
       index=3
       if (run==1) {
-        cat("GLAMER method\n")
+        cat("PDMR method\n")
       }
-      model <- DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, algorithm="glamer", family="gaussian")
+      model <- DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, algorithm="PDMR", family="gaussian")
 
-      gic <- gic.DMR(model, c = 2)   #we are using existing gic calculation which is compatible with GLAMER models
+      gic <- gic.DMR(model, c = 2)   #we are using existing gic calculation which is compatible with PDMR models
 
-    }  else  if (model_choice=="cv+sd.GLAMER") {
+    }  else  if (model_choice=="cv+sd.PDMR") {
       index=2
       if (run==1) {
-        cat("GLAMER with cv+sd\n")
+        cat("PDMR with cv+sd\n")
       }
-      model<-cv.DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, family="gaussian", indexation.mode = "dimension", algorithm="glamer")
+      model<-cv.DMRnet(antigua.train.70percent.x, antigua.train.70percent.y, family="gaussian", indexation.mode = "dimension", algorithm="PDMR")
 
     } else
       stop("Uknown method")
 
-    if (model_choice=="gic.DMRnet" | model_choice=="gic.GLAMER") {
+    if (model_choice=="gic.DMRnet" | model_choice=="gic.PDMR") {
       #cat(model_choice, "pred\n")
       prediction<- predict(model, newx=antigua.test.70percent.x, df = gic$df.min, type="class")
       prediction1<- predict(gic, newx=antigua.test.70percent.x, type="class")
@@ -104,7 +104,7 @@ for (model_choice in c( run_list )) {
       #cat(model_choice, "pred\n")
       prediction<- predict(model, newx=antigua.test.70percent.x, type="class")
       df<-model$df.min
-    } else  if (model_choice=="cv+sd.GLAMER") {
+    } else  if (model_choice=="cv+sd.PDMR") {
       #cat(model_choice, "pred\n")
       prediction<- predict(model, newx=antigua.test.70percent.x, type="class", md="df.1se")
       df<-model$df.1se

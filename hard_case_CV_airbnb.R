@@ -8,11 +8,11 @@ cat("data loaded\n")
 
 cat("random seed set\n")
 
-mod<-cv.DMRnet(data.train.percent.x, data.train.percent.y, algorithm="glamer", indexation.mode = "dimension", nlambda=20)
+mod<-cv.DMRnet(data.train.percent.x, data.train.percent.y, algorithm="PDMR", indexation.mode = "dimension", nlambda=20)
 #the problem in DMRnet v. 0.3.1 is that mod$df.min (which is the model dimension of the *best* model) is higher than
 #ncol(mod$dmr.fit$beta) (which is equal to the largest model available)
 
-cat("glamer model computed for the previously identified hard case\n")
+cat("PDMR model computed for the previously identified hard case\n")
 
 if (mod$df.min > ncol(mod$dmr.fit$beta))                              #in DMRnet v. 0.3.1: > mod$df.min
   stop("model dimension of the *best* model higher than the largest model available")    # [1] 55
@@ -122,9 +122,32 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
 
         if (length(model.percent)==2) {
           next
-        }
+        } else  if (model_choice=="cvg.PDMR") {
+          cat("run", run, "PDMR with cv indexed by GIC\n")
+          model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10, algorithm="PDMR"),
+                                    error=function(cond) {
+                                      message("Numerical instability in model creation in CV (cvg.PDMR) detected. Will skip this 1-percent set. Original error:")
+                                      message(cond); cat("\n")
+                                      return(c(1,1))
+                                    })
+
+          if (length(model.percent)==2) {
+            next
+          }
 
 
+        } else  if (model_choice=="cv.PDMR") {
+          cat("run", run, "PDMR with cv indexed by model dimension\n")
+          model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10, algorithm="PDMR", indexation.mode="dimension"),
+                                    error=function(cond) {
+                                      message("Numerical instability in model creation in CV (cv.PDMR) detected. Will skip this 1-percent set. Original error:")
+                                      message(cond); cat("\n")
+                                      return(c(1,1))
+                                    })
+
+          if (length(model.percent)==2) {
+            next
+          }
       }
 
       prediction<- predict(model.percent, newx=data.test.percent.x, md="df.min")
@@ -162,7 +185,7 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
 load("data_airbnb/airbnb.RData")   #TODO: the intention is to move that part into separate massive_airbnb.R tests later on
 cat("data loaded\n")
 
-model_choices<-c( "cvg.GLAMER","cv.GLAMER", "cvg.DMRnet", "cv.DMRnet")
+model_choices<-c( "cvg.GLAMER","cv.GLAMER", "cvg.PDMR","cv.PDMR","cvg.DMRnet", "cv.DMRnet")
 
 cat("running test for ", model_choices, "\n")
 
