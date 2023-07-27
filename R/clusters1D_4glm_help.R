@@ -42,7 +42,7 @@ clusters1D_4glm_help <- function(S, betas_with_intercept, X, y, clust.method, la
       return(out)
     })
     #cutting dendrograms
-    if (clust.method == "artificial_clustering") {
+    if (clust.method == "variable_selection") {
       models <- lapply(points, function(x) artificial_clustering(x))
     } else {
       models <- lapply(points, function(x) hclust1d::hclust1d(x, method = clust.method))
