@@ -55,6 +55,9 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                 Const <- exp(seq(log(RIC_constant/50),log(RIC_constant*50), length=81))
                 laGIC <- Const*log(p)*s2
                 RSS <- sapply(1:nfolds, function(i) rss[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
+                if (is.null(dim(RSS))) {
+                  RSS<-t(as.matrix((RSS)))  #making it a horizontal one-row matrix
+                }
                 #MD <- sapply(1:nfolds, function(i)  md[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
                 IND <- apply( RSS, 2, function(r) sapply( laGIC, function(la) which.min(r+la*length(r):1) ) )
                 errGIC <- apply( IND, 1, function(ind) mean(ERR[cbind(ind,1:nfolds)]) )
@@ -133,6 +136,9 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                         Const <- exp(seq(log(RIC_constant/50),log(RIC_constant*50), length=81))
                         laGIC <- Const*log(p)
                         LOGLIK <- sapply(1:nfolds, function(i) loglik[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
+                        if (is.null(dim(LOGLIK))) {
+                          LOGLIK<-t(as.matrix((LOGLIK)))  #making it a horizontal one-row matrix
+                        }
                         #MD <- sapply(1:nfolds, function(i)  md[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
                         IND <- apply( LOGLIK, 2, function(ll) sapply( laGIC, function(la) which.min(ll+la*length(ll):1) ) )
                         errGIC <- apply( IND, 1, function(ind) mean(ERR[cbind(ind,1:nfolds)]) )
