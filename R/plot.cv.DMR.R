@@ -38,8 +38,10 @@ plot.cv.DMR <- function(x, ...){
       graphics::text(1, y/2+min(stats::na.omit(x$cvm))/2, "1SD", pos=4, cex=0.7)
 
       #df.1se point & text
-      graphics::points(x$df.1se, x$cvm[length(x$cvm) - x$df.1se + 1], pch = 16, col = "blue")
-      graphics::text(x$df.1se, x$cvm[length(x$cvm) - x$df.1se + 1], "df.1se", pos=4, cex=0.7, col = "blue")
+      if (sum(x_values == x$df.1se) == 1) {
+        graphics::points(x$df.1se, x$cvm[x_values == x$df.1se], pch = 16, col = "blue")
+        graphics::text(x$df.1se, x$cvm[x_values == x$df.1se], "df.1se", pos=4, cex=0.7, col = "blue")
+      }
     }
   }
 }
