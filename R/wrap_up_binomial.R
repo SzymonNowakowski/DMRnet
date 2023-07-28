@@ -26,6 +26,9 @@ wrap_up_binomial <- function(mm, p, maxp, SS, fl, x.full, ord, n, levels.listed,
     }
   })
 
+  if (is.null(dim(be)))
+    be <- matrix(be)
+
   legal_cols <- !is.na(apply(be, 2, sum))
 
   rownames(be) <- colnames(x.full)
