@@ -26,6 +26,9 @@ wrap_up_gaussian <- function(mm, p, maxp, SS, fl, X, y, x.full, ord, n, levels.l
     }
   })
 
+  if (is.null(dim(be)))
+    be <- matrix(be)
+
   legal_cols <- !is.na(apply(be, 2, sum))
 
   rownames(be) <- colnames(x.full)
