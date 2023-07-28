@@ -3,7 +3,6 @@ load_all()
 
 #this file is the test case for issue#39 https://github.com/SzymonNowakowski/DMRnet/issues/39
 
-
 all <- function(family, indexation.mode, algorithm) {
 
   print(">>>>> FAMILY:")
@@ -21,32 +20,32 @@ all <- function(family, indexation.mode, algorithm) {
 
     ##### THE BELOW 5 TEST CASES WERE ORIGINALLY IN MD-INDEXED CV, BUT HERE WE CHECK ALL COMBINATIONS ANYWAY
 
-  print("5_1_1 seed+0, DMRnet")
+  print("5_1_1 seed+0")
   load("data/DMRnet_simulations/5_1_1_data.RData")
   if (family == "binomial") y <- factor(y>mean(y))
   model <- cv.DMRnet(XX, y, indexation.mode=indexation.mode, family=family, algorithm=algorithm, nlambda=20)  #in 0.3.2.9001 Error in 1:ncol(SS) : argument of length 0
                                                           # Called from: lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[, i], X, y,
                                                           #   fl, clust.method, lam))
-  print("5_1_1 seed+1, DMRnet")
+  print("5_1_1 seed+1")
   load("data/DMRnet_simulations/5_1_1_plus_1_data.RData")
   if (family == "binomial") y <- factor(y>mean(y))
   model <- cv.DMRnet(XX, y, indexation.mode=indexation.mode, family=family, algorithm=algorithm, nlambda=20)  #in 0.3.2.9001 Error in SS[, i] : subscript out of bounds
                                                           # Called from: DMRnet4lm_help(SS[, i], X, y, fl, clust.method, lam)
 
-  print("6_1_1 seed+0, DMRnet")
+  print("6_1_1 seed+0")
   load("data/DMRnet_simulations/6_1_1_data.RData")
   if (family == "binomial") y <- factor(y>mean(y))
   model <- cv.DMRnet(XX, y, indexation.mode=indexation.mode, family=family, algorithm=algorithm, nlambda=20)  #in 0.3.2.9001 Error in SS[, i] : subscript out of bounds
                                                           # Called from: DMRnet4lm_help(SS[, i], X, y, fl, clust.method, lam)
 
-  print("6_1_1 seed+1, DMRnet")
+  print("6_1_1 seed+1")
   load("data/DMRnet_simulations/6_1_1_plus_1_data.RData")
   if (family == "binomial") y <- factor(y>mean(y))
   model <- cv.DMRnet(XX, y, indexation.mode=indexation.mode, family=family, algorithm=algorithm, nlambda=20)  #in 0.3.2.9001 Error in SS[, i] : subscript out of bounds
                                                           # Called from: DMRnet4lm_help(SS[, i], X, y, fl, clust.method, lam)
 
 
-  print("6_2_1 seed+0, DMRnet (the fastest error happening in the full model)")
+  print("6_2_1 seed+0 (the fastest error happening in the full model)")
   load("data/DMRnet_simulations/6_2_1_data.RData")
   if (family == "binomial") y <- factor(y>mean(y))
   model <- cv.DMRnet(XX, y, indexation.mode=indexation.mode, family=family, algorithm=algorithm, nlambda=20)  #in 0.3.2.9001 Error in SS[, i] : subscript out of bounds
@@ -62,21 +61,21 @@ all <- function(family, indexation.mode, algorithm) {
     ##### THE BELOW 3 TEST CASES WERE ORIGINALLY IN GIC-INDEXED CV, BUT HERE WE CHECK ALL COMBINATIONS ANYWAY
 
 
-  print("6_2_1 seed+1, DMRnet")
+  print("6_2_1 seed+1")
   load("data/DMRnet_simulations/6_2_1_plus_1_data.RData")
   if (family == "binomial") y <- factor(y>mean(y))
   model <- cv.DMRnet(XX, y, indexation.mode=indexation.mode, family=family, algorithm=algorithm, nlambda=20)  #in 0.3.2.9001 Error in 1:ncol(SS) : argument of length 0
                              # Called from: lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[, i], X, y,
                              #   fl, clust.method, lam))
 
-  print("6_3_1 seed+0, DMRnet")
+  print("6_3_1 seed+0")
   load("data/DMRnet_simulations/6_3_1_data.RData")
   if (family == "binomial") y <- factor(y>mean(y))
   model <- cv.DMRnet(XX, y, indexation.mode=indexation.mode, family=family, algorithm=algorithm, nlambda=20)  # in 0.3.2.9001 Error in 1:ncol(SS) : argument of length 0
                              # Called from: lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[, i], X, y,
                              # fl, clust.method, lam))
 
-  print("4_2_1 seed+1, DMRnet")
+  print("4_2_1 seed+1")
   load("data/DMRnet_simulations/4_2_1_plus_1_data.RData")
   if (family == "binomial") y <- factor(y>mean(y))
   model <- cv.DMRnet(XX, y, indexation.mode=indexation.mode, family=family, algorithm=algorithm, nlambda=20)  # in 0.3.2.9001 Error in 1:ncol(SS) : argument of length 0
