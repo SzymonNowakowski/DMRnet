@@ -11,14 +11,16 @@ wrap_up_gaussian <- function(mm, p, maxp, SS, fl, X, y, x.full, ord, n, levels.l
   }
 
   if (arguments$clust.method == "variable_selection")
-    for (col in 1:ncol(rss))
+    for (col in 1:ncol(rss)) {
+      b_matrix <- mm[[col]]$b
+      if (is.null(dim(b_matrix))) {
+        b_matrix<-matrix(b_matrix)
+      }
       for (row in (shift[col]+1):nrow(rss))
         if (is.finite(rss[row, col])) {
+
           #analyse if this cell results from full factors only
-          b_matrix <- mm[[col]]$b
-          if (is.null(dim(b_matrix))) {
-            b_matrix<-matrix(b_matrix)
-          }
+
           b_vector<-b_matrix[, row - shift[col]]
 
           S_vector <- SS[, col]
@@ -27,12 +29,15 @@ wrap_up_gaussian <- function(mm, p, maxp, SS, fl, X, y, x.full, ord, n, levels.l
           for (i in seq_along(S_vector))
             if (S_vector[i]==1) {
               #check if positions related to this factor are all the same - either 0 or >0
-              b_unique <- unique(b_vector[(pos_in_b+1):(pos_in_b+fl[i]-1)] == 0)
-              if (length(b_unique)==2)  #not unique, mix of 0 and >0
+                                                      #and if >0 than all different to prevent merging levels
+              b_fragment <- b_vector[(pos_in_b+1):(pos_in_b+fl[i]-1)]
+              b_zeros <- (b_fragment == 0)
+              if (length(unique(b_zeros))!=1 | length(unique(b_fragment))!=(fl-1))  # mix of 0 and >0  OR not all different
                 rss[row, col] <- Inf
               pos_in_b <- pos_in_b + fl[i]-1
             }
         }
+    }
 
   ind <- apply(rss, 1, which.min)  #in each row, which is the index of a model minimizing rss
 
