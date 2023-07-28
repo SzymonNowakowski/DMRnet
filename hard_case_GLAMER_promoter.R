@@ -19,6 +19,9 @@ b_PDMR <- DMRnet(X[15], y, family = "binomial", algorithm="PDMR")
 cat("binomial glamer single 4-level factor column:\n")
 b_glamer <- DMRnet(X[15], y, family = "binomial", algorithm="glamer")
 
+cat("binomial var_sel single 4-level factor column:\n")
+b_var_sel <- DMRnet(X[15], y, family = "binomial", algorithm="var_sel")
+
 cat("binomial dmrnet single 4-level factor column:\n")
 b_dmrnet <- DMRnet(X[15], y, family = "binomial")
 
@@ -31,6 +34,9 @@ b_PDMR <- DMRnet(X, y, family = "binomial", algorithm="PDMR")  #fixed by PR#18-2
 cat("binomial glamer:\n")
 b_glamer <- DMRnet(X, y, family = "binomial", algorithm="glamer")
 
+cat("binomial var_sel:\n")
+b_var_sel <- DMRnet(X, y, family = "binomial", algorithm="var_sel")
+
 cat("binomial dmrnet:\n")
 b_dmrnet <- DMRnet(X, y, family = "binomial")
 
@@ -42,6 +48,9 @@ b_cv.PDMR  <- cv.DMRnet(X, y, family = "binomial", algorithm="PDMR", nlambda=20)
 
 cat("binomial cvg.glamer:\n")
 b_cv.glamer  <- cv.DMRnet(X, y, family = "binomial", algorithm="glamer", nlambda=20)
+
+cat("binomial cvg.var_sel:\n")
+b_cv.var_sel  <- cv.DMRnet(X, y, family = "binomial", algorithm="var_sel", nlambda=20)
 
 cat("binomial dmr would not pass, as p>n:\n")
 #b_dmr <- DMR(X, y, family = "binomial")
@@ -57,6 +66,9 @@ PDMR <- DMRnet(X[15], y, family = "gaussian", algorithm="PDMR")
 cat("gaussian glamer single 4-level factor column:\n")
 glamer <- DMRnet(X[15], y, family = "gaussian", algorithm="glamer")
 
+cat("gaussian var_sel single 4-level factor column:\n")
+var_sel <- DMRnet(X[15], y, family = "gaussian", algorithm="var_sel")
+
 cat("gaussian dmrnet single 4-level factor column:\n")
 dmrnet <- DMRnet(X[15], y, family = "gaussian")
 
@@ -69,6 +81,9 @@ PDMR <- DMRnet(X, y, family = "gaussian", algorithm = "PDMR")  #fixed by PR#18-2
 cat("gaussian glamer:\n")
 glamer <- DMRnet(X, y, family = "gaussian", algorithm = "glamer")
 
+cat("gaussian var_sel:\n")
+var_sel <- DMRnet(X, y, family = "gaussian", algorithm = "var_sel")
+
 cat("gaussian dmrnet:\n")
 dmrnet <- DMRnet(X, y, family = "gaussian")
 
@@ -80,6 +95,9 @@ cv.PDMR  <- cv.DMRnet(X, y, family = "gaussian", algorithm="PDMR", nlambda=20)
 
 cat("gaussian cvg.glamer:\n")
 cv.glamer  <- cv.DMRnet(X, y, family = "gaussian", algorithm="glamer", nlambda=20)
+
+cat("gaussian cvg.var_sel:\n")
+cv.var_sel  <- cv.DMRnet(X, y, family = "gaussian", algorithm="var_sel", nlambda=20)
 
 cat("gaussian dmr would not pass, as p>n:\n")
 #dmr <- DMR(X, y, family = "gaussian")

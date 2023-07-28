@@ -8,6 +8,9 @@ set.seed(0)    #to make the tests reproducible
 cat("glamer single 2-level factor column:\n")
 glamer <- DMRnet(Xtr[1], ytr, family = "gaussian", algorithm="glamer")
 
+cat("var_sel single 2-level factor column:\n")
+var_sel <- DMRnet(Xtr[1], ytr, family = "gaussian", algorithm="var_sel")
+
 cat("PDMR single 2-level factor column:\n")
 PDMR <- DMRnet(Xtr[1], ytr, family = "gaussian", algorithm="PDMR")
 
@@ -19,6 +22,9 @@ dmr <- DMR(Xtr[1], ytr, family = "gaussian")           #passes in 0.2.0
 
 cat("glamer:\n")
 glamer <- DMRnet(Xtr, ytr, family = "gaussian", algorithm = "glamer")
+
+cat("var_sel:\n")
+var_sel <- DMRnet(Xtr, ytr, family = "gaussian", algorithm = "var_sel")
 
 cat("PDMR:\n")
 PDMR <- DMRnet(Xtr, ytr, family = "gaussian", algorithm = "PDMR")
@@ -48,6 +54,9 @@ ytr<-factor(ytr>mean(ytr))
 cat("binomial glamer single 2-level factor column:\n")
 b_glamer <- DMRnet(Xtr[1], ytr, family = "binomial", algorithm="glamer")
 
+cat("binomial var_sel single 2-level factor column:\n")
+b_var_sel <- DMRnet(Xtr[1], ytr, family = "binomial", algorithm="var_sel")
+
 cat("binomial PDMR single 2-level factor column:\n")
 b_PDMR <- DMRnet(Xtr[1], ytr, family = "binomial", algorithm="PDMR")
 
@@ -59,6 +68,9 @@ b_dmr <- DMR(Xtr[1], ytr, family = "binomial")           #passes in 0.2.0
 
 cat("binomial glamer:\n")
 b_glamer <- DMRnet(Xtr, ytr, family = "binomial", algorithm="glamer")
+
+cat("binomial var_sel:\n")
+b_var_sel <- DMRnet(Xtr, ytr, family = "binomial", algorithm="var_sel")
 
 cat("binomial PDMR:\n")
 b_PDMR <- DMRnet(Xtr, ytr, family = "binomial", algorithm="PDMR")

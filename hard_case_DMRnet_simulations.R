@@ -92,6 +92,8 @@ all("gaussian", "GIC", "DMRnet")
 all("gaussian", "dimension", "glamer")         # ?
 all("gaussian", "GIC", "glamer")               # ?
 
+all("gaussian", "GIC", "var_sel")               # ?
+
 all("gaussian", "dimension", "PDMR")         # ?
 all("gaussian", "GIC", "PDMR")               # ?
 
@@ -100,6 +102,8 @@ all("binomial", "GIC", "DMRnet")               # it is not causing problems in 0
 
 all("binomial", "dimension", "glamer")         # ?
 all("binomial", "GIC", "glamer")               # ?
+
+all("binomial", "GIC", "var_sel")               # ?
 
 all("binomial", "dimension", "PDMR")         # ?
 all("binomial", "GIC", "PDMR")               # ?

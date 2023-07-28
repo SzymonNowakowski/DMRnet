@@ -110,6 +110,32 @@ if (stopper)
   if (errorA!=errorB | errorA > 1e-10 | errorB > 1e-10)
     stop(paste("Incorrect computation for permuted columns: error in scenario A =", errorA, "while error in scenario B =", errorB))
 
+######### SCENARIO A var_sel binomial
+
+cat("var_sel binomial\n")
+X <- X[,c(3:15, 1, 2)]
+
+mod <- DMRnet(X, y, algorithm="var_sel", family="binomial")
+pred <- predict(mod, newx=X, df=7, type="class")                        #WHY df=2 for 2 x 2-factor columns???
+errorA <- mean(as.integer(y) != (as.integer(pred)+1))
+cat("Scenario A: ", errorA, "\n")
+
+
+######### SCENARIO B var_sel binomial
+
+X <- X[,c(14, 15, 1:13)]
+
+mod <- DMRnet(X, y, algorithm="var_sel", family="binomial")
+pred <- predict(mod, newx=X, df=7, type="class")                   #WHY df=2 for 2 x 2-factor columns???
+errorB <- mean(as.integer(y) != (as.integer(pred)+1))
+cat("Scenario B: ", errorB, "\n")
+
+
+if (stopper)
+  if (errorA!=errorB | errorA > 1e-10 | errorB > 1e-10)
+    stop(paste("Incorrect computation for permuted columns: error in scenario A =", errorA, "while error in scenario B =", errorB))
+
+
 
 
 ######### SCENARIO A GLAMER binomial
@@ -205,6 +231,31 @@ if (stopper)
     stop(paste("Incorrect computation for permuted columns: error in scenario A =", errorA, "while error in scenario B =", errorB))
 
 
+
+######### SCENARIO A var_sel binomial p>n
+
+cat("var_sel binomial p>n\n")
+X <- X[,c(3:15, 1, 2)]
+
+mod <- DMRnet(X, y, algorithm="var_sel", family="binomial")
+pred <- predict(mod, newx=X, df=4, type="class")                        #WHY df=2 for 2 x 2-factor columns???
+errorA <- mean(as.integer(y) != (as.integer(pred)+1))
+cat("Scenario A: ", errorA, "\n")
+
+
+######### SCENARIO B var_sel binomial p>n
+
+X <- X[,c(14, 15, 1:13)]
+
+mod <- DMRnet(X, y, algorithm="var_sel", family="binomial")
+pred <- predict(mod, newx=X, df=4, type="class")                   #WHY df=2 for 2 x 2-factor columns???
+errorB <- mean(as.integer(y) != (as.integer(pred)+1))
+cat("Scenario B: ", errorB, "\n")
+
+
+if (stopper)
+  if (errorA!=errorB | errorA > 1e-10 | errorB > 1e-10)
+    stop(paste("Incorrect computation for permuted columns: error in scenario A =", errorA, "while error in scenario B =", errorB))
 
 ######### SCENARIO A GLAMER binomial p>n
 
@@ -359,6 +410,31 @@ if (stopper)
   if (MSEA != MSEB | MSEA > 1e-10 | MSEB > 1e-10)
     stop(paste("Incorrect computation for permuted columns: MSE in scenario A =", MSEA, "while MSE in scenario B =", MSEB))
 
+######### SCENARIO A var_sel gaussian
+
+cat("var_sel gaussian\n")
+X <- X[,c(3:15, 1, 2)]
+
+mod <- DMRnet(X, y, algorithm="var_sel")
+pred <- predict(mod, newx=X, df=7)
+MSEA <- mean((y - pred)^2)
+cat("Scenario A: ", MSEA, "\n")
+
+
+######### SCENARIO B var_sel gaussian
+
+X <- X[,c(14, 15, 1:13)]
+
+mod <- DMRnet(X, y, algorithm="var_sel")
+pred <- predict(mod, newx=X, df=7)
+MSEB <- mean((y - pred)^2)
+cat("Scenario B: ", MSEB, "\n")
+
+
+if (stopper)
+  if (MSEA != MSEB | MSEA > 1e-10 | MSEB > 1e-10)
+    stop(paste("Incorrect computation for permuted columns: MSE in scenario A =", MSEA, "while MSE in scenario B =", MSEB))
+
 
 
 ######### SCENARIO A GLAMER gaussian
@@ -454,6 +530,33 @@ if (stopper)
 
 
 
+######### SCENARIO A var_sel gaussian p>n
+
+cat("var_sel gaussian p>n\n")
+X <- X[,c(3:15, 1, 2)]
+
+mod <- DMRnet(X, y, algorithm="var_sel")
+pred <- predict(mod, newx=X, df=6)
+MSEA <- mean((y - pred)^2)                #the MSE tends to be > 1.0 in var_sel
+cat("Scenario A: ", MSEA, "\n")
+
+
+######### SCENARIO B var_sel gaussian p>n
+
+X <- X[,c(14, 15, 1:13)]
+
+mod <- DMRnet(X, y, algorithm="var_sel")
+pred <- predict(mod, newx=X, df=6)
+MSEB <- mean((y - pred)^2)                #the MSE tends to be > 1.0 in var_sel
+cat("Scenario B: ", MSEB, "\n")
+
+
+if (stopper)
+  if (abs(MSEA - MSEB) > 1e-10  )
+    stop(paste("Incorrect computation for permuted columns: MSE in scenario A =", MSEA, "while MSE in scenario B =", MSEB))
+
+
+
 ######### SCENARIO A GLAMER gaussian p>n
 
 cat("GLAMER gaussian p>n\n")
@@ -478,6 +581,7 @@ cat("Scenario B: ", MSEB, "\n")
 if (stopper)
   if (abs(MSEA - MSEB) > 1e-10 )
     stop(paste("Incorrect computation for permuted columns: MSE in scenario A =", MSEA, "while MSE in scenario B =", MSEB))
+
 
 
 ######### SCENARIO A PDMR gaussian p>n

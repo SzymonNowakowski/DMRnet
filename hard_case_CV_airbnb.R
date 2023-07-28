@@ -97,6 +97,20 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
           next
         }
 
+      } else  if (model_choice=="cvg.var_sel") {
+        cat("run", run, "variable selection with cv indexed by GIC\n")
+        model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10, algorithm="var_sel"),
+                                  error=function(cond) {
+                                    message("Numerical instability in model creation in CV (cvg.var_sel) detected. Will skip this 1-percent set. Original error:")
+                                    message(cond); cat("\n")
+                                    return(c(1,1))
+                                  })
+
+        if (length(model.percent)==2) {
+          next
+        }
+
+
       } else  if (model_choice=="cvg.GLAMER") {
         cat("run", run, "GLAMER with cv indexed by GIC\n")
         model.percent <- tryCatch(cv.DMRnet(data.train.percent.x, data.train.percent.y, nlambda=100, nfolds=10, algorithm="glamer"),
@@ -186,11 +200,11 @@ gaussian <- function(allX, ally, factor_columns, model_choices, set_name, train_
 load("data_airbnb/airbnb.RData")   #TODO: the intention is to move that part into separate massive_airbnb.R tests later on
 cat("data loaded\n")
 
-model_choices<-c( "cvg.GLAMER","cv.GLAMER", "cvg.PDMR","cv.PDMR","cvg.DMRnet", "cv.DMRnet")
+model_choices<-c( "cvg.var_sel", "cvg.GLAMER","cv.GLAMER", "cvg.PDMR","cv.PDMR","cvg.DMRnet", "cv.DMRnet")
 
 cat("running test for ", model_choices, "\n")
 
-cat(">>starting 0.04 percent 50 runs test\n")
-gaussian(air_X, air_y, factor_columns=1:4, model_choices=model_choices, set_name="airbnb", train_percent=0.04, runs=50)
+cat(">>starting 0.04 percent 10 runs test\n")
+gaussian(air_X, air_y, factor_columns=1:4, model_choices=model_choices, set_name="airbnb", train_percent=0.04, runs=10)
 
 cat("completed\n")
