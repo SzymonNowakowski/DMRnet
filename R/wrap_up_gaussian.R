@@ -2,62 +2,14 @@ wrap_up_gaussian <- function(mm, p, maxp, SS, fl, X, y, x.full, ord, n, levels.l
   maxl <- max(sapply(1:length(mm), function(i) length(mm[[i]]$rss)))
   rss <- sapply(1:length(mm), function(i) c(rep(Inf, maxl - length(mm[[i]]$rss)), mm[[i]]$rss))
 
-  if (maxl == 1)
-    rss <- t(as.matrix(rss))      #making rss a horizontal one-row matrix
+  out   <- prevent_merging_levels(clust_method = arguments$clust.method, result_matrix = rss, as_vector = (maxl==1), mm = mm, SS = SS, factor_levels = fl, filler = Inf)
+  rss   <- out$result_matrix
+  shift <- out$shift
 
-  shift <- rep(0, ncol(rss))   #calculating shift based on number of Infs, because we are about to add Infs
-  for (i in 1:ncol(rss)) {
-    shift[i] <- sum(rss[, i]==Inf)
-  }
-
-  if (arguments$clust.method == "variable_selection")
-    for (col in 1:ncol(rss)) {
-      b_matrix <- mm[[col]]$b
-      if (is.null(dim(b_matrix))) {
-        b_matrix<-matrix(b_matrix)
-      }
-      for (row in (shift[col]+1):nrow(rss))
-        if (is.finite(rss[row, col])) {
-
-          #analyse if this cell results from full factors only
-
-          b_vector<-b_matrix[, row - shift[col]]
-
-          S_vector <- SS[, col]
-          pos_in_b <- 1
-
-          for (i in seq_along(S_vector))
-            if (S_vector[i]==1) {
-              #check if positions related to this factor are all the same - either 0 or >0
-                                                      #and if >0 than all different to prevent merging levels
-              b_fragment <- b_vector[(pos_in_b+1):(pos_in_b+fl[i]-1)]
-              b_zeros <- (b_fragment == 0)
-              if (length(unique(b_zeros))!=1 | length(unique(b_fragment))!=(fl[i]-1))  # mix of 0 and >0  OR not all different
-                rss[row, col] <- Inf
-              pos_in_b <- pos_in_b + fl[i]-1
-            }
-        }
-    }
-
-  ind <- apply(rss, 1, which.min)  #in each row, which is the index of a model minimizing rss
-
-  maxi <- min(p, maxp)
-  if (length(ind) > maxi){
-    idx <- (length(ind) - maxi):length(ind)   #but real model sizes are still length(idx):1
-  } else {
-    idx <- 1:length(ind)
-  }
-
-  #smallest models are last
-  model_group <- ind    #we will simply call it differently (alias)
-  model_index_within_group <- rep(0, length(ind))
-  for (i in idx) {
-    if (is.infinite(rss[i, model_group[i]])) {
-      model_index_within_group[i] <- NA
-    } else {
-      model_index_within_group[i] <- i-shift[model_group[i]]
-    }
-  }
+  out           <- calculate_model_groups(result_matrix = rss, selection_function = which.min, p = p, maxp = maxp, shift = shift)
+  idx           <- out$idx
+  model_group   <- out$model_group
+  model_index_within_group <- out$model_index_within_group
 
   be <- sapply(idx, function(i) {
     b_matrix<-mm[[model_group[i]]]$b;
@@ -80,7 +32,7 @@ wrap_up_gaussian <- function(mm, p, maxp, SS, fl, X, y, x.full, ord, n, levels.l
 
   be <- be[ord,]  #reordering betas to reflect the original matrix X
 
-  fit <- list(beta = be[,legal_cols], df = (length(idx):1)[legal_cols], rss = rss[cbind(idx[legal_cols], ind[idx[legal_cols]])], n = n, levels.listed = levels.listed, lambda = mL$lambda, arguments = arguments, interc = TRUE)
+  fit <- list(beta = be[,legal_cols], df = (length(idx):1)[legal_cols], rss = rss[cbind(idx[legal_cols], model_group[idx[legal_cols]])], n = n, levels.listed = levels.listed, lambda = mL$lambda, arguments = arguments, interc = TRUE)
 
   class(fit) = "DMR"
   return(fit)
