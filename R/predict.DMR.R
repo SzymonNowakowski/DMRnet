@@ -76,10 +76,10 @@ predict.DMR <- function(object, newx, df = NULL, type = "link", unknown.factor.l
                          out <- Z%*%object$beta
                          colnames(out) <- paste("df", object$df, sep = "")
          } else {
-                  if (df>ncol(object$beta)) {
-                    stop(paste("Error: requested prediction for model size df =",df,"exceeding maximum model size available which is", ncol(object$beta)))
+                  if (!(df %in% object$df)) {
+                    stop(paste("Error: requested prediction for model size df =",df,"which is not available"))
                   }
-                  out <- Z%*%object$beta[,ncol(object$beta) - df + 1]
+                  out <- Z%*%object$beta[, which.max(object$df == df)] # which.max(vector == scalar) returns the first position on which a vector value is equal to a scalar
          }
          if(type == "response" | type == "class"){
                  out <- exp(out)

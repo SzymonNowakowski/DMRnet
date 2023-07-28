@@ -12,7 +12,8 @@ cv_indexation.mode_distribute <- function(X, y, nfolds, indexation.mode, model_f
                }
        }
 
-
+       out$indexation.mode <- indexation.mode
+       out$call <- match.call()
        class(out) <- "cv.DMR"
 
        return(out)

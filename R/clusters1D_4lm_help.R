@@ -38,7 +38,12 @@ clusters1D_4lm_help <- function(S, betas_with_intercept, X, y, clust.method, lam
       return(out)
     })
     #cutting dendrograms
-    models <- lapply(points, function(x) hclust1d::hclust1d(x, method = clust.method))
+    if (clust.method == "variable_selection") {
+      models <- lapply(points, function(x) artificial_clustering(x))
+    } else {
+      models <- lapply(points, function(x) hclust1d::hclust1d(x, method = clust.method))
+    }
+
     heig <- lapply(1:n.factors, function(x){
       out <- models[[x]]$he
       names(out)<- rep(x, length(out))
@@ -49,7 +54,7 @@ clusters1D_4lm_help <- function(S, betas_with_intercept, X, y, clust.method, lam
     heig <- c()
     models <- list()
   }
-  len <- length(heig)
+
   heig <- c(0,heig)
   names(heig)[1] = "full"
   if ((p.fac + 1) < p){    #continous columns handling
@@ -58,12 +63,13 @@ clusters1D_4lm_help <- function(S, betas_with_intercept, X, y, clust.method, lam
     # } else {
     #   heig.add <- ((Ro[(p.fac + 2):p,]%*%z)^2)/(sigma*(apply(Ro[(p.fac + 2):p, ], 1, function(y) t(y)%*%y)))
     # }
-    heig.add <- betas_with_intercept[(p.fac + 2):p]^2   #heights for continuous columns are just the betas squared
+    heig.add <- betas_with_intercept[(p.fac + 2):p]   #heights for continuous columns are just the betas (NOT squared!)
     names(heig.add) <- colnames(x.full)[(p.fac + 2):p]
     heig <- c(heig, heig.add)
   }
   heig <- sort(heig)
   len <- length(heig)
+
   #fitting models on the path
   sp <- list()
   form <- c()
@@ -91,26 +97,34 @@ clusters1D_4lm_help <- function(S, betas_with_intercept, X, y, clust.method, lam
         jj <- which(namCont == kt)
         a[p.fac + jj + 1] <- 1
 
-      } else {
-        kt <- as.numeric(kt)
+      } else {    #this routine fails for equal heights, however it is fairly complex...
+        kt <- as.numeric(kt)   #kt = number of a factor
 
-        spold <- sp[[kt]]
+        spold <- sp[[kt]]    #spold = clusters on the previous height for this factor
+
         sp[[kt]] <- stats::cutree(models[[kt]], h = heig[i])
         if(length(sp[[kt]][sp[[kt]] != 1]) > 0){
           sp[[kt]][sp[[kt]] != 1] <- sp[[kt]][sp[[kt]] != 1] + min(spold[spold != 1]) - min(sp[[kt]][sp[[kt]] != 1])
         }
-        ii <- min(which(spold != sp[[kt]]))
-        suma <- ifelse(kt == 1, 0, sum(n.levels[1:(kt-1)] - 1))
-        if(sp[[kt]][ii] == 1){
-          a[suma + ii] <- 1
-        } else {
-          a[suma + ii] <- 1
-          a[suma + min(which(sp[[kt]] == sp[[kt]][ii]))] <- -1
+
+        for (ii in min(which(spold != sp[[kt]]))) {
+          suma <- ifelse(kt == 1, 0, sum(n.levels[1:(kt-1)] - 1))
+          if(sp[[kt]][ii] == 1){    #adding this to intercept
+            a[suma + ii ] <- 1
+          } else {
+            a[suma + ii] <- 1
+            a[suma + min(which(sp[[kt]] == sp[[kt]][ii]))] <- -1
+          }
+          if (kt < length(sp))
+            for( x in (kt+1):length(sp)) {
+              if (length(sp[[x]][sp[[x]]!=1]) > 0 )
+                sp[[x]][sp[[x]] != 1] <- sp[[x]][sp[[x]] !=1 ] - 1
+            }
+          nl <- nl - 1
         }
-        if (kt < length(sp)) for( x in (kt+1):length(sp)){ if (length(sp[[x]][sp[[x]]!=1]) > 0 ) sp[[x]][sp[[x]]!= 1] = sp[[x]][sp[[x]]!=1] - 1}
-        nl <- nl - 1
       }
       A <- cbind(A, a)
+
       be <- c(0, 2:(p-i+2))
       bb <- c()
       if(n.factors > 0){
@@ -125,6 +139,7 @@ clusters1D_4lm_help <- function(S, betas_with_intercept, X, y, clust.method, lam
       b=cbind(b, c(1, be[bb]))
     }
   }
+
   A[1,] <- rep(0, p-1)
   m <- stats::lm.fit(x.full, y)  #it is in top of the related DMRnet function, in GLAMER moved here close to the end
   #######################REGULARIZING THE RESULT########################################
@@ -145,5 +160,6 @@ clusters1D_4lm_help <- function(S, betas_with_intercept, X, y, clust.method, lam
   r22 <- Tr%*%wyn
   RSS <- (sum(y^2) - sum(z^2))
   RSS2 <- c(RSS, as.vector(RSS + r22))
+
   return(list(b = b, rss = RSS2))
 }

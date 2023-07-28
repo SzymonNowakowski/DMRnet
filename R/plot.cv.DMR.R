@@ -19,7 +19,11 @@
 #'
 #' @export
 plot.cv.DMR <- function(x, ...){
-  graphics::plot(length(x$cvm):1, x$cvm, pch = 16, xlab = "df", ylab = "cv error", ...)
+  x_values <- x$dmr.fit$df
+  if (length(x_values) > length(x$cvm))
+    x_values <- x_values[(length(x_values) - length(x$cvm) + 1):length(x_values)]
+
+  graphics::plot(x_values, x$cvm, pch = 16, xlab = "df", ylab = "cv error", ...)
   #df.min point & text
   graphics::points(x$df.min, min(stats::na.omit(x$cvm)), pch = 16, col = "red")  #min(x$cvm)==x$cvm[length(x$cvm) - x$df.min + 1]
   graphics::text(x$df.min, min(stats::na.omit(x$cvm)), "df.min", pos=3, cex=0.7, col = "red")
@@ -29,7 +33,7 @@ plot.cv.DMR <- function(x, ...){
     if (standard_deviation != 0) {
       #1 SD line, arrow and text
       y <- min(stats::na.omit(x$cvm)) + standard_deviation
-      graphics::lines(c(length(x$cvm),1), c(y, y), lty="dashed", col = "blue")
+      graphics::lines(c(x_values[1], x_values[length(x_values)]), c(y, y), lty="dashed", col = "blue")
       graphics::arrows(1, min(stats::na.omit(x$cvm)), 1, y, length=0.05, code=3)
       graphics::text(1, y/2+min(stats::na.omit(x$cvm))/2, "1SD", pos=4, cex=0.7)
 

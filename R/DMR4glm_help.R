@@ -52,7 +52,6 @@ DMR4glm_help <- function(X, y, clust.method, lam){
         heig <- c()
         models <- list()
     }
-    len <- length(heig)
     heig <- c(0,heig)
     names(heig)[1] = "full"
     if ((p.fac + 1) < p){

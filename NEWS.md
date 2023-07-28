@@ -1,4 +1,8 @@
 
+# DMRnet 0.3.4.9003
+
+- Variable selection algorithm `var_sel` added
+
 # DMRnet 0.3.4.9002
 
 - GLAMER implemented as a net version respective to its $\tau$ parameter [issue #57](https://github.com/SzymonNowakowski/DMRnet/issues/57)

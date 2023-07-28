@@ -1,6 +1,10 @@
 cv_MD_indexed <- function(X, y, nfolds, model_function, ...) {
 
         family = list(...)$family
+        algorithm = list(...)$algorithm
+        if (!is.null(algorithm))
+          if (algorithm == "var_sel")
+            warning("Variable selection algorithm was selected. Resulting model sizes may be different in cross validation folds, especially if data with factors with numerous levels is involved or for small cross validation fold counts. This may cause instability in cross validation with model size indexation. If you encounter such problems with your particular data, choose the default GIC indexed cross validation to accompany variable selection algorithm.")
 
         if (family == "gaussian"){
                 n <- length(y)

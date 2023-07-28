@@ -58,7 +58,6 @@ DMR4lm <- function(X, y, clust.method, lam){
         models <- list()
     }
 
-    len <- length(heig)
     heig <- c(0,heig)
     names(heig)[1] = "full"
 
