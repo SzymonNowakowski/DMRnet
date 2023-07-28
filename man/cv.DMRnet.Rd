@@ -40,7 +40,7 @@ cv.DMRnet(
 
 \item{indexation.mode}{How the cross validation algorithm should index the models for internal quality comparisons; one of: \code{"GIC"} (the default) for GIC-indexed cross validation, \code{"dimension"}, for model dimension-indexed cross validation.}
 
-\item{algorithm}{The algorithm to be used to merge levels; one of: \code{"DMRnet"} (the default), \code{"glamer"}, \code{"PDMR"}.}
+\item{algorithm}{The algorithm to be used; for partition selection (merging levels) use one of: \code{"DMRnet"} (the default), \code{"glamer"} or \code{"PDMR"}. Alternatively, use \code{"var_sel"} for variable (group) selection with no partition selection.}
 
 \item{clust.method}{Clustering method used for partitioning levels of factors; see function \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html}{hclust} in package \pkg{stats} for details. \code{clust.method="complete"} is the default for all algorithms except \code{algorithm="glamer"}, for which \code{clust.method="single"} is the default.}
 }

@@ -39,13 +39,14 @@ The available model selection algorithms are the following:
 - `DMRnet` is the default and the most comprehensive model selection algorithm in the package, it can be used both for $p<n$ and $p \geq n$ scenarios. It first executes a screening step in order to reduce the problem to $p<n$ and then uses `DMR` subsequently.
 - `GLAMER` stands for Group LAsso MERger and it is a new (simplified in relation to DMRnet) model selection algorithm that can be used both for $p<n$ and $p \geq n$ scenarios. In comparison to `DMRnet`, the step of reordering variables based on their t-statistics is skipped. This is the first partition selection algorithm in literature for which a partition selection consistency has been proven for high dimensional scenario [Nowakowski *et al.*, 2021].
 - `PDMR` stands for Plain DMR and it is a threshold parameter agnostic variant of GLAMER algorithm [Nowakowski *et al.*, 2023]. It can be used both for $p<n$ and $p \geq n$ scenarios, as well. 
+- Variable selection algorithm allows user to select (or deselect) full variables, for factors it means that merging their levels is not allowed (they are either retained or discarded in full). Internally, it is executed as a thresholded group lasso. Initially, a two dimensional net of lasso-related lambda and threshold values results in a large family of models, but at a later stage of the algorithm, for each model dimension the best model (i.e. the model maximizing the likelihood) is chosen.  
 - `DMR` [Maj-Kańska *et al.*, 2015] is a model selection algorithm that can be used for $p<n$ scenario only.
 - `SOSnet` [Pokarowski and Mielniczuk, 2015, Pokarowski *et al.*, 2022] is a model selection algorithm that is used both for $p<n$ and $p \geq n$ scenarios for continuous-only regressors (with no categorical variables and, consequently, no partition selection). 
 
 Algorithm-wise, the package user has the following choices:
 
 - The user can select `DMRnet` algorithm by calling `DMRnet()` or `cv.DMRnet()` functions.
-- The user can select `GLAMER` or `PDMR` algorithms by calling `DMRnet()` or `cv.DMRnet()` functions and passing `algorithm="glamer"` or `algorithm="PDMR"` argument, respectively.
+- The user can select variable selection, `GLAMER` or `PDMR` algorithms by calling `DMRnet()` or `cv.DMRnet()` functions and passing `algorithm="var_sel"`, `algorithm="glamer"` or `algorithm="PDMR"` argument, respectively.
 - The user can select `DMR` algorithm by calling `DMR()` or `cv.DMR()` functions.
 - The `SOSnet` algorithm is automatically chosen if `DMRnet()` or `cv.DMRnet()` functions were called with an input consisting of continuous-only regressors.
 
@@ -138,12 +139,19 @@ cv.model <- cv.DMRnet(X, y)
 plot(cv.model)
 ```
 
-As before, one can access a model dimension with
+As before, one can access the best model dimension with
 ```{r cv.df.min}
 cv.model$df.min
 ```
 
-Well, the dimension is the same as when we used GIC directly.
+In a plot above there is also a blue dot indicating a `df.1se` model. This is the smallest model (respective to its dimension)
+having its error within the boundary of one standard deviation (the blue dotted line) from the best model. 
+This model improves interpretability without erring much more than the best model.
+```{r cv.df.1se}
+cv.model$df.1se
+```
+
+Returning to the best model, `df.min`, its dimension is the same as when we used GIC directly.
 Let's check if the CV-selected model is the same as the best model selected with GIC:
 ```{r cv.coef}
 coef(cv.model)==coef(gic.model)
@@ -162,12 +170,19 @@ predict(cv.model, newx=head(X))
 
 No wonder the corresponding predictions are all equal, since the selected models were the same.
 
+In models selected with CV, one can switch between `df.min` and `df.1se` models with the use of `md` argument, as follows:
+```{r cv predict}
+predict(cv.model, md="df.min", newx=head(X))  # the default, best model
+predict(cv.model, md="df.1se",  newx=head(X)) # the alternative df.1se model
+```
+
+
 One can predict the response variable values for the whole sequence of models as well:
 ```{r seq-predict}
 predict(models, newx=head(X))
 ```
 
-Notice how the `df12` model predictions overlap with the values we obtained above.
+Notice how the `df12` model predictions overlap with the values we obtained for the `df.min` model, and `df3` overlaps with the values we obtained for the `df.1se` model.
 
 # Classification with 2 classes
 

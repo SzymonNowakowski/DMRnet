@@ -1,7 +1,7 @@
 
 # DMRnet 0.3.4.9003
 
-- Work started on a group selection algorithm
+- Variable selection algorithm `var_sel` added
 
 # DMRnet 0.3.4.9002
 
