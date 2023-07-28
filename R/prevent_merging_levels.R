@@ -10,10 +10,8 @@ prevent_merging_levels <- function(clust_method, result_matrix, as_vector, mm, S
 
   if (clust_method == "variable_selection")
     for (col in 1:ncol(result_matrix)) {
-      b_matrix <- mm[[col]]$b
-      if (is.null(dim(b_matrix))) {
-        b_matrix<-matrix(b_matrix)
-      }
+      b_matrix <- as.matrix(mm[[col]]$b)
+
       for (row in (shift[col]+1):nrow(result_matrix))
         if (is.finite(result_matrix[row, col])) {
 
