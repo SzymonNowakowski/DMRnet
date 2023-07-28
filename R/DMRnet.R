@@ -100,31 +100,38 @@ DMRnet <- function(X, y, family = "gaussian", o = 5, nlambda = 100, lam = 10^(-7
     sumnonfac <- sum(typeofcols == "factor")
     if (family == "gaussian"){
        if(sumnonfac == 0){
-           return(SOSnet4lm(X, y, o = o, nlambda = nlambda, interc = interc, maxp = maxp, lambda = lambda))
+           ret <- SOSnet4lm(X, y, o = o, nlambda = nlambda, interc = interc, maxp = maxp, lambda = lambda)
+           ret$arguments$algorithm <- "SOSnet"
        } else{
-                if (algorithm == "DMRnet") {
-                    return(DMRnet4lm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
-                } else if (algorithm %in% c("glamer", "PDMR")) {
-                    return(glamer_4lm(X, y, clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
-                } else if (algorithm == "var_sel") {
-                  return(glamer_4lm(X, y, clust.method = "variable_selection", nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
-                } else stop(wrong_algo)
+          if (algorithm == "DMRnet") {
+            ret <- DMRnet4lm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda)
+          } else if (algorithm %in% c("glamer", "PDMR")) {
+            ret <- glamer_4lm(X, y, clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda)
+          } else if (algorithm == "var_sel") {
+            ret <- glamer_4lm(X, y, clust.method = "variable_selection", nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda)
+          } else stop(wrong_algo)
+
+          ret$arguments$algorithm <- algorithm
        }
     } else{
        if (family == "binomial"){
           if(sumnonfac == 0){
-              return(SOSnet4glm(X, y, o = o, nlambda = nlambda, lam = lam, interc = interc, maxp = maxp, lambda = lambda))
+              ret <- SOSnet4glm(X, y, o = o, nlambda = nlambda, lam = lam, interc = interc, maxp = maxp, lambda = lambda)
+              ret$arguments$algorithm <- "SOSnet"
           } else{
               if (algorithm == "DMRnet") {
-                  return(DMRnet4glm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
+                ret <- DMRnet4glm(X, y, clust.method = clust.method, o = o, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda)
               } else if (algorithm %in% c("glamer", "PDMR")) {
-                  return(glamer_4glm(X, y, clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
+                ret <- glamer_4glm(X, y, clust.method = clust.method, nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda)
               } else if (algorithm == "var_sel") {
-                return(glamer_4glm(X, y, clust.method = "variable_selection", nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda))
+                ret <- glamer_4glm(X, y, clust.method = "variable_selection", nlambda = nlambda, lam = lam, maxp = maxp, lambda = lambda)
               } else stop(wrong_algo)
 
+              ret$arguments$algorithm <- algorithm
           }
        }
        else stop("Error: wrong family, should be one of: gaussian, binomial")
     }
+    ret$call <- match.call()
+    return(ret)
 }

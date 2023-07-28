@@ -75,11 +75,14 @@ DMR <- function(X, y, family = "gaussian", clust.method = 'complete', lam = 10^(
     typeofcols <- sapply(1:ncol(X),function(i) class(X[,i]))
     if(sum(unlist(typeofcols) == "ordered") > 0) stop("Error: there is an ordered factor in the data frame, change it to factor")
     if (family == "gaussian"){
-       return(DMR4lm(X, y, clust.method = clust.method, lam = lam))
+       ret <- DMR4lm(X, y, clust.method = clust.method, lam = lam)
     } else{
        if (family == "binomial"){
-          return(DMR4glm(X, y, clust.method = clust.method, lam = lam))
+          ret <- DMR4glm(X, y, clust.method = clust.method, lam = lam)
        }
        else stop("Error: wrong family, should be one of: gaussian, binomial")
     }
+    ret$arguments$algorithm <- "DMR"
+    ret$call <- match.call()
+    return(ret)
 }
