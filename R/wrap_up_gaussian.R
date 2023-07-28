@@ -26,14 +26,11 @@ wrap_up_gaussian <- function(mm, p, maxp, SS, fl, X, y, x.full, ord, n, levels.l
     }
   })
 
-  if (is.null(dim(be)))
-    be <- matrix(be)
-
   legal_cols <- !is.na(apply(be, 2, sum))
 
   rownames(be) <- colnames(x.full)
 
-  be <- be[ord,]  #reordering betas to reflect the original matrix X
+  be <- as.matrix(be[ord,])  #reordering betas to reflect the original matrix X, making it a matrix just in case it is one column
 
   fit <- list(beta = be[,legal_cols], df = (length(idx):1)[legal_cols], rss = rss[cbind(idx[legal_cols], model_group[idx[legal_cols]])], n = n, levels.listed = levels.listed, lambda = mL$lambda, arguments = arguments, interc = TRUE)
 

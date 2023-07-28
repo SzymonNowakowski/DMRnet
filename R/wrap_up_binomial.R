@@ -26,14 +26,11 @@ wrap_up_binomial <- function(mm, p, maxp, SS, fl, x.full, ord, n, levels.listed,
     }
   })
 
-  if (is.null(dim(be)))
-    be <- matrix(be)
-
   legal_cols <- !is.na(apply(be, 2, sum))
 
   rownames(be) <- colnames(x.full)
 
-  be <- be[ord,]  #reordering betas to reflect the original matrix X
+  be <- as.matrix(be[ord,])  #reordering betas to reflect the original matrix X, making it a matrix just in case it is one column
 
   fit <- list(beta = be[,legal_cols], df = (length(idx):1)[legal_cols], loglik = loglik[cbind(idx[legal_cols], model_group[idx[legal_cols]])], n = n, levels.listed = levels.listed, lambda = mL$lambda, arguments=arguments, interc = TRUE)
 
