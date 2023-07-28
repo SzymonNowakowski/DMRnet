@@ -32,7 +32,7 @@ wrap_up_gaussian <- function(mm, p, maxp, SS, fl, X, y, x.full, ord, n, levels.l
                                                       #and if >0 than all different to prevent merging levels
               b_fragment <- b_vector[(pos_in_b+1):(pos_in_b+fl[i]-1)]
               b_zeros <- (b_fragment == 0)
-              if (length(unique(b_zeros))!=1 | length(unique(b_fragment))!=(fl-1))  # mix of 0 and >0  OR not all different
+              if (length(unique(b_zeros))!=1 | length(unique(b_fragment))!=(fl[i]-1))  # mix of 0 and >0  OR not all different
                 rss[row, col] <- Inf
               pos_in_b <- pos_in_b + fl[i]-1
             }
