@@ -82,6 +82,7 @@ all <- function(family, indexation.mode, algorithm) {
                              # Called from: lapply(1:ncol(SS), function(i) DMRnet4lm_help(SS[, i], X, y,
                              # fl, clust.method, lam))
 
+  print("all() routine done")
 
 }
 
