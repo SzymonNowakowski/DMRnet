@@ -28,7 +28,7 @@ cat("insurance data loaded\n")
 
 results_mes<-results_dfs<-matrix(nrow=200, ncol=4)
 
-for (mega_run in 1:4) {
+for (mega_run in 1:20) {
   for (part in c("PDMR", "DMRnet")) {
     if (part == "PDMR") {
       run_list<-run_list_PDMR
@@ -75,7 +75,12 @@ for (mega_run in 1:4) {
           if (run==1) {
             cat("DMRnet with GIC only\n")
           }
-          model <- DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian")
+          model <- tryCatch(DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian"),
+                            error=function(cond) {
+                              message("Numerical instability in regular model creation detected. Will skip this set. Original error:")
+                              message(cond); cat("\n")
+                              return(c(1,1))
+                            })
 
           gic <- gic.DMR(model, c = 2)
 
@@ -84,14 +89,24 @@ for (mega_run in 1:4) {
           if (run==1) {
             cat(model_choice, "with cvg\n")
           }
-          model <- cv.DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", indexation.mode = "GIC")
+          model <- tryCatch(cv.DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", indexation.mode = "GIC"),
+                            error=function(cond) {
+                              message("Numerical instability in model creation in CV (cv.DMRnet) detected. Will skip this set. Original error:")
+                              message(cond); cat("\n")
+                              return(c(1,1))
+                            })
 
         } else if (model_choice=="gic.PDMR") {
           index=3
           if (run==1) {
             cat("PDMR method\n")
           }
-          model <- DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, algorithm="PDMR", family="gaussian")
+          model <- tryCatch(DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, algorithm="PDMR", family="gaussian"),
+                            error=function(cond) {
+                              message("Numerical instability in regular model creation detected. Will skip this set. Original error:")
+                              message(cond); cat("\n")
+                              return(c(1,1))
+                            })
 
           gic <- gic.DMR(model, c = 2)   #we are using existing gic calculation which is compatible with PDMR models
 
@@ -100,7 +115,12 @@ for (mega_run in 1:4) {
           if (run==1) {
             cat("PDMR with cv+sd\n")
           }
-          model<-cv.DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", indexation.mode = "dimension", algorithm="PDMR")
+          model <- tryCatch(cv.DMRnet(insurance.train.10percent.x, insurance.train.10percent.y, family="gaussian", indexation.mode = "dimension", algorithm="PDMR"),
+                            error=function(cond) {
+                              message("Numerical instability in model creation in CV (cv.DMRnet) detected. Will skip this set. Original error:")
+                              message(cond); cat("\n")
+                              return(c(1,1))
+                            })
 
         } else
           stop("Uknown method")
@@ -148,8 +168,8 @@ par(mfrow=c(2,4))
 for (model_index in 1:4) {
   model_choice <- c("cv+sd.PDMR","gic.PDMR",  "cvg.DMRnet", "gic.DMRnet") [model_index]
   index <- model_index + 1 # a number of the corresponding expected result in a result filename
-  vioplot(list(actual=results_mes[,model_index], expected=insurance.expected.errors[[index]][1:40]), ylab="Error", main=model_choice)
-  vioplot(list(actual=results_dfs[,model_index], expected=insurance.expected.df[[index]][1:40]), ylab="Model Dimension", main=model_choice)
+  vioplot(list(actual=results_mes[,model_index], expected=insurance.expected.errors[[index]][1:200]), ylab="Error", main=model_choice)
+  vioplot(list(actual=results_dfs[,model_index], expected=insurance.expected.df[[index]][1:200]), ylab="Model Dimension", main=model_choice)
 }
 
 
