@@ -81,6 +81,9 @@ for (mega_run in 1:20) {
                               message(cond); cat("\n")
                               return(c(1,1))
                             })
+          if (length(model)==2) {
+            next
+          }
 
           gic <- gic.DMR(model, c = 2)
 
@@ -95,6 +98,9 @@ for (mega_run in 1:20) {
                               message(cond); cat("\n")
                               return(c(1,1))
                             })
+          if (length(model)==2) {
+            next
+          }
 
         } else if (model_choice=="gic.PDMR") {
           index=3
@@ -107,6 +113,9 @@ for (mega_run in 1:20) {
                               message(cond); cat("\n")
                               return(c(1,1))
                             })
+          if (length(model)==2) {
+            next
+          }
 
           gic <- gic.DMR(model, c = 2)   #we are using existing gic calculation which is compatible with PDMR models
 
@@ -121,6 +130,9 @@ for (mega_run in 1:20) {
                               message(cond); cat("\n")
                               return(c(1,1))
                             })
+          if (length(model)==2) {
+            next
+          }
 
         } else
           stop("Uknown method")
