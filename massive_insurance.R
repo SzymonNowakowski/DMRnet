@@ -40,8 +40,8 @@ for (mega_run in 1:4) {
 
     for (model_choice in c( run_list )) {
 
-
-      for (run in 1:10) {
+      run <- 1
+      while (run <= 10) {
 
         ################ original response 8 levels!
         insurance.all.y<-insurance.all[,ncol(insurance.all)] +0.0
@@ -169,6 +169,7 @@ for (mega_run in 1:4) {
         results_mes[total_run, index-1]<-MSPE
         results_dfs[total_run, index-1]<-df
 
+        run <- run + 1
       }#run
     }#model_choice
   }#part
