@@ -6,6 +6,7 @@ echo " - hard_case_CV_airbnb.R" >> tag_text
 echo " - hard_case_DMRnet_insurance.R" >> tag_text
 echo " - hard_case_DMRnet_simulations.R" >> tag_text
 echo " - hard_case_GLAMER_promoter.R" >> tag_text
+echo " - hard_case_LAPACK_SVD_insurance.R" >> tag_text
 echo " - hard_case_NA_insurance.R" >> tag_text
 echo " - hard_case_permute_columns.R" >> tag_text
 echo " - hard_case_SOSnet.R" >> tag_text
