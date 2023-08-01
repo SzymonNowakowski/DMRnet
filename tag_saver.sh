@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "" >> tag_text
+echo "" >> tag_text
 echo "# The following correctness tests were executed and completed:" >tag_text
 echo "" >> tag_text
 echo " - hard_case_CV_airbnb.R" >> tag_text
