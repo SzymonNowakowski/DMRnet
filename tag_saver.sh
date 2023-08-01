@@ -28,6 +28,11 @@ echo "============================================================" >> tag_text
 cat hc_LSi >> tag_text
 
 echo "============================================================" >> tag_text
+echo "hard_case_NA_insurance.R" >> tag_text
+echo "============================================================" >> tag_text
+cat hc_Ni >> tag_text
+
+echo "============================================================" >> tag_text
 echo "hard_case_permute_columns.R" >> tag_text
 echo "============================================================" >> tag_text
 cat hc_pc >> tag_text
