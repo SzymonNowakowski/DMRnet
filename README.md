@@ -223,7 +223,7 @@ To this end the following test cases were identified:
  [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
  Please consult the comments in the file for more detailed information.
 
-- `hard_case_DMRnet_simulations.R` - a compilation of tests specifically for testing [issue #39]( https://github.com/SzymonNowakowski/DMR
+- `hard_case_DMRnet_simulations.R` - a compilation of tests specifically for testing [issue #39](https://github.com/SzymonNowakowski/DMR
 net/issues/39)
 
 - `hard_case_GLAMER_promoter.R` - a problem with group constrained identified with GLAMER in
