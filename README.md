@@ -216,18 +216,15 @@ bugs have some additional test files dedicated to testing that the particular bu
 
 To this end the following test cases were identified:
 
+- `hard_case_CV_airbnb.R` - a problem in model-dimension indexed CV resulting in mismatching model dimension in rare cases of different number of predictors in-between folds during the cross validation. The side effect of this bug has been larger than optimal models returned in case of this mismatch. In the extreme (even rarer) cases the returned model dimension exceeded the number of a computed `dmr.fit` models, which in effect led to incorrect `predict()` behavior. Fixed in [PR#34](https://github.com/SzymonNowakowski/DMRnet/pull/34) and [PR#35](https://github.com/SzymonNowakowski/DMRnet/pull/35).
+  
 - `hard_case_DMRnet_insurance.R` - a compilation of tests for various previously 
  identified bugs in DMRnet with data coming from 
  [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
  Please consult the comments in the file for more detailed information.
 
-- `hard_case_LAPACK_SVD_insurance.R` - the outstanding (not fixed) cases of PDMR and DMRnet computation 
- failure resulting from 
- [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672) with
- data isolated from 
- [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). 
-
-- `hard_case_NA_insurance.R` - cases in which NA values were returned for GLAMER, DMRnet and DMR for [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data) because design matrices involved were not of full rank. [PR#27](https://github.com/SzymonNowakowski/DMRnet/pull/27) and [PR#28](https://github.com/SzymonNowakowski/DMRnet/pull/28) fixed those issues.
+- `hard_case_DMRnet_simulations.R` - a compilation of tests specifically for testing [issue #39]( https://github.com/SzymonNowakowski/DMR
+net/issues/39)
 
 - `hard_case_GLAMER_promoter.R` - a problem with group constrained identified with GLAMER in
  data isolated from 
@@ -235,9 +232,19 @@ To this end the following test cases were identified:
  The cause was that `grpreg` didn't observe the so called *group constraint* for one of the columns 
  and returned two non-zero betas and one beta equal to zero.
 
+- `hard_case_LAPACK_SVD_insurance.R` - the outstanding (not fixed) cases of PDMR and DMRnet computation 
+ failure resulting from 
+ [`LAPACK` bug in `dgesdd` routine](https://github.com/Reference-LAPACK/lapack/issues/672) with
+ data isolated from 
+ [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data). LAPACK version got increased and some other matrices crash LAPACK, but I retain those cases and that test set.
+
+- `hard_case_NA_insurance.R` - cases in which NA values were returned for GLAMER, DMRnet and DMR for [Insurance data set](https://www.kaggle.com/c/prudential-life-insurance-assessment/data) because design matrices involved were not of full rank. [PR#27](https://github.com/SzymonNowakowski/DMRnet/pull/27) and [PR#28](https://github.com/SzymonNowakowski/DMRnet/pull/28) fixed those issues.
+
+- `hard_case_permute_columns.R` - testing if GLAMER, DMRnet and SOSnet correctly handles cases with permuted factor and non-factor columns and related cases.
+
 - `hard_case_SOSnet.R` - a problem in SOSnet with artificial data set 
  (in which a matrix is close to - but not exactly - singular) resulting in 
  numerical instabilities with QR calculations.
 
-- `hard_case_CV_airbnb.R` - a problem in model-dimension indexed CV resulting in mismatching model dimension in rare cases of different number of predictors in-between folds during the cross validation. The side effect of this bug has been larger than optimal models returned in case of this mismatch. In the extreme (even rarer) cases the returned model dimension exceeded the number of a computed `dmr.fit` models, which in effect led to incorrect `predict()` behavior. Fixed in [PR#34](https://github.com/SzymonNowakowski/DMRnet/pull/34) and [PR#35](https://github.com/SzymonNowakowski/DMRnet/pull/35).
+
 
