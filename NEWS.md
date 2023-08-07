@@ -1,12 +1,14 @@
 
+# DMRnet 0.4.0.9000
+
 # DMRnet 0.4.0
 
 - Variable selection algorithm `var_sel` added
-- GLAMER implemented as a net version respective to its $\tau$ parameter [issue #57](https://github.com/SzymonNowakowski/DMRnet/issues/57)
+- GLAMER implemented as a net version respective to its $\tau$ parameter ([issue #57](https://github.com/SzymonNowakowski/DMRnet/issues/57))
 - Features package load message with citation info
 - Fixing a problem with zero-length arrow in CV plots resulting from sd=0 (problem still remaining in [issue #39](https://github.com/SzymonNowakowski/DMRnet/issues/39) after the `0.3.2.9002` fix)
 - Citation update
-- Hierarchical clustering based on segmentation of 1D points with hclust1d package for PDMR and GLAMER 
+- Hierarchical clustering based on segmentation of 1D points with `hclust1d` package for PDMR and GLAMER 
 
 # DMRnet 0.3.4
 
