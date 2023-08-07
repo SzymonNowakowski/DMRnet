@@ -1,6 +1,8 @@
 
 # DMRnet 0.4.0.9000
 
+- Starting a new development version
+
 # DMRnet 0.4.0
 
 - Variable selection algorithm `var_sel` added

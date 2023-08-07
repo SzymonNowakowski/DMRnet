@@ -19,11 +19,11 @@
 There were no ERRORs, WARNINGs, or NOTEs. 
 
 ## Downstream dependencies
-There seem to be only one reverse dependence (DMRnet). It has the same maintainer, who keeps the changes synchronized.
+There seem to be no downstream dependencies:
 
 ```{r revdep}
 devtools::revdep("DMRnet")
-# [1] "DMRnet"         <-------------- this package has the same maintainer
+# character(0)
 ```
 
 
