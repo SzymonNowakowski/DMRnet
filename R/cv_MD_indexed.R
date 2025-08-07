@@ -54,6 +54,7 @@ cv_MD_indexed <- function(X, y, nfolds, model_function, ...) {
                         foldid[which(y == levels(factor(y))[1])] = foldid1
                         foldid[which(y == levels(factor(y))[2])] = foldid2
                         error <- list()
+                        fold_n <- list()
 
                         model.full <- model_function(X, y, ...)
                         lambda.full<- model.full$lambda
