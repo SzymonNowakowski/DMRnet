@@ -1,23 +1,17 @@
 
-# This is a 2nd resubmission of 0.3.4
+# `check_win_devel()` and `check_rhub()` checks
 
-- The following NOTE from WINDOWS precheck **has been corrected**:
+- All words from this NOTE are spelled correctly (they are the author name/conference title/publisher of Springer publication)
 
-  * checking CRAN incoming feasibility ... [15s] NOTE
-  Maintainer: 'Szymon Nowakowski <s.nowakowski@mimuw.edu.pl>'
-
-  Package CITATION file contains call(s) to personList() or
-  as.personList().  Please use c() on person objects instead.
-  Package CITATION file contains call(s) to citEntry(), citHeader() or
-  citFooter().  Please use bibentry() instead.
-  
-- The folowing NOTE from precheck **has been corrected** by reducing examples by roughly 25%:
-
-  Flavor: r-devel-windows-x86_64
-  Check: examples, Result: NOTE
-    Examples with CPU (user + system) or elapsed time > 10s
-           user system elapsed
-    DMRnet   10   0.17   10.21
+  * checking CRAN incoming feasibility ... [11s] NOTE
+    Maintainer: 'Szymon Nowakowski <s.nowakowski@mimuw.edu.pl>'
+    
+    Possibly misspelled words in DESCRIPTION:
+      Cham (9:552)
+      ICCS (9:473)
+      Nowakowski (9:306)
+      Springer (9:542)
+      Szymon (9:299)
 
 # Local checks
 

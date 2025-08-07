@@ -4,9 +4,11 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
 
         if (family == "gaussian"){
                 n <- length(y)
-                real_n <- 0 #recount  of test instances
+                total_n <- 0 #recount  of test instances
                 foldid <- sample(rep(1:nfolds,length.out=n))   #PP replaces cvfolds by a simpler sample(rep()) function
-                err <- list(); rss <- list(); #md <- list()
+                err <- list()
+                rss <- list() #md <- list()
+                fold_n <-list()
 
                 model.full <- model_function(X, y, ...)
                 lambda.full<- model.full$lambda
@@ -18,13 +20,14 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                         Xtr <- X[foldid != fold, ,drop = FALSE]
                         ytr <- y[foldid != fold, drop = FALSE]
 
-                        compute_model <- cv_compute_model(model_function, Xtr, ytr, Xte, yte, real_n, lambda.full = lambda.full, ...)   #three letter abbreviations (lambda.full vs lam) make this function call confused, so explicit passing of named parameter i.e. lambda.full=lambda.full is required
+                        compute_model <- cv_compute_model(model_function, Xtr, ytr, Xte, yte, lambda.full = lambda.full, ...)   #three letter abbreviations (lambda.full vs lam) make this function call confused, so explicit passing of named parameter i.e. lambda.full=lambda.full is required
                         model<-compute_model$model
                         Xtr<-compute_model$Xtr
                         ytr<-compute_model$ytr
                         Xte<-compute_model$Xte
                         yte<-compute_model$yte
-                        real_n<-compute_model$real_n
+                        total_n <- total_n + compute_model$this_fold_n
+                        fold_n[[fold]] <- compute_model$this_fold_n
 
                         #PP new code
                         rss[[fold]] <- model$rss
@@ -60,14 +63,24 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                 }
                 #MD <- sapply(1:nfolds, function(i)  md[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
                 IND <- apply( RSS, 2, function(r) sapply( laGIC, function(la) which.min(r+la*length(r):1) ) )
-                errGIC <- apply( IND, 1, function(ind) mean(ERR[cbind(ind,1:nfolds)]) )
+                error_means_in_folds <- apply( IND, 1, function(ind) ERR[cbind(ind,1:nfolds)])
+                #here the errors are mean errors for each model size and each fold, sized foldmin x nfolds
+
+                errGIC <- apply(error_means_in_folds, 1, mean)
+                #errGIC is the mean of those mean errors
+
+
+                std_err <- sqrt(rowSums(error_means_in_folds^2-errGIC^2)/((nfolds-1)*nfolds))     # SD in nfolds numbers, further divided by sqrt(n_folds)
+                # std_err is a vector (of length foldmin) and it stores standard errors for different model sizes
+                # it is calculated similarly as in glmnet for group=TRUE, but not doubly weighted
+
                 #mdGIC  <- apply( IND, 1, function(ind) mean(MD[cbind(ind,1:10)]) )
                 #plot(mdGIC[length(laGIC):1],errGIC[length(laGIC):1]/s2, xlab="MD", ylab="PE", type="o")
 
                 r <- model.full$rss
                 kt <- which(errGIC == min(errGIC))
                 indGIC <- kt[length(kt)]    #TODO: why last?
-                gic.full <- (r+laGIC[indGIC]*length(r):1)/(real_n*s2)
+                gic.full <- (r+laGIC[indGIC]*length(r):1)/(total_n*s2)
                 #plot(gic.full[length(gic.full):1])
 
         } else{
@@ -81,7 +94,7 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                         }
                         n1 <- table(y)[1]
                         n2 <- table(y)[2]
-                        real_n <- 0 #recount  of test instances
+                        total_n <- 0 #recount  of test instances
 
                         foldid1 <- sample(rep(1:nfolds,length.out=n1))  #PP replaces cvfolds by a simpler sample(rep()) function
                         foldid2 <- sample(rep(1:nfolds,length.out=n2))  #PP replaces cvfolds by a simpler sample(rep()) function
@@ -101,13 +114,15 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                                 Xtr <- X[foldid != fold, , drop = FALSE]
                                 ytr <- y[foldid != fold, drop = FALSE]
 
-                                compute_model <- cv_compute_model(model_function, Xtr, ytr, Xte, yte, real_n, lambda.full = lambda.full, ...)   #three letter abbreviations (lambda.full vs lam) make this function call confused, so explicit passing of named parameter i.e. lambda.full=lambda.full is required
+                                compute_model <- cv_compute_model(model_function, Xtr, ytr, Xte, yte, lambda.full = lambda.full, ...)   #three letter abbreviations (lambda.full vs lam) make this function call confused, so explicit passing of named parameter i.e. lambda.full=lambda.full is required
                                 model<-compute_model$model
                                 Xtr<-compute_model$Xtr
                                 ytr<-compute_model$ytr
                                 Xte<-compute_model$Xte
                                 yte<-compute_model$yte
-                                real_n<-compute_model$real_n
+                                total_n <- total_n + compute_model$this_fold_n
+                                fold_n[[fold]] <- compute_model$this_fold_n
+
 
                                 #SzN new code based on PP new code
                                 loglik[[fold]] <- -2*model$loglik
@@ -141,14 +156,24 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                         }
                         #MD <- sapply(1:nfolds, function(i)  md[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
                         IND <- apply( LOGLIK, 2, function(ll) sapply( laGIC, function(la) which.min(ll+la*length(ll):1) ) )
-                        errGIC <- apply( IND, 1, function(ind) mean(ERR[cbind(ind,1:nfolds)]) )
+                        error_means_in_folds <- apply( IND, 1, function(ind) ERR[cbind(ind,1:nfolds)])
+                        #here the errors are mean errors for each model size and each fold, sized foldmin x nfolds
+
+                        errGIC <- apply(error_means_in_folds, 1, mean)
+                        #errGIC is the mean of those mean errors
+
+
+                        std_err <- sqrt(rowSums(error_means_in_folds^2-errGIC^2)/((nfolds-1)*nfolds))     # SD in nfolds numbers, further divided by sqrt(n_folds)
+                        # std_err is a vector (of length foldmin) and it stores standard errors for different model sizes
+                        # it is calculated similarly as in glmnet for group=TRUE, but not doubly weighted
+
                         #mdGIC  <- apply( IND, 1, function(ind) mean(MD[cbind(ind,1:10)]) )
                         #plot(mdGIC[length(laGIC):1],errGIC[length(laGIC):1]/s2, xlab="MD", ylab="PE", type="o")
 
                         ll <- -2*model.full$loglik
                         kt <- which(errGIC == min(errGIC))
                         indGIC <- kt[length(kt)]    #TODO: why last?
-                        gic.full <- (ll+laGIC[indGIC]*length(ll):1)/real_n
+                        gic.full <- (ll+laGIC[indGIC]*length(ll):1)/total_n
                         #plot(gic.full[length(gic.full):1])
 
                 }
@@ -161,7 +186,7 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
         indMod <- kt[length(kt)]
         df.min <- model.full$df[indMod]
 
-        kt <- which(gic.full <= min(stats::na.omit(gic.full)) + stats::sd(stats::na.omit(gic.full[gic.full!=Inf & gic.full!=-Inf])))
+        kt <- which(gic.full <= min(stats::na.omit(gic.full)) + stats::na.omit(std_err[gic.full!=Inf & gic.full!=-Inf]))
         if (length(kt) == 0) {
           df.1se <- NULL
         } else {
@@ -169,6 +194,6 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
           df.1se <- model.full$df[indMod]
         }
 
-        out <- list(df.min = df.min, df.1se = df.1se, dmr.fit = model.full, cvm = gic.full, foldid = foldid)
+        out <- list(df.min = df.min, df.1se = df.1se, dmr.fit = model.full, cvm = gic.full, cvse = std_err, foldid = foldid)
         return(out)
 }
