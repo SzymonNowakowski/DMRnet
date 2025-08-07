@@ -1,4 +1,4 @@
-cv_compute_model<-function(model_function, Xtr, ytr, Xte, yte, real_n, lambda.full, ...) {
+cv_compute_model<-function(model_function, Xtr, ytr, Xte, yte, lambda.full, ...) {
 
   #### remove from train and test columns causing data singularity
   ssd <- apply(Xtr, 2, function(x) length(unique(x)))
@@ -26,12 +26,11 @@ cv_compute_model<-function(model_function, Xtr, ytr, Xte, yte, real_n, lambda.fu
       Xte<-Xte[which(Xte[,factor_columns[i]] %in% train.levels), , drop=FALSE]
 
     }
-  real_n <- real_n + length(yte)
 
   #TODO: maybe one can do better if all test data is removed in one of the folds?
   if (length(yte) == 0) {
     stop("Unable to perform cross validation. Empty test set in one of the folds.")
   }
 
-  return (list(model=model, Xtr=Xtr, ytr=ytr, Xte=Xte, yte=yte, real_n=real_n))
+  return (list(model=model, Xtr=Xtr, ytr=ytr, Xte=Xte, yte=yte, this_fold_n=length(yte)))
 }
