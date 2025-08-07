@@ -102,7 +102,10 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                         foldid[which(y == levels(factor(y))[1])] = foldid1
                         foldid[which(y == levels(factor(y))[2])] = foldid2
                         #PP new code error <- list()
-                        err <- list(); loglik <- list(); #md <- list()
+                        err <- list()
+                        loglik <- list()
+                        #md <- list()
+                        fold_n <-list()
 
                         model.full <- model_function(X, y, ...)
                         lambda.full<- model.full$lambda
