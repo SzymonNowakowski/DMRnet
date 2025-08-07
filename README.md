@@ -200,10 +200,8 @@ The first purpose is testing agreement of the results obtained for the new versi
    
    
    The resulting model dimension and prediction error data was retained. 
-   It creates opportunity to compare the expected distibutions of model dimension and prediction error 
-   with the actual distributions for new package versions
-   (we would expect to get the same results with the new PDMR algorithm in package
-   versions >= 0.4.0 as were obtained with GLAMER in the beginning of 2022 with v. 0.2.0).
+   It creates opportunity to compare the expected distibutions (as of v. 0.3.1) of model dimension and prediction error 
+   with the actual distributions for new package versions.
    
    ![High Dimensional Simulations](https://github.com/SzymonNowakowski/DMRnet/blob/testing_branch/result_high_dimensional_simulation.svg)
        
