@@ -203,7 +203,8 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
 
         # BUT: foldmin may be shorter than the length of a model.full (and of gic.full, which is the same length)
         # We need to propagate the first value to the left
-        std_err <- c(rep(std_err[1], length(gic.full) - length(std_err)), std_err)
+        if (length(gic.full) > length(std_err))
+          std_err <- c(rep(std_err[1], length(gic.full) - length(std_err)), std_err)
 
         kt <- which(gic.full <= gic.full[kt] + std_err[kt])
         if (length(kt) == 0) {
