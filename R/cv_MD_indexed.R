@@ -112,13 +112,14 @@ cv_MD_indexed <- function(X, y, nfolds, model_function, ...) {
         # std_err is a vector (of length foldmin) and it stores standard errors for different model sizes
         # calculated similarly as in glmnet for group=TRUE, i.e. doubly weighted (once for mean calculation and then for sd calculation)
 
+        # first, compute .min estimator
         kt <- which(error_means == min(stats::na.omit(error_means)))   #kt stores indexes in error_means equal to a minimum error.
                 #if there is more than one such index, the LAST one is the one returned, because LAST means a smaller model.
         df.min <- model$df[error_nfolds_length - foldmin + kt[length(kt)]]   #model is a model computed in the last cross validation fold (==nfolds)
               #so in case there are differences in model lengths in cv folds, the model size in that particular model needs to be shifted
 
-
-        kt <- which(error_means <= min(stats::na.omit(error_means)) + stats::na.omit(std_err[error_means!=Inf & error_means!=-Inf]))
+        # next, compute .1se estimator
+        kt <- which(error_means <= error_means[kt] + std_err[kt])
 
         if (length(kt) == 0) {
           df.1se <- NULL
