@@ -1,7 +1,5 @@
 #' DMRnet-package
 #'
-#' @name DMRnet-package
-#' @docType package
 #' @description Model selection algorithms for regression and classification, where the predictors can be continuous or categorical and the number of regressors may exceed the number of observations. The selected model consists of a subset of numerical regressors and partitions of levels of factors.
 #' @section DMRnet Functions:
 #'
@@ -37,4 +35,4 @@
 #'
 #' Piotr Pokarowski, Wojciech Rejchel, Agnieszka Sołtys, Michał Frej and Jan Mielniczuk, 2022. Improving Lasso for model selection and prediction. Scandinavian Journal of Statistics, 49(2): 831–863. \doi{10.1111/sjos.12546}
 #'
-NULL
+"_PACKAGE"

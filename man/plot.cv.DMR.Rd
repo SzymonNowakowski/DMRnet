@@ -15,7 +15,7 @@
 Plots cross-validated error values from a \code{cv.DMR} object.
 }
 \details{
-Produces a plot of cross-validated error values for the entire sequence of models from the fitted \code{cv.DMR} object. The horizontal level indicating separation of one standard deviation from the minimum error is indicated with a blue dashed line. The df.min (the smallest model minimizing the cross-validated error) and df.1se (the smallest model falling under the blue dashed line) are marked with red and blue points, respectively.
+Produces a plot of cross-validated mean error values for the entire sequence of models from the fitted \code{cv.DMR} object. The mean error values are presented with dots. Brackets indicate range of one standard error from the mean error. The \code{df.min} (the smallest model minimizing the mean cross-validation error) and \code{df.1se} (the smallest model falling under minimum mean cross validation error plus its one standard error indicated by the upper bracket) are marked with red and blue dots, respectively.
 }
 \examples{
 ## cv.DMR for linear regression

@@ -15,8 +15,12 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
 ```
 
+```{r seed, include = FALSE}
+set.seed(0)
+```
 
 # This document
 
@@ -132,7 +136,7 @@ coef(gic.model)
 
 ### Model selection with $K$-fold Cross Validation
 
-The default $K$ value is 10. Because the data needs to be partitioned into CV subsets which alternate as training and validating sets, the precomputed sequence of models in `models` variable cannot be used directly, as was the case with GIC-based model selection. Instead, to perform a 10-fold CV-based model selection execute
+Because the data needs to be partitioned into CV subsets which alternate as training and validating sets, the precomputed sequence of models in `models` variable cannot be used directly, as was the case with GIC-based model selection. Instead, to perform a 10-fold CV-based model selection (the default $K$ value is 10) execute 
 
 ```{r cross-validation, fig.height=4, fig.width=6, small.mar=TRUE}
 cv.model <- cv.DMRnet(X, y)
@@ -144,15 +148,13 @@ As before, one can access the best model dimension with
 cv.model$df.min
 ```
 
-In a plot above there is also a blue dot indicating a `df.1se` model. This is the smallest model (respective to its dimension)
-having its error within the boundary of one standard deviation (the blue dotted line) from the best model. 
-This model improves interpretability without erring much more than the best model.
+In the plot above, a red dot marks the `df.min` model — the one with the lowest cross-validated error. A blue dot indicates the `df.1se` model — the smallest model (in terms of dimension) whose error lies within one standard error of the minimum, as shown by the upper grey bracket above `df.min`. 
+This model improves interpretability by selecting fewer variables, while maintaining an error level that is not substantially worse than that of the best model.
 ```{r cv.df.1se}
 cv.model$df.1se
 ```
 
-Returning to the best model, `df.min`, its dimension is the same as when we used GIC directly.
-Let's check if the CV-selected model is the same as the best model selected with GIC:
+Returning to the best model, `df.min`, we observe that its dimension matches the one obtained using GIC directly. This suggests that the model selected via cross-validation may in fact coincide with the GIC-optimal model. Let us now verify this hypothesis:
 ```{r cv.coef}
 coef(cv.model)==coef(gic.model)
 ```
