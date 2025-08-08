@@ -184,12 +184,15 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                         stop("Error: wrong family, should be one of: gaussian, binomial")
                 }
         }
+
+        # first, compute .min estimator
         kt <- which(gic.full == min(stats::na.omit(gic.full))) #kt stores indexes in error equal to a minimum error.
         #if there is more than one such index, the LAST one is the one returned, because LAST means a smaller model.
         indMod <- kt[length(kt)]
         df.min <- model.full$df[indMod]
 
-        kt <- which(gic.full <= min(stats::na.omit(gic.full)) + stats::na.omit(std_err[gic.full!=Inf & gic.full!=-Inf]))
+        # next, compute .1se estimator
+        kt <- which(gic.full <= gic.full[kt] + std_err[kt])
         if (length(kt) == 0) {
           df.1se <- NULL
         } else {
