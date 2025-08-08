@@ -41,7 +41,7 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
 
                 len_err <- sapply(err, length)
                 foldmin <- min(len_err)
-                ERR <- sapply(1:nfolds, function(i) err[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
+                ERR <- sapply(1:nfolds, function(i) utils::tail(err[[i]], foldmin))
                 if (foldmin == 1) {
                   ERR<-t(as.matrix((ERR)))  #making it a horizontal one-row matrix
                 }
@@ -58,7 +58,7 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                 RIC_constant <- constants()$RIC_gaussian_constant
                 Const <- exp(seq(log(RIC_constant/50),log(RIC_constant*50), length=81))
                 laGIC <- Const*log(p)*s2
-                RSS <- sapply(1:nfolds, function(i) rss[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
+                RSS <- sapply(1:nfolds, function(i) utils::tail(rss[[i]], foldmin))
                 if (is.null(dim(RSS))) {
                   RSS<-t(as.matrix((RSS)))  #making it a horizontal one-row matrix
                 }
@@ -139,7 +139,7 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
 
                         len_err <- sapply(err, length)
                         foldmin <- min(len_err)
-                        ERR <- sapply(1:nfolds, function(i) err[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
+                        ERR <- sapply(1:nfolds, function(i) utils::tail(err[[i]], foldmin))
                         if (foldmin == 1) {
                           ERR<-t(as.matrix((ERR)))  #making it a horizontal one-row matrix
                         }
@@ -154,7 +154,7 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                         RIC_constant <- constants()$RIC_binomial_constant
                         Const <- exp(seq(log(RIC_constant/50),log(RIC_constant*50), length=81))
                         laGIC <- Const*log(p)
-                        LOGLIK <- sapply(1:nfolds, function(i) loglik[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
+                        LOGLIK <- sapply(1:nfolds, function(i) utils::tail(loglik[[i]], foldmin))
                         if (is.null(dim(LOGLIK))) {
                           LOGLIK<-t(as.matrix((LOGLIK)))  #making it a horizontal one-row matrix
                         }
@@ -205,6 +205,12 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
         # We need to propagate the first value to the left
         if (length(gic.full) > length(std_err))
           std_err <- c(rep(std_err[1], length(gic.full) - length(std_err)), std_err)
+
+        # ALSO: foldmin may be longer than the length of a model.full (and of gic.full, which is the same length)
+        # This is rare but may happen, we need to shorten std_err in this case
+        if (length(gic.full) < length(std_err))
+          std_err <- utils::tail(std_err, length(gic.full))
+
 
         kt <- which(gic.full <= gic.full[kt] + std_err[kt])
         if (length(kt) == 0) {

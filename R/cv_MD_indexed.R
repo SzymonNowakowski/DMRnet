@@ -89,8 +89,8 @@ cv_MD_indexed <- function(X, y, nfolds, model_function, ...) {
         #compute foldmin - the length of model sizes (or lambdas) that is minimal across folds.
         foldmin <- min(c(sapply(error, length), length(model.full$df)))   #taking into consideration the length of a full model, which may be SMALLER than in any of the folds
 
-        error_nfolds_length <- length(error[[nfolds]])  #this value needs to be retained because error will be redefined (shifted!) in the next line
-        error <- sapply(1:length(error), function(i) error[[i]][(length(error[[i]]) - foldmin + 1) : length(error[[i]])])
+        error_nfolds_length <- length(error[[nfolds]])  #this value needs to be retained because error will be redefined (shortened!) in the next line
+        error <- sapply(error, function(x) utils::tail(x, foldmin))
 
         # error is a matrix with foldmin rows and nfolds column,
         # containing sums of errors within each model size and in each fold
