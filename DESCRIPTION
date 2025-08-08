@@ -2,7 +2,7 @@ Package: DMRnet
 Type: Package
 Title: Delete or Merge Regressors Algorithms for Linear and Logistic
         Model Selection and High-Dimensional Data
-Version: 0.4.0.9000
+Version: 0.4.0.9001
 Authors@R: c(person("Agnieszka", "Prochenka-Sołtys", email = "ap220756@mimuw.edu.pl", role = c("aut"), comment = "previous maintainer for versions <= 0.2.0"),
    person("Piotr", "Pokarowski", role = c("aut")),
    person("Szymon", "Nowakowski", email = "s.nowakowski@mimuw.edu.pl", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1939-9512")))
@@ -11,8 +11,8 @@ License: GPL-2
 Encoding: UTF-8
 LazyData: true
 Imports: hclust1d, glmnet, grpreg, stats, graphics, utils
-Suggests: knitr
+Suggests: rmarkdown, knitr
 URL: https://github.com/SzymonNowakowski/DMRnet 
 BugReports: https://github.com/SzymonNowakowski/DMRnet/issues
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr

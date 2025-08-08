@@ -40,6 +40,14 @@ Piotr Pokarowski and Jan Mielniczuk, 2015. Combined l1 and greedy l0 penalized l
 
 Piotr Pokarowski, Wojciech Rejchel, Agnieszka Sołtys, Michał Frej and Jan Mielniczuk, 2022. Improving Lasso for model selection and prediction. Scandinavian Journal of Statistics, 49(2): 831–863. \doi{10.1111/sjos.12546}
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/SzymonNowakowski/DMRnet}
+  \item Report bugs at \url{https://github.com/SzymonNowakowski/DMRnet/issues}
+}
+
+}
 \author{
 Agnieszka Prochenka-Sołtys, Piotr Pokarowski, Szymon Nowakowski
 

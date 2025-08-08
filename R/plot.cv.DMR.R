@@ -6,7 +6,7 @@
 #'
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @details Produces a plot of cross-validated error values for the entire sequence of models from the fitted \code{cv.DMR} object. The horizontal level indicating separation of one standard deviation from the minimum error is indicated with a blue dashed line. The df.min (the smallest model minimizing the cross-validated error) and df.1se (the smallest model falling under the blue dashed line) are marked with red and blue points, respectively.
+#' @details Produces a plot of cross-validated mean error values for the entire sequence of models from the fitted \code{cv.DMR} object. The mean error values are presented with dots. Brackets indicate range of one standard error from the mean error. The \code{df.min} (the smallest model minimizing the mean cross-validation error) and \code{df.1se} (the smallest model falling under minimum mean cross validation error plus its one standard error indicated by the upper bracket) are marked with red and blue dots, respectively.
 #'
 #' @examples
 #' ## cv.DMR for linear regression
@@ -18,30 +18,40 @@
 #' plot(cv)
 #'
 #' @export
-plot.cv.DMR <- function(x, ...){
-  x_values <- x$dmr.fit$df
-  if (length(x_values) > length(x$cvm))
-    x_values <- x_values[(length(x_values) - length(x$cvm) + 1):length(x_values)]
+  plot.cv.DMR <- function(x, ...){
+    x_values <- x$dmr.fit$df
+    if (length(x_values) > length(x$cvm))
+      x_values <- x_values[(length(x_values) - length(x$cvm) + 1):length(x_values)]
 
-  graphics::plot(x_values, x$cvm, pch = 16, xlab = "df", ylab = "cv error", ...)
-  #df.min point & text
-  graphics::points(x$df.min, min(stats::na.omit(x$cvm)), pch = 16, col = "red")  #min(x$cvm)==x$cvm[length(x$cvm) - x$df.min + 1]
-  graphics::text(x$df.min, min(stats::na.omit(x$cvm)), "df.min", pos=3, cex=0.7, col = "red")
+    #establishing the min and max limits of the viewport
+    text_height <- graphics::strheight("df.min", cex = 0.7, units="inches") * 1.33 # value of 1.33 includes the shift induced by pos=1)
+    viewport_height <- graphics::par("pin")[2]  # height of plot region in inches
+    ylim_min <- min(x$cvm - x$cvse)
+    ylim_max <- max(x$cvm + x$cvse)
+    ylim_min <- ylim_min - (ylim_max - ylim_min) * text_height / viewport_height
 
-  if (!is.null(x$df.1se)) {
-    standard_deviation <- stats::sd(stats::na.omit(x$cvm[x$cvm!=Inf & x$cvm!=-Inf]))
-    if (standard_deviation != 0) {
-      #1 SD line, arrow and text
-      y <- min(stats::na.omit(x$cvm)) + standard_deviation
-      graphics::lines(c(x_values[1], x_values[length(x_values)]), c(y, y), lty="dashed", col = "blue")
-      graphics::arrows(1, min(stats::na.omit(x$cvm)), 1, y, length=0.05, code=3)
-      graphics::text(1, y/2+min(stats::na.omit(x$cvm))/2, "1SD", pos=4, cex=0.7)
+    graphics::plot(x_values, x$cvm, pch = 16, xlab = "df", ylab = "cv error", ylim=c(ylim_min, ylim_max), ...)
+    #df.min point & text
+    graphics::points(x$df.min, min(stats::na.omit(x$cvm)), pch = 16, col = "red")  #min(x$cvm)==x$cvm[length(x$cvm) - x$df.min + 1]
+    graphics::text(x$df.min, min(stats::na.omit(x$cvm)), "df.min", pos=1, cex=0.7, col = "red")
 
+    if (!is.null(x$df.1se)) {   # df.1se is defined
       #df.1se point & text
-      if (sum(x_values == x$df.1se) == 1) {
+      if (sum(x_values == x$df.1se) == 1) {  # it is present on-screen
         graphics::points(x$df.1se, x$cvm[x_values == x$df.1se], pch = 16, col = "blue")
-        graphics::text(x$df.1se, x$cvm[x_values == x$df.1se], "df.1se", pos=4, cex=0.7, col = "blue")
+        graphics::text(x$df.1se, x$cvm[x_values == x$df.1se], "df.1se", pos=3, cex=0.7, col = "blue")
       }
     }
+
+    # presentation of vertical grey brackets to indicate standard error
+    for (i in seq_along(x_values)) {
+      se <- x$cvse[i]
+      mu <- x$cvm[i]
+      if (is.finite(se) && is.finite(mu)) {
+        graphics::arrows(x0 = x_values[i], y0 = mu - se,
+                         x1 = x_values[i], y1 = mu + se,
+                         angle = 90, code = 3, length = 0.05, col = "grey")
+      }
+    }
+
   }
-}

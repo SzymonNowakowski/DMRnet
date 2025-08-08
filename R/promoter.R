@@ -1,6 +1,6 @@
 #' promoter dataset
 #'
-#' It consists of E. coli promoter gene sequences starting at position -50 (p-50) and ending at position +7 (p7). Each of these 57 Fields is filled by one of {a, g, t, c}. The task is to recognize promoters, which are genetic regions which initiate the first step in the expression of adjacent genes (transcription). There are 53 promoters and 53 non-promoter sequences.
+#' It consists of E. coli promoter gene sequences starting at position -50 (p-50) and ending at position +7 (p7). Each of these 57 Fields is filled by one of \{a, g, t, c\}. The task is to recognize promoters, which are genetic regions which initiate the first step in the expression of adjacent genes (transcription). There are 53 promoters and 53 non-promoter sequences.
 #'
 #' @docType data
 #'
@@ -9,63 +9,63 @@
 #' @format A data frame with 106 observations on the following 58 variables.
 #' \describe{
 #'   \item{y}{One of 1/0, indicating the class (1 = promoter).}
-#'   \item{X1}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X2}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X3}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X4}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X5}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X6}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X7}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X8}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X9}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X10}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X11}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X12}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X13}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X14}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X15}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X16}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X17}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X18}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X19}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X20}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X21}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X22}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X23}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X24}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X25}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X26}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X27}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X28}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X29}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X30}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X31}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X32}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X33}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X34}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X35}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X36}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X37}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X38}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X39}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X40}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X41}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X42}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X43}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X44}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X45}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X46}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X47}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X48}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X49}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X50}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X51}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X52}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X53}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X54}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X55}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X56}{Sequence; filled by one of {a, g, t, c}.}
-#'   \item{X57}{Sequence; filled by one of {a, g, t, c}.}}
+#'   \item{X1}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X2}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X3}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X4}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X5}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X6}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X7}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X8}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X9}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X10}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X11}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X12}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X13}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X14}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X15}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X16}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X17}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X18}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X19}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X20}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X21}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X22}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X23}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X24}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X25}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X26}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X27}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X28}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X29}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X30}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X31}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X32}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X33}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X34}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X35}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X36}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X37}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X38}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X39}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X40}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X41}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X42}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X43}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X44}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X45}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X46}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X47}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X48}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X49}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X50}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X51}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X52}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X53}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X54}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X55}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X56}{Sequence; filled by one of \{a, g, t, c\}.}
+#'   \item{X57}{Sequence; filled by one of \{a, g, t, c\}.}}
 #'
 #' @keywords datasets
 #'

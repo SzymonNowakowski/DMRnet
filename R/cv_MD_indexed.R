@@ -104,11 +104,11 @@ cv_MD_indexed <- function(X, y, nfolds, model_function, ...) {
         # containing mean errors within each model size and in each fold
 
         error_means <- rowSums(error)/total_n   # a sum of errors across all folds divided by the total number of test cases
-        # error_means is a vector sized foldmin now and it stores mean classification errors for different lambdas (model sizes)
+        # error_means is a vector sized foldmin now and it stores mean classification errors for different model sizes
         # note that it is correctly weighted
 
         wt <- unlist(fold_n) / total_n
-        std_err <- sqrt(apply(error_means_in_folds^2-error_means^2, 1, weighted.mean, wt)) / sqrt(nfolds-1)
+        std_err <- sqrt(apply(error_means_in_folds^2-error_means^2, 1, stats::weighted.mean, wt)) / sqrt(nfolds-1)
         # std_err is a vector (of length foldmin) and it stores standard errors for different model sizes
         # calculated similarly as in glmnet for group=TRUE, i.e. doubly weighted (once for mean calculation and then for sd calculation)
 

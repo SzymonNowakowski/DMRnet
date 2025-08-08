@@ -46,6 +46,7 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                   ERR<-t(as.matrix((ERR)))  #making it a horizontal one-row matrix
                 }
                 #err <- rowMeans(ERR); kt <- which(err == min(err)); df.min <- dmr$df[kt[length(kt)]]; plot(err, type="o")
+                # ERR[m, f] = CV error for model `m` in fold `f`
 
                 p1 <- model.full$df[1]
                 s2 <- model.full$rss[1]/(n-p1)
@@ -61,25 +62,27 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                 if (is.null(dim(RSS))) {
                   RSS<-t(as.matrix((RSS)))  #making it a horizontal one-row matrix
                 }
+                # RSS[m, f] = CV rss for model `m` in fold `f`
+
+                error_means_in_folds <- RSS/(unlist(fold_n)^2*s2)
+                # error_means_in_folds is a matrix with foldmin rows and nfolds column,
+                # containing mean errors (in term of rss) within each model size and in each fold
+
+                error_means <- rowSums(RSS)/(total_n^2*s2)    # a sum of errors (in term of rss) across all folds divided by the total number of test cases
+                # error_means is a vector sized foldmin now and it stores mean classification errors (in term of rss) for different model sizes
+                # note that it is correctly weighted already
+
                 #MD <- sapply(1:nfolds, function(i)  md[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
                 IND <- apply( RSS, 2, function(r) sapply( laGIC, function(la) which.min(r+la*length(r):1) ) )
-                error_means_in_folds <- apply( IND, 1, function(ind) ERR[cbind(ind,1:nfolds)])
-                #here the errors are mean errors for each model size and each fold, sized foldmin x nfolds
-
-                errGIC <- apply(error_means_in_folds, 1, mean)
-                #errGIC is the mean of those mean errors
-
-
-                std_err <- sqrt(rowSums(error_means_in_folds^2-errGIC^2)/((nfolds-1)*nfolds))     # SD in nfolds numbers, further divided by sqrt(n_folds)
-                # std_err is a vector (of length foldmin) and it stores standard errors for different model sizes
-                # it is calculated similarly as in glmnet for group=TRUE, but not doubly weighted
+                errGIC <- apply( IND, 1, function(ind) mean(ERR[cbind(ind,1:nfolds)]))
+                #errGIC - vector of mean CV error values for models selected by each GIC penalty level
 
                 #mdGIC  <- apply( IND, 1, function(ind) mean(MD[cbind(ind,1:10)]) )
                 #plot(mdGIC[length(laGIC):1],errGIC[length(laGIC):1]/s2, xlab="MD", ylab="PE", type="o")
 
                 r <- model.full$rss
                 kt <- which(errGIC == min(errGIC))
-                indGIC <- kt[length(kt)]    #TODO: why last?
+                indGIC <- kt[length(kt)]    # why last? GIC penalties grow → higher k implies simpler models
                 gic.full <- (r+laGIC[indGIC]*length(r):1)/(total_n*s2)
                 #plot(gic.full[length(gic.full):1])
 
@@ -126,12 +129,10 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                                 total_n <- total_n + compute_model$this_fold_n
                                 fold_n[[fold]] <- compute_model$this_fold_n
 
-
-                                #SzN new code based on PP new code
                                 loglik[[fold]] <- -2*model$loglik
 
                                 pred <- predict.DMR(model, newx = as.data.frame(Xte), type = "class")
-                                #SzN new code based on PP new code error[[fold]] <- apply(pred, 2, function(z) sum(z != yte))
+
                                 err[[fold]] <- apply(pred, 2, function(z) mean(z != yte))
 
                         }
@@ -139,12 +140,12 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                         len_err <- sapply(err, length)
                         foldmin <- min(len_err)
                         ERR <- sapply(1:nfolds, function(i) err[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
-                        #err <- rowMeans(ERR); kt <- which(err == min(err)); df.min <- dmr$df[kt[length(kt)]]; plot(err, type="o")
-
-
                         if (foldmin == 1) {
                           ERR<-t(as.matrix((ERR)))  #making it a horizontal one-row matrix
                         }
+                        # ERR[m, f] = CV error for model `m` in fold `f`
+
+                        #err <- rowMeans(ERR); kt <- which(err == min(err)); df.min <- dmr$df[kt[length(kt)]]; plot(err, type="o")
 
                         p <- ncol(model.full$beta)
                         if (is.null(p))
@@ -157,25 +158,28 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                         if (is.null(dim(LOGLIK))) {
                           LOGLIK<-t(as.matrix((LOGLIK)))  #making it a horizontal one-row matrix
                         }
+                        # LOGLIK[m, f] = CV loglik for model `m` in fold `f`
+
+                        error_means_in_folds <- -2*LOGLIK / unlist(fold_n)
+                        # error_means_in_folds is a matrix with foldmin rows and nfolds column,
+                        # containing mean errors (in term of logliks) within each model size and in each fold
+
+                        error_means <- -2*rowSums(LOGLIK)/total_n   # a sum of errors (in term of logliks) across all folds divided by the total number of test cases
+                        # error_means is a vector sized foldmin now and it stores mean classification errors (in term of logliks) for different model sizes
+                        # note that it is correctly weighted already
+
+
                         #MD <- sapply(1:nfolds, function(i)  md[[i]][ (len_err[i] - foldmin + 1) : len_err[i] ] )
                         IND <- apply( LOGLIK, 2, function(ll) sapply( laGIC, function(la) which.min(ll+la*length(ll):1) ) )
-                        error_means_in_folds <- apply( IND, 1, function(ind) ERR[cbind(ind,1:nfolds)])
-                        #here the errors are mean errors for each model size and each fold, sized foldmin x nfolds
-
-                        errGIC <- apply(error_means_in_folds, 1, mean)
-                        #errGIC is the mean of those mean errors
-
-
-                        std_err <- sqrt(rowSums(error_means_in_folds^2-errGIC^2)/((nfolds-1)*nfolds))     # SD in nfolds numbers, further divided by sqrt(n_folds)
-                        # std_err is a vector (of length foldmin) and it stores standard errors for different model sizes
-                        # it is calculated similarly as in glmnet for group=TRUE, but not doubly weighted
+                        errGIC <- apply( IND, 1, function(ind) mean(ERR[cbind(ind,1:nfolds)]))
+                        ##errGIC - vector of mean CV error values for models selected by each GIC penalty level
 
                         #mdGIC  <- apply( IND, 1, function(ind) mean(MD[cbind(ind,1:10)]) )
                         #plot(mdGIC[length(laGIC):1],errGIC[length(laGIC):1]/s2, xlab="MD", ylab="PE", type="o")
 
                         ll <- -2*model.full$loglik
                         kt <- which(errGIC == min(errGIC))
-                        indGIC <- kt[length(kt)]    #TODO: why last?
+                        indGIC <- kt[length(kt)]    # why last? GIC penalties grow → higher k implies simpler models
                         gic.full <- (ll+laGIC[indGIC]*length(ll):1)/total_n
                         #plot(gic.full[length(gic.full):1])
 
@@ -192,6 +196,15 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
         df.min <- model.full$df[indMod]
 
         # next, compute .1se estimator
+        wt <- unlist(fold_n) / total_n
+        std_err <- sqrt(apply(error_means_in_folds^2-error_means^2, 1, stats::weighted.mean, wt)) / sqrt(nfolds-1)
+        # std_err is a vector (of length foldmin) and it stores standard errors (in terms of logliks or rss) for different model sizes
+        # calculated similarly as in glmnet for group=TRUE, i.e. doubly weighted (once for mean calculation and then for sd calculation)
+
+        # BUT: foldmin may be shorter than the length of a model.full (and of gic.full, which is the same length)
+        # We need to propagate the first value to the left
+        std_err <- c(rep(std_err[1], length(gic.full) - length(std_err)), std_err)
+
         kt <- which(gic.full <= gic.full[kt] + std_err[kt])
         if (length(kt) == 0) {
           df.1se <- NULL

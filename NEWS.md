@@ -1,7 +1,9 @@
 
-# DMRnet 0.4.0.9000
+# DMRnet 0.4.0.9001
 
-- Starting a new development version
+- Fixed invalid lambda.1se computation (([issue #63](https://github.com/SzymonNowakowski/DMRnet/issues/63)))
+- Changed the presentation of CV plots to reflect that fix
+- Updated documentation and vignettes
 
 # DMRnet 0.4.0
 
