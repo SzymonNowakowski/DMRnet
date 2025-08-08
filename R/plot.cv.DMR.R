@@ -21,24 +21,29 @@
   plot.cv.DMR <- function(x, ...){
     x_values <- x$dmr.fit$df
     if (length(x_values) > length(x$cvm))
-      x_values <- x_values[(length(x_values) - length(x$cvm) + 1):length(x_values)]
+      x_values <- utils::tail(x_values, length(x$cvm))
+
+    point_size <- 1.0
 
     #establishing the min and max limits of the viewport
     text_height <- graphics::strheight("df.min", cex = 0.7, units="inches") * 1.33 # value of 1.33 includes the shift induced by pos=1)
     viewport_height <- graphics::par("pin")[2]  # height of plot region in inches
+    viewport_width <- graphics::par("pin")[1]  # width in inches
+    arrowhead_length <- 0.006 * viewport_width  # e.g. 1% of width
+
     ylim_min <- min(x$cvm - x$cvse)
     ylim_max <- max(x$cvm + x$cvse)
     ylim_min <- ylim_min - (ylim_max - ylim_min) * text_height / viewport_height
 
-    graphics::plot(x_values, x$cvm, pch = 16, xlab = "df", ylab = "cv error", ylim=c(ylim_min, ylim_max), ...)
+    graphics::plot(x_values, x$cvm, pch = 16, cex = point_size, xlab = "df", ylab = "cv error", ylim=c(ylim_min, ylim_max), ...)
     #df.min point & text
-    graphics::points(x$df.min, min(stats::na.omit(x$cvm)), pch = 16, col = "red")  #min(x$cvm)==x$cvm[length(x$cvm) - x$df.min + 1]
+    graphics::points(x$df.min, min(stats::na.omit(x$cvm)), pch = 16, col = "red", cex = point_size)
     graphics::text(x$df.min, min(stats::na.omit(x$cvm)), "df.min", pos=1, cex=0.7, col = "red")
 
     if (!is.null(x$df.1se)) {   # df.1se is defined
       #df.1se point & text
       if (sum(x_values == x$df.1se) == 1) {  # it is present on-screen
-        graphics::points(x$df.1se, x$cvm[x_values == x$df.1se], pch = 16, col = "blue")
+        graphics::points(x$df.1se, x$cvm[x_values == x$df.1se], pch = 16, col = "blue", cex = point_size)
         graphics::text(x$df.1se, x$cvm[x_values == x$df.1se], "df.1se", pos=3, cex=0.7, col = "blue")
       }
     }
@@ -50,7 +55,7 @@
       if (is.finite(se) && is.finite(mu)) {
         graphics::arrows(x0 = x_values[i], y0 = mu - se,
                          x1 = x_values[i], y1 = mu + se,
-                         angle = 90, code = 3, length = 0.05, col = "grey")
+                         angle = 90, code = 3, length = arrowhead_length, col = "grey")
       }
     }
 
