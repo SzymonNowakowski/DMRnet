@@ -99,7 +99,7 @@ cv_MD_indexed <- function(X, y, nfolds, model_function, ...) {
           error <- t(as.matrix(error))  #making it a horizontal one-row matrix
         }
 
-        error_means_in_folds <- error / unlist(fold_n)
+        error_means_in_folds <- sweep(error, 2, unlist(fold_n), "/")  # For each column (i.e., fold) of the matrix, divide it by the corresponding entry in unlist(fold_n).
         # error_means_in_folds is a matrix with foldmin rows and nfolds column,
         # containing mean errors within each model size and in each fold
 

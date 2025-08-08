@@ -64,7 +64,7 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                 }
                 # RSS[m, f] = CV rss for model `m` in fold `f`
 
-                error_means_in_folds <- RSS/(unlist(fold_n)^2*s2)
+                error_means_in_folds <- sweep(RSS, 2, unlist(fold_n)^2*s2, "/")  # For each column (i.e., fold) of the matrix, divide it by the corresponding entry in a vector
                 # error_means_in_folds is a matrix with foldmin rows and nfolds column,
                 # containing mean errors (in term of rss) within each model size and in each fold
 
@@ -160,7 +160,7 @@ cv_GIC_indexed <- function(X, y, nfolds, model_function, ...) {
                         }
                         # LOGLIK[m, f] = CV loglik for model `m` in fold `f`
 
-                        error_means_in_folds <- -2*LOGLIK / unlist(fold_n)
+                        error_means_in_folds <- sweep(-2*LOGLIK, 2, unlist(fold_n), "/")  # For each column (i.e., fold) of the matrix, divide it by the corresponding entry in a vector
                         # error_means_in_folds is a matrix with foldmin rows and nfolds column,
                         # containing mean errors (in term of logliks) within each model size and in each fold
 
