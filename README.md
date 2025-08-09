@@ -113,7 +113,7 @@ This remains to be introduced to PDMR, GLAMER and DMRnet algorithms in future ve
 
 ## Purpose of the `testing_branch`
 
-The `testing_branch` GitHub branch serves double purpose.
+Testing of the 0.4.0.9002 version, commit 0281fa86155434814ba904dccb44f4cdbaf08755.
 
 ### Consistency with previous package versions
 
