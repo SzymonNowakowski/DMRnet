@@ -20,7 +20,7 @@
 
 \item{type}{One of: \code{"link"}, \code{"response"}, \code{"class"}. For \code{family="gaussian"} for all values of \code{type} it gives the fitted values. For \code{family="binomial"} and \code{type="link"} it returns the linear predictors, for \code{type="response"} it returns the fitted probabilities and for \code{type="class"} it produces the class labels corresponding to the maximum probability.}
 
-\item{md}{Value of the model dimension parameter at which predictions are required. The default is \code{md="df.min"} value indicating the model minimizing the cross validation error. Alternatively, \code{md="df.1se"} can be used, indicating the smallest model falling under the upper curve of a prediction error plus one standard deviation.}
+\item{md}{Value of the model dimension parameter at which predictions are required. The default is \code{md="df.min"} value indicating the model minimizing the cross validation error. Alternatively, \code{md="df.1se"} can be used, indicating the smallest model falling under the upper curve of a minimal prediction error plus one standard error.}
 
 \item{unknown.factor.levels}{The way of handling factor levels in test data not seen while training a model. One of \code{"error"} (the default - throwing an error) or \code{"NA"} (returning \code{NA} in place of legitimate value for problematic rows).}
 
@@ -30,7 +30,7 @@
 Vector of predictions.
 }
 \description{
-Makes predictions from a cv.DMR object (for the model with minimal cross-validated error /the default/ or the smallest model falling under the upper curve of a prediction error plus one standard deviation).
+Makes predictions from a cv.DMR object (for the model with minimal cross-validated error /the default/ or the smallest model falling under the upper curve of a minimal prediction error plus one standard error).
 }
 \details{
 Similar to other \code{predict} methods, this function predicts fitted values from a fitted \code{cv.DMR} object.

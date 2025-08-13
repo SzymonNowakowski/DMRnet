@@ -1,7 +1,7 @@
 
-# DMRnet 0.4.0.9002
+# DMRnet 0.4.1
 
-- Fixed invalid lambda.1se computation (([issue #63](https://github.com/SzymonNowakowski/DMRnet/issues/63)))
+- Fixed invalid lambda.1se computation (([issue #69](https://github.com/SzymonNowakowski/DMRnet/issues/69)))
 - Changed the presentation of CV plots to reflect that fix
 - Updated documentation and the vignette
 

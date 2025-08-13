@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{Fitted \code{cv.DMR} object.}
 
-\item{md}{Value of the model dimension parameter at which predictions are required. The default is \code{md="df.min"} value indicating the model minimizing the cross validation error. Alternatively, \code{md="df.1se"} can be used, indicating the smallest model falling under the upper curve of a prediction error plus one standard deviation.}
+\item{md}{Value of the model dimension parameter at which predictions are required. The default is \code{md="df.min"} value indicating the model minimizing the cross validation error. Alternatively, \code{md="df.1se"} can be used, indicating the smallest model falling under the upper curve of a minimal prediction error plus one standard error.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
@@ -17,7 +17,7 @@
 Vector of coefficients.
 }
 \description{
-Extracts coefficients from a \code{cv.DMR} object (for the model with minimal cross-validated error /the default/ or the smallest model falling under the upper curve of a prediction error plus one standard deviation).
+Extracts coefficients from a \code{cv.DMR} object (for the model with minimal cross-validated error /the default/ or the smallest model falling under the upper curve of a minimal prediction error plus one standard error).
 }
 \details{
 Similar to other \code{coef} methods, this function extracts coefficients from a fitted \code{cv.DMR} object.
