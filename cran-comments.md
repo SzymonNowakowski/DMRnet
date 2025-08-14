@@ -1,5 +1,5 @@
 
-# `check_win_devel()` and Rhub (`ubuntu-release`, `windows (R-devel)`, `macos (R-devel)`) checks
+# `check_win_devel()` and `rhub::rhub_check(platforms = c("ubuntu-release", "windows", "macos"))` checks
 
 There were no ERRORs, WARNINGs, or NOTEs. 
 
