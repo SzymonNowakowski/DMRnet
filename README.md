@@ -113,7 +113,7 @@ This remains to be introduced to PDMR, GLAMER and DMRnet algorithms in future ve
 
 ## Purpose of the `testing_branch`
 
-Testing of the 0.4.0.9002 version, commit 0281fa86155434814ba904dccb44f4cdbaf08755.
+Testing of the 0.4.0.9002 version, commit 0281fa86155434814ba904dccb44f4cdbaf08755. Main change of this version is fixing [issue #69](https://github.com/SzymonNowakowski/DMRnet/issues/69). One can clearly see that for the `.1se` models (marked as `cv+sd`) the error remains the same or is slightly lower, and model dimension gets increased.
 
 ### Consistency with previous package versions
 
