@@ -113,7 +113,11 @@ This remains to be introduced to PDMR, GLAMER and DMRnet algorithms in future ve
 
 ## Purpose of the `testing_branch`
 
-Testing of the 0.4.0.9002 version, commit 0281fa86155434814ba904dccb44f4cdbaf08755. Main change of this version is fixing [issue #69](https://github.com/SzymonNowakowski/DMRnet/issues/69). One can clearly see that for the `.1se` models (marked as `cv+sd`) the error remains the same or is slightly lower, and model dimension gets increased.
+Testing of the 0.4.0.9002 version, commit 0281fa86155434814ba904dccb44f4cdbaf08755. Main change in this version is fixing [issue #69](https://github.com/SzymonNowakowski/DMRnet/issues/69).  
+For the fixed `.1se` models (marked as `cv+sd`), one can clearly see that the error remains the same or is slightly lower, while the model dimension increases.  
+
+In the `Insurance` dataset, one might get the wrong impression that both the error and the model dimension improve. This is because the chart compares the `actual` version with a rather outdated `expected` version. A proper comparison—between the previous and the newest chart, and only the `actual` columns (corresponding to the previous and the most recent release candidates, respectively)—leads to the correct conclusion: the error remains the same or is slightly lower, and the model dimension increases for the fixed `.1se` predictor.
+
 
 ### Consistency with previous package versions
 
