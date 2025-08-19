@@ -33,7 +33,7 @@ cv.DMR(
 An object with S3 class \code{"cv.DMR"} is  returned,  which  is  a  list  with  the  ingredients  of  the  cross-validation fit.
 \describe{
   \item{df.min}{df (number of parameters) of the model with minimal cross-validated error.}
-  \item{df.1se}{df (number of parameters) of the smallest model falling under the upper curve of a prediction error plus one standard error.}
+  \item{df.1se}{df (number of parameters) of the smallest model falling under the upper curve of a minimal prediction error plus one standard error.}
   \item{dmr.fit}{Fitted \code{DMR} object for the full data.}
   \item{cvm}{The mean cross-validated error for the entire sequence of models.}
   \item{cvse}{The standard error used in \code{df.1se} calculation for the entire sequence of models.}

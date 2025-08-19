@@ -1,10 +1,10 @@
 #' @title coef.cv.DMR
 #'
-#' @description Extracts coefficients from a \code{cv.DMR} object (for the model with minimal cross-validated error /the default/ or the smallest model falling under the upper curve of a prediction error plus one standard deviation).
+#' @description Extracts coefficients from a \code{cv.DMR} object (for the model with minimal cross-validated error /the default/ or the smallest model falling under the upper curve of a minimal prediction error plus one standard error).
 #'
 #' @param object Fitted \code{cv.DMR} object.
 #'
-#' @param md Value of the model dimension parameter at which predictions are required. The default is \code{md="df.min"} value indicating the model minimizing the cross validation error. Alternatively, \code{md="df.1se"} can be used, indicating the smallest model falling under the upper curve of a prediction error plus one standard deviation.
+#' @param md Value of the model dimension parameter at which predictions are required. The default is \code{md="df.min"} value indicating the model minimizing the cross validation error. Alternatively, \code{md="df.1se"} can be used, indicating the smallest model falling under the upper curve of a minimal prediction error plus one standard error.
 #'
 #' @param ... Further arguments passed to or from other methods.
 #'
@@ -27,7 +27,7 @@ coef.cv.DMR <- function(object, md="df.min", ...){
   if (md=="df.1se" & !is.null(object$df.1se)) {
     out <- coef.DMR(object$dmr.fit, df = object$df.1se)
   } else if (md=="df.1se") {   #object$df.1se is null
-    stop("Error: required the smallest model falling under the upper curve of a prediction error plus one standard deviation, but it is not set. Use size=`df.min` instead, for the model minimizing the cross validation error.")
+    stop("Error: required the smallest model falling under the upper curve of a minimal prediction error plus one standard error, but it is not set. Use size=`df.min` instead, for the model minimizing the cross validation error.")
   } else if (md=="df.min") {
     out <- coef.DMR(object$dmr.fit, df = object$df.min)
   } else{

@@ -40,7 +40,7 @@ All in all, the cross validation features in the package are the following:
 
 2. The net of lambda values is first calculated from the full data set and then this net is used for particular cross validation folds. The motivation behind this change is to stabilize the results.
 
-3. Apart from `df.min`, which is the model with minimal cross-validated error, the routines now return `df.1se` which is the smallest model falling under the upper curve of a prediction error plus one standard deviation. It can be used in `predict()` for inference by passing `md="df.1se"` instead of the default `md="df.min"`.
+3. Apart from `df.min`, which is the model with minimal cross-validated error, the routines now return `df.1se` which is the smallest model falling under the upper curve of a prediction error plus one standard error. It can be used in `predict()` for inference by passing `md="df.1se"` instead of the default `md="df.min"`.
 
 4. Cross validation handles the mismatched factor levels in a way that minimizes incorrect behavior (see Section [Handling of mismatched factor levels](#handling-of-mismatched-factor-levels)).
 

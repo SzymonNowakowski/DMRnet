@@ -5,3 +5,4 @@
 ^CRAN-SUBMISSION$
 ^\.version\.json$
 ^Meta$
+^\.github$
